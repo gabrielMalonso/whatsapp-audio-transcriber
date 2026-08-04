@@ -1,0 +1,39 @@
+name: Sugerir uma melhoria
+description: Proponha um recurso ou aperfeiçoamento para o projeto.
+title: '[Melhoria]: '
+body:
+  - type: markdown
+    attributes:
+      value: Obrigado por ajudar a melhorar o projeto.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema a proposta resolve?
+      description: Explique a necessidade antes de descrever a solução.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solução proposta
+      description: Descreva como você imagina o comportamento da extensão.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Liste outras abordagens ou soluções temporárias, se houver.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Verificações
+      options:
+        - label: Procurei por propostas semelhantes.
+          required: true
+        - label: A proposta preserva a privacidade ou explica qualquer novo tratamento de dados.
+          required: true

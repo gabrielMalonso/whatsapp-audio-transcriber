@@ -107,7 +107,10 @@ export function App() {
     <main>
       <div className="atmosphere" aria-hidden="true" />
 
-      <header className="reveal" style={{ '--d': '0ms' } as React.CSSProperties}>
+      <header
+        className="reveal"
+        style={{ '--d': '0ms' } as React.CSSProperties}
+      >
         <img className="mark" src={appIcon} alt="" width={40} height={40} />
         <div className="brand">
           <p className="eyebrow">WhatsApp</p>
@@ -131,7 +134,10 @@ export function App() {
           aria-label="Verificar novamente"
           title="Verificar novamente"
         >
-          <RefreshCw {...iconSm} className={health === 'checking' ? 'spin' : undefined} />
+          <RefreshCw
+            {...iconSm}
+            className={health === 'checking' ? 'spin' : undefined}
+          />
         </button>
       </section>
 
@@ -274,7 +280,10 @@ export function App() {
         </button>
       </section>
 
-      <footer className="reveal" style={{ '--d': '280ms' } as React.CSSProperties}>
+      <footer
+        className="reveal"
+        style={{ '--d': '280ms' } as React.CSSProperties}
+      >
         <span>v0.2</span>
       </footer>
     </main>
