@@ -1,5 +1,4 @@
 import {
-  BotMessageSquare,
   Eye,
   EyeOff,
   ExternalLink,
@@ -17,11 +16,11 @@ import {
   cacheStats,
   clearTranscriptCache,
 } from '../../src/storage/transcripts';
+import appIcon from '../../assets/icon.png';
 
 type Health = 'checking' | 'ready' | 'unavailable' | 'unconfigured';
 
 const iconSm = { 'aria-hidden': true, size: 14, strokeWidth: 1.75 } as const;
-const iconMd = { 'aria-hidden': true, size: 16, strokeWidth: 1.7 } as const;
 
 export function App() {
   const [health, setHealth] = useState<Health>('checking');
@@ -109,9 +108,7 @@ export function App() {
       <div className="atmosphere" aria-hidden="true" />
 
       <header className="reveal" style={{ '--d': '0ms' } as React.CSSProperties}>
-        <div className="mark">
-          <BotMessageSquare {...iconMd} />
-        </div>
+        <img className="mark" src={appIcon} alt="" width={40} height={40} />
         <div className="brand">
           <p className="eyebrow">WhatsApp</p>
           <h1>Transcritor</h1>

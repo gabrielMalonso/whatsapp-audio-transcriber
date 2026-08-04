@@ -81,16 +81,12 @@ header {
 }
 
 .mark {
-  display: grid;
+  display: block;
   width: 40px;
   height: 40px;
-  place-items: center;
   border-radius: 12px;
-  background: linear-gradient(160deg, #12352e 0%, #0a241f 100%);
-  color: #7ee0c4;
-  box-shadow:
-    0 10px 24px rgba(10, 36, 31, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(0, 120, 90, 0.22);
 }
 
 .brand {
