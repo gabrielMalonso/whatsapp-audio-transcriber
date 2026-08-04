@@ -1,3 +1,12 @@
+import {
+  BotMessageSquare,
+  Eye,
+  EyeOff,
+  ExternalLink,
+  KeyRound,
+  RefreshCw,
+  Trash2,
+} from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { browser } from 'wxt/browser';
 import type {
@@ -10,6 +19,9 @@ import {
 } from '../../src/storage/transcripts';
 
 type Health = 'checking' | 'ready' | 'unavailable' | 'unconfigured';
+
+const iconSm = { 'aria-hidden': true, size: 14, strokeWidth: 1.75 } as const;
+const iconMd = { 'aria-hidden': true, size: 16, strokeWidth: 1.7 } as const;
 
 export function App() {
   const [health, setHealth] = useState<Health>('checking');
@@ -94,149 +106,189 @@ export function App() {
 
   return (
     <main>
-      <header>
-        <div className="mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M5 9v6M9 5v14M13 8v8M17 3v18M21 9v6" />
-          </svg>
+      <div className="atmosphere" aria-hidden="true" />
+
+      <header className="reveal" style={{ '--d': '0ms' } as React.CSSProperties}>
+        <div className="mark">
+          <BotMessageSquare {...iconMd} />
         </div>
-        <div>
-          <p className="eyebrow">WHATSAPP · GROQ</p>
+        <div className="brand">
+          <p className="eyebrow">WhatsApp</p>
           <h1>Transcritor</h1>
         </div>
       </header>
 
-      <section className="status-card">
+      <section
+        className={`status-card reveal ${health}`}
+        style={{ '--d': '60ms' } as React.CSSProperties}
+      >
         <div className={`status-dot ${health}`} />
-        <div>
+        <div className="status-copy">
           <strong>{healthTitle(health)}</strong>
-          <span>{detail}</span>
+          {health !== 'ready' && <span>{detail}</span>}
         </div>
         <button
           type="button"
-          className="refresh"
+          className="icon-action"
           onClick={refresh}
           aria-label="Verificar novamente"
+          title="Verificar novamente"
         >
-          ↻
+          <RefreshCw {...iconSm} className={health === 'checking' ? 'spin' : undefined} />
         </button>
       </section>
 
-      <section className="pipeline" aria-label="Pipeline de transcrição">
-        <p>PIPELINE</p>
+      <section
+        className="pipeline reveal"
+        aria-label="Pipeline de transcrição"
+        style={{ '--d': '110ms' } as React.CSSProperties}
+      >
         <div className="pipeline-step">
-          <span>01</span>
+          <span className="step-index">1</span>
           <div>
-            <strong>Transcrição</strong>
+            <strong>Transcrever</strong>
             <small>Whisper Large v3 Turbo</small>
           </div>
         </div>
-        <div className="pipeline-line" />
+        <div className="pipeline-rail" aria-hidden="true" />
         <div className="pipeline-step">
-          <span>02</span>
+          <span className="step-index">2</span>
           <div>
-            <strong>Formatação</strong>
-            <small>GPT-OSS 20B · reasoning low</small>
+            <strong>Formatar</strong>
+            <small>GPT-OSS 20B</small>
           </div>
         </div>
       </section>
 
-      {!loaded ? (
-        <div className="key-loading" aria-label="Carregando configuração">
-          <span />
-          <span />
-        </div>
-      ) : editing ? (
-        <form className="key-form" onSubmit={saveKey}>
-          <div className="form-heading">
-            <div>
-              <strong>API key da Groq</strong>
-              <span>Salva somente no armazenamento da extensão.</span>
-            </div>
-            <a
-              href="https://console.groq.com/keys"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Criar chave ↗
-            </a>
+      <section
+        className="reveal"
+        style={{ '--d': '160ms' } as React.CSSProperties}
+      >
+        {!loaded ? (
+          <div className="key-loading" aria-label="Carregando configuração">
+            <span />
+            <span />
           </div>
-          <label>
-            <span className="sr-only">API key da Groq</span>
-            <input
-              type={showKey ? 'text' : 'password'}
-              value={apiKey}
-              onChange={(event) => setApiKey(event.target.value)}
-              placeholder="gsk_…"
-              spellCheck={false}
-              autoComplete="off"
-              autoFocus
-            />
-            <button type="button" onClick={() => setShowKey((value) => !value)}>
-              {showKey ? 'Ocultar' : 'Mostrar'}
-            </button>
-          </label>
-          {formError && <p className="form-error">{formError}</p>}
-          <div className="form-actions">
-            {health !== 'unconfigured' && (
-              <button
-                className="secondary"
-                type="button"
-                onClick={() => setEditing(false)}
+        ) : editing ? (
+          <form className="key-form" onSubmit={saveKey}>
+            <div className="form-heading">
+              <div className="form-title">
+                <KeyRound {...iconSm} />
+                <div>
+                  <strong>API key da Groq</strong>
+                  <span>Salva só no armazenamento da extensão.</span>
+                </div>
+              </div>
+              <a
+                href="https://console.groq.com/keys"
+                target="_blank"
+                rel="noreferrer"
+                className="text-link"
               >
-                Cancelar
+                Criar
+                <ExternalLink size={12} strokeWidth={1.8} aria-hidden="true" />
+              </a>
+            </div>
+            <label>
+              <span className="sr-only">API key da Groq</span>
+              <input
+                type={showKey ? 'text' : 'password'}
+                value={apiKey}
+                onChange={(event) => setApiKey(event.target.value)}
+                placeholder="gsk_…"
+                spellCheck={false}
+                autoComplete="off"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="icon-action inset"
+                onClick={() => setShowKey((value) => !value)}
+                aria-label={showKey ? 'Ocultar chave' : 'Mostrar chave'}
+                title={showKey ? 'Ocultar' : 'Mostrar'}
+              >
+                {showKey ? <EyeOff {...iconSm} /> : <Eye {...iconSm} />}
               </button>
-            )}
-            <button className="save" type="submit" disabled={saving}>
-              {saving ? 'Testando…' : 'Salvar e testar'}
-            </button>
+            </label>
+            {formError && <p className="form-error">{formError}</p>}
+            <div className="form-actions">
+              {health !== 'unconfigured' && (
+                <button
+                  className="ghost"
+                  type="button"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancelar
+                </button>
+              )}
+              <button className="primary" type="submit" disabled={saving}>
+                {saving ? 'Testando…' : 'Salvar e testar'}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="key-row">
+            <div className="key-meta">
+              <KeyRound {...iconSm} />
+              <span>Chave configurada</span>
+            </div>
+            <div className="row-actions">
+              <button
+                type="button"
+                className="text-action"
+                onClick={() => setEditing(true)}
+              >
+                Trocar
+              </button>
+              <button
+                type="button"
+                className="icon-action danger"
+                onClick={removeKey}
+                aria-label="Remover chave"
+                title="Remover"
+              >
+                <Trash2 {...iconSm} />
+              </button>
+            </div>
           </div>
-        </form>
-      ) : (
-        <div className="key-actions">
-          <span>Chave configurada</span>
-          <button type="button" onClick={() => setEditing(true)}>
-            Trocar
-          </button>
-          <button type="button" className="danger" onClick={removeKey}>
-            Remover
-          </button>
-        </div>
-      )}
+        )}
+      </section>
 
-      <div className="privacy-note">
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M8 1.5v13M3 5l5-3.5L13 5M3 11l5 3.5 5-3.5" />
-        </svg>
-        <span>
-          O áudio é enviado diretamente à Groq; não passa por servidor próprio.
-        </span>
-      </div>
-
-      <section className="cache-row">
-        <div>
+      <section
+        className="cache-row reveal"
+        style={{ '--d': '200ms' } as React.CSSProperties}
+      >
+        <div className="cache-meta">
           <span>Transcrições salvas</span>
-          <strong>{count}</strong>
-          <small>{formatBytes(bytes)}</small>
+          <div className="cache-stats">
+            <strong>{count}</strong>
+            <small>{formatBytes(bytes)}</small>
+          </div>
         </div>
-        <button type="button" onClick={clearCache} disabled={!count}>
-          Limpar
+        <button
+          type="button"
+          className="icon-action"
+          onClick={clearCache}
+          disabled={!count}
+          aria-label="Limpar transcrições"
+          title="Limpar"
+        >
+          <Trash2 {...iconSm} />
         </button>
       </section>
 
-      <footer>
-        <span>Idioma automático · macOS · Windows · Linux</span>
-        <code>v0.2 · {browser.runtime.id}</code>
+      <footer className="reveal" style={{ '--d': '280ms' } as React.CSSProperties}>
+        <span>v0.2</span>
       </footer>
     </main>
   );
 }
 
 function healthTitle(health: Health) {
-  if (health === 'ready') return 'Pipeline pronto';
+  if (health === 'ready') return 'Pronto';
   if (health === 'checking') return 'Verificando…';
-  if (health === 'unconfigured') return 'Configuração necessária';
-  return 'Groq indisponível';
+  if (health === 'unconfigured') return 'Configure a chave';
+  return 'Indisponível';
 }
 
 function formatBytes(bytes: number) {

@@ -11,6 +11,8 @@
     "typecheck": "wxt prepare && tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/fraunces": "^5.3.0",
+    "@fontsource/sora": "^5.3.0",
     "@wat/protocol": "workspace:*",
     "lucide-react": "^1.28.0",
     "react": "19.2.8",
