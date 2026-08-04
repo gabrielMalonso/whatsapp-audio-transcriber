@@ -1,4 +1,14 @@
 import type { ProgressStage, TranscriptionEvent } from '@wat/protocol';
+import {
+  AlignLeft,
+  BotMessageSquare,
+  Check,
+  Copy,
+  Info,
+  RefreshCw,
+  TriangleAlert,
+  X,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { VoiceMessageDescriptor } from '../adapters/whatsapp/voiceMessages';
@@ -22,6 +32,18 @@ type Phase =
   | 'working'
   | 'success'
   | 'error';
+
+const iconProps = {
+  absoluteStrokeWidth: false,
+  'aria-hidden': true,
+  size: 15,
+  strokeWidth: 1.75,
+} as const;
+
+const triggerIconProps = {
+  ...iconProps,
+  size: 13,
+} as const;
 
 export function TranscriptWidget({
   message,
@@ -157,7 +179,7 @@ export function TranscriptWidget({
         aria-label="Transcrever"
         title="Transcrever"
       >
-        <SparkIcon />
+        <BotMessageSquare {...triggerIconProps} />
       </button>
     );
   }
@@ -171,7 +193,7 @@ export function TranscriptWidget({
         aria-label="Ver transcrição"
         title="Ver transcrição"
       >
-        <TextIcon />
+        <AlignLeft {...triggerIconProps} />
       </button>
     );
   }
@@ -181,7 +203,7 @@ export function TranscriptWidget({
       {phase === 'notice' && (
         <>
           <div className="panel-title">
-            <InfoIcon />
+            <Info {...iconProps} />
             Antes da primeira transcrição
           </div>
           <p className="notice-copy">
@@ -208,8 +230,7 @@ export function TranscriptWidget({
         <div className="status-row">
           <span className="spinner" aria-hidden="true" />
           <div className="status-copy">
-            <strong>{statusTitle(phase, stage)}</strong>
-            <span>{statusDetail(phase, stage)}</span>
+            <strong>{statusLabel(phase, stage)}</strong>
           </div>
           <button
             className="icon-button"
@@ -217,7 +238,7 @@ export function TranscriptWidget({
             onClick={cancel}
             aria-label="Cancelar"
           >
-            <CloseIcon />
+            <X {...iconProps} />
           </button>
         </div>
       )}
@@ -225,7 +246,7 @@ export function TranscriptWidget({
       {phase === 'error' && (
         <>
           <div className="panel-title error-title">
-            <AlertIcon />
+            <TriangleAlert {...iconProps} />
             Não foi possível transcrever
           </div>
           <p className="error-copy">{error}</p>
@@ -252,7 +273,7 @@ export function TranscriptWidget({
         <>
           <div className="transcript-head">
             <div className="panel-title">
-              <TextIcon />
+              <AlignLeft {...iconProps} />
               Transcrição
             </div>
             <button
@@ -261,25 +282,29 @@ export function TranscriptWidget({
               onClick={() => setExpanded(false)}
               aria-label="Fechar transcrição"
             >
-              <CloseIcon />
+              <X {...iconProps} />
             </button>
           </div>
           <p className="transcript">{record.text}</p>
           <div className="transcript-foot">
-            <span>
-              {record.language ? record.language.toUpperCase() : 'AUTO'} · Groq
-              · GPT-OSS
-            </span>
             <div className="inline-actions">
-              <button className="text-button" type="button" onClick={copy}>
-                {copied ? 'Copiado' : 'Copiar'}
+              <button
+                className="icon-button"
+                type="button"
+                onClick={copy}
+                aria-label={copied ? 'Copiado' : 'Copiar'}
+                title={copied ? 'Copiado' : 'Copiar'}
+              >
+                {copied ? <Check {...iconProps} /> : <Copy {...iconProps} />}
               </button>
               <button
-                className="text-button"
+                className="icon-button"
                 type="button"
                 onClick={beginTranscription}
+                aria-label="Refazer"
+                title="Refazer"
               >
-                Refazer
+                <RefreshCw {...iconProps} />
               </button>
             </div>
           </div>
@@ -290,45 +315,7 @@ export function TranscriptWidget({
   );
 }
 
-function statusTitle(phase: Phase, stage: ProgressStage) {
-  if (phase === 'capturing') return 'Preparando o áudio';
-  if (phase === 'queued') return 'Na fila';
-  if (stage === 'formatting') return 'Formatando com GPT-OSS';
-  return 'Transcrevendo com Whisper';
+function statusLabel(phase: Phase, stage: ProgressStage) {
+  if (stage === 'formatting' && phase === 'working') return 'Formatando…';
+  return 'Transcrevendo…';
 }
-
-function statusDetail(phase: Phase, stage: ProgressStage) {
-  if (phase === 'capturing') return 'Lendo a mensagem de voz…';
-  if (phase === 'queued') return 'Aguardando o pipeline da Groq…';
-  if (stage === 'formatting') return 'Corrigindo pontuação e parágrafos…';
-  return 'Enviando e reconhecendo o áudio…';
-}
-
-const SparkIcon = () => (
-  <svg className="spark-icon" viewBox="0 0 16 16" aria-hidden="true">
-    <path d="M8 1.5c.35 2.55 1.95 4.15 4.5 4.5C9.95 6.35 8.35 7.95 8 10.5 7.65 7.95 6.05 6.35 3.5 6 6.05 5.65 7.65 4.05 8 1.5Z" />
-    <path d="M12.3 9.3c.18 1.25.95 2.02 2.2 2.2-1.25.18-2.02.95-2.2 2.2-.18-1.25-.95-2.02-2.2-2.2 1.25-.18 2.02-.95 2.2-2.2Z" />
-  </svg>
-);
-const TextIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
-    <path d="M2.25 3.25h11.5M2.25 6.4h8.5M2.25 9.55h11.5M2.25 12.7h7" />
-  </svg>
-);
-const InfoIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
-    <circle cx="8" cy="8" r="6.25" />
-    <path d="M8 7v4M8 4.75h.01" />
-  </svg>
-);
-const AlertIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
-    <path d="M8 1.8 14.3 13H1.7L8 1.8Z" />
-    <path d="M8 5.5v3.7M8 11.4h.01" />
-  </svg>
-);
-const CloseIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
-    <path d="m4 4 8 8M12 4l-8 8" />
-  </svg>
-);
