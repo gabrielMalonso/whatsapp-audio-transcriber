@@ -1,0 +1,321 @@
+:host {
+  --wat-green: #00a884;
+  --wat-green-strong: #008f72;
+  display: block;
+  color: var(--message-primary, #111b21);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+:host([data-wat-bubble]) {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+:host([data-wat-panel]) {
+  position: relative;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font: inherit;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid color-mix(in srgb, var(--icon, #54656f) 20%, transparent);
+  border-radius: 999px;
+  background: color-mix(
+    in srgb,
+    var(--panel-background, #fff) 88%,
+    transparent
+  );
+  color: var(--secondary, #54656f);
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
+}
+
+.trigger.icon-only {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(11, 20, 26, 0.12);
+}
+
+:host([data-wat-hover]) .trigger.icon-only,
+:host .trigger.icon-only:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.trigger.icon-only.ready {
+  opacity: 0.78;
+  pointer-events: auto;
+  color: var(--wat-green-strong);
+  border-color: color-mix(in srgb, var(--wat-green) 35%, transparent);
+}
+
+:host([data-wat-hover]) .trigger.icon-only.ready,
+:host .trigger.icon-only.ready:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .trigger.icon-only {
+    opacity: 0.92;
+    pointer-events: auto;
+  }
+}
+
+.trigger:hover {
+  border-color: color-mix(in srgb, var(--wat-green) 45%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--wat-green) 9%,
+    var(--panel-background, #fff)
+  );
+  color: var(--wat-green-strong);
+}
+
+.trigger.ready {
+  color: var(--wat-green-strong);
+}
+
+.trigger svg,
+.panel-title svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trigger svg path:first-child {
+  fill: currentColor;
+  stroke: none;
+}
+
+.panel {
+  width: min(380px, calc(100vw - 96px));
+  margin-top: 2px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--icon, #54656f) 14%, transparent);
+  border-radius: 10px;
+  background: var(--panel-background, #fff);
+  box-shadow: 0 3px 12px rgba(11, 20, 26, 0.06);
+  pointer-events: auto;
+}
+
+:host([data-wat-outgoing]) .panel {
+  margin-left: auto;
+}
+
+:host(:not([data-wat-outgoing])) .panel {
+  margin-right: auto;
+}
+
+.panel-title,
+.transcript-head,
+.status-row,
+.actions,
+.transcript-foot,
+.inline-actions {
+  display: flex;
+  align-items: center;
+}
+
+.panel-title {
+  gap: 7px;
+  color: var(--message-primary, #111b21);
+  font-weight: 600;
+}
+
+.notice-copy,
+.error-copy,
+.transcript {
+  margin: 9px 0 0;
+}
+
+.notice-copy,
+.error-copy {
+  color: var(--secondary, #54656f);
+  font-size: 12.5px;
+}
+
+.actions {
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.primary,
+.quiet,
+.text-button,
+.icon-button {
+  border: 0;
+  cursor: pointer;
+}
+
+.primary,
+.quiet {
+  min-height: 30px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-weight: 600;
+}
+
+.primary {
+  background: var(--wat-green);
+  color: #fff;
+}
+
+.primary:hover {
+  background: var(--wat-green-strong);
+}
+
+.quiet {
+  background: transparent;
+  color: var(--secondary, #54656f);
+}
+
+.quiet:hover,
+.icon-button:hover,
+.text-button:hover {
+  background: color-mix(in srgb, var(--icon, #54656f) 9%, transparent);
+}
+
+.status-row {
+  gap: 10px;
+}
+
+.status-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.status-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-copy span {
+  color: var(--secondary, #54656f);
+  font-size: 11.5px;
+}
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid color-mix(in srgb, var(--wat-green) 22%, transparent);
+  border-top-color: var(--wat-green);
+  border-radius: 50%;
+  animation: wat-spin 850ms linear infinite;
+}
+
+.icon-button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--secondary, #54656f);
+}
+
+.icon-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.error-title {
+  color: #d14d49;
+}
+
+.transcript-head {
+  justify-content: space-between;
+}
+
+.transcript {
+  max-height: 220px;
+  overflow: auto;
+  color: var(--message-primary, #111b21);
+  white-space: pre-wrap;
+  scrollbar-width: thin;
+}
+
+.transcript-foot {
+  justify-content: space-between;
+  margin-top: 11px;
+  padding-top: 8px;
+  border-top: 1px solid
+    color-mix(in srgb, var(--icon, #54656f) 12%, transparent);
+  color: var(--secondary, #54656f);
+  font-size: 10.5px;
+}
+
+.inline-actions {
+  gap: 3px;
+}
+
+.text-button {
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--wat-green-strong);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--wat-green);
+  outline-offset: 2px;
+}
+
+@keyframes wat-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger {
+    transition: none;
+  }
+  .spinner {
+    animation: none;
+  }
+}

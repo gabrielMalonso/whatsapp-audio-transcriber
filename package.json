@@ -1,0 +1,21 @@
+{
+  "name": "whatsapp-audio-transcriber",
+  "private": true,
+  "version": "0.2.0",
+  "packageManager": "pnpm@11.20.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter @wat/protocol build && pnpm --filter @wat/extension build",
+    "dev": "pnpm --filter @wat/extension dev",
+    "prepare": "pnpm --filter @wat/protocol build && pnpm --filter @wat/extension prepare",
+    "test": "pnpm --filter @wat/protocol test && pnpm --filter @wat/extension test",
+    "typecheck": "pnpm --filter @wat/protocol typecheck && pnpm --filter @wat/extension typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.9.6"
+  }
+}
