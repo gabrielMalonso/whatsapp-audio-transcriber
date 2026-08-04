@@ -1,8 +1,15 @@
 import type { Root } from 'react-dom/client';
 import { createRoot } from 'react-dom/client';
 import { TranscriptWidget } from '../../components/TranscriptWidget';
-import { findVoiceMessages } from './voiceMessages';
+import {
+  findVoiceMessages,
+  type VoiceMessageDescriptor,
+} from './voiceMessages';
 import styles from '../../../entrypoints/whatsapp.content/style.css?inline';
+
+const TRIGGER_SIZE = 18;
+// WhatsApp paints the audio content at z-index 200.
+const TRIGGER_Z_INDEX = 201;
 
 type MountedWidget = {
   row: HTMLElement;
@@ -11,6 +18,10 @@ type MountedWidget = {
   panelHost: HTMLElement;
   root: Root;
   disposeHover: () => void;
+  disposeGeometry: () => void;
+  syncGeometry: () => void;
+  durationElement: HTMLElement | null;
+  slider: HTMLElement;
   restoreBubblePosition: (() => void) | null;
 };
 
@@ -28,9 +39,12 @@ export function startVoiceMessageScanner(): () => void {
       if (
         current?.row === message.row &&
         current.bubble === message.bubble &&
+        current.slider === message.slider &&
+        current.durationElement === message.durationElement &&
         current.bubbleHost.isConnected &&
         current.panelHost.isConnected
       ) {
+        current.syncGeometry();
         continue;
       }
       teardown(current);
@@ -43,11 +57,10 @@ export function startVoiceMessageScanner(): () => void {
       if (message.outgoing) bubbleHost.dataset.watOutgoing = '1';
       Object.assign(bubbleHost.style, {
         position: 'absolute',
-        inset: '0',
-        width: 'auto',
-        height: 'auto',
+        width: `${TRIGGER_SIZE}px`,
+        height: `${TRIGGER_SIZE}px`,
         pointerEvents: 'none',
-        zIndex: '2',
+        zIndex: String(TRIGGER_Z_INDEX),
         boxSizing: 'border-box',
       });
       message.bubble.appendChild(bubbleHost);
@@ -58,14 +71,16 @@ export function startVoiceMessageScanner(): () => void {
       if (message.outgoing) panelHost.dataset.watOutgoing = '1';
       panelHost.hidden = true;
       Object.assign(panelHost.style, {
-        width: '100%',
         boxSizing: 'border-box',
         pointerEvents: 'none',
+        marginLeft: message.outgoing ? 'auto' : '0',
+        marginRight: message.outgoing ? '0' : 'auto',
       });
       message.bubble.insertAdjacentElement('afterend', panelHost);
       const panelApp = attachShadowApp(panelHost);
 
-      const disposeHover = bindRowHover(message.row, bubbleHost, panelHost);
+      const disposeHover = bindRowHover(message.row, bubbleHost);
+      const geometry = bindWidgetGeometry(message, bubbleHost, panelHost);
 
       const root = createRoot(bubbleApp);
       root.render(
@@ -83,6 +98,10 @@ export function startVoiceMessageScanner(): () => void {
         panelHost,
         root,
         disposeHover,
+        disposeGeometry: geometry.dispose,
+        syncGeometry: geometry.sync,
+        durationElement: message.durationElement,
+        slider: message.slider,
         restoreBubblePosition,
       });
     }
@@ -115,6 +134,7 @@ export function startVoiceMessageScanner(): () => void {
 function teardown(widget: MountedWidget | undefined) {
   if (!widget) return;
   widget.disposeHover();
+  widget.disposeGeometry();
   widget.root.unmount();
   widget.bubbleHost.remove();
   widget.panelHost.remove();
@@ -139,40 +159,96 @@ function ensureRelativePosition(bubble: HTMLElement): (() => void) | null {
   };
 }
 
-function bindRowHover(
-  row: HTMLElement,
-  bubbleHost: HTMLElement,
-  panelHost: HTMLElement,
-): () => void {
-  const sync = () => {
-    const hovering =
-      row.matches(':hover') ||
-      bubbleHost.matches(':hover') ||
-      panelHost.matches(':hover');
-    if (hovering) {
-      bubbleHost.dataset.watHover = '1';
-      panelHost.dataset.watHover = '1';
-    } else {
+function bindRowHover(row: HTMLElement, bubbleHost: HTMLElement): () => void {
+  let frame = 0;
+  const show = () => {
+    if (frame) cancelAnimationFrame(frame);
+    bubbleHost.dataset.watHover = '1';
+  };
+  const hide = () => {
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      if (row.matches(':hover') || bubbleHost.matches(':hover')) return;
       delete bubbleHost.dataset.watHover;
-      delete panelHost.dataset.watHover;
-    }
+    });
   };
 
-  row.addEventListener('mouseenter', sync);
-  row.addEventListener('mouseleave', sync);
-  bubbleHost.addEventListener('mouseenter', sync);
-  bubbleHost.addEventListener('mouseleave', sync);
-  panelHost.addEventListener('mouseenter', sync);
-  panelHost.addEventListener('mouseleave', sync);
+  row.addEventListener('mouseenter', show);
+  row.addEventListener('mouseleave', hide);
+  bubbleHost.addEventListener('mouseenter', show);
+  bubbleHost.addEventListener('mouseleave', hide);
 
   return () => {
-    row.removeEventListener('mouseenter', sync);
-    row.removeEventListener('mouseleave', sync);
-    bubbleHost.removeEventListener('mouseenter', sync);
-    bubbleHost.removeEventListener('mouseleave', sync);
-    panelHost.removeEventListener('mouseenter', sync);
-    panelHost.removeEventListener('mouseleave', sync);
+    if (frame) cancelAnimationFrame(frame);
+    row.removeEventListener('mouseenter', show);
+    row.removeEventListener('mouseleave', hide);
+    bubbleHost.removeEventListener('mouseenter', show);
+    bubbleHost.removeEventListener('mouseleave', hide);
     delete bubbleHost.dataset.watHover;
-    delete panelHost.dataset.watHover;
+  };
+}
+
+function bindWidgetGeometry(
+  message: VoiceMessageDescriptor,
+  bubbleHost: HTMLElement,
+  panelHost: HTMLElement,
+): { sync: () => void; dispose: () => void } {
+  const sync = () => {
+    const bubbleRect = message.bubble.getBoundingClientRect();
+    const sliderRect = message.slider.getBoundingClientRect();
+    const durationRect = message.durationElement?.getBoundingClientRect();
+    const metaRect = message.bubble
+      .querySelector<HTMLElement>('[data-testid="msg-meta"]')
+      ?.getBoundingClientRect();
+    const anchor = durationRect ?? {
+      right: sliderRect.left + 24,
+      top: sliderRect.bottom + 1,
+    };
+    const geometry = calculateWidgetGeometry(bubbleRect, anchor, metaRect);
+
+    bubbleHost.style.left = `${geometry.triggerLeft}px`;
+    bubbleHost.style.top = `${geometry.triggerTop}px`;
+    panelHost.style.width = `${geometry.panelWidth}px`;
+  };
+
+  const observer = new ResizeObserver(sync);
+  observer.observe(message.bubble);
+  observer.observe(message.slider);
+  if (message.durationElement) observer.observe(message.durationElement);
+  window.addEventListener('resize', sync);
+  sync();
+
+  return {
+    sync,
+    dispose: () => {
+      observer.disconnect();
+      window.removeEventListener('resize', sync);
+    },
+  };
+}
+
+export function calculateWidgetGeometry(
+  bubble: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>,
+  anchor: Pick<DOMRect, 'right' | 'top'>,
+  meta?: Pick<DOMRect, 'left'>,
+) {
+  const edge = 4;
+  const gap = 5;
+  const maxFromBubble = bubble.width - TRIGGER_SIZE - edge;
+  const maxFromMeta = meta
+    ? meta.left - bubble.left - TRIGGER_SIZE - gap
+    : maxFromBubble;
+  const maxLeft = Math.max(edge, Math.min(maxFromBubble, maxFromMeta));
+
+  return {
+    triggerLeft: Math.max(
+      edge,
+      Math.min(anchor.right - bubble.left + gap, maxLeft),
+    ),
+    triggerTop: Math.max(
+      2,
+      Math.min(anchor.top - bubble.top - 2, bubble.height - TRIGGER_SIZE - 2),
+    ),
+    panelWidth: bubble.width,
   };
 }

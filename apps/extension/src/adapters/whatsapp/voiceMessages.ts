@@ -2,6 +2,8 @@ export type VoiceMessageDescriptor = {
   id: string;
   row: HTMLElement;
   bubble: HTMLElement;
+  slider: HTMLElement;
+  durationElement: HTMLElement | null;
   transportButton: HTMLButtonElement;
   outgoing: boolean;
 };
@@ -27,12 +29,30 @@ export function findVoiceMessages(
       id: messageRoot.dataset.id,
       row,
       bubble,
+      slider,
+      durationElement: findDurationElement(bubble),
       transportButton,
       outgoing: isOutgoingMessage(row, bubble),
     });
   }
 
   return messages;
+}
+
+function findDurationElement(bubble: HTMLElement): HTMLElement | null {
+  const durationPattern = /^\d{1,2}:\d{2}$/u;
+  const candidates = [...bubble.querySelectorAll<HTMLElement>('span, div')];
+
+  return (
+    candidates.findLast((element) => {
+      if (element.closest('[data-testid="msg-meta"]')) return false;
+      if (!durationPattern.test((element.textContent ?? '').trim()))
+        return false;
+      return ![...element.children].some((child) =>
+        durationPattern.test((child.textContent ?? '').trim()),
+      );
+    }) ?? null
+  );
 }
 
 function isOutgoingMessage(row: HTMLElement, bubble: HTMLElement): boolean {

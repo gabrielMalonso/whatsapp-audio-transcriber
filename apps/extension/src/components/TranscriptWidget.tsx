@@ -305,7 +305,7 @@ function statusDetail(phase: Phase, stage: ProgressStage) {
 }
 
 const SparkIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
+  <svg className="spark-icon" viewBox="0 0 16 16" aria-hidden="true">
     <path d="M8 1.5c.35 2.55 1.95 4.15 4.5 4.5C9.95 6.35 8.35 7.95 8 10.5 7.65 7.95 6.05 6.35 3.5 6 6.05 5.65 7.65 4.05 8 1.5Z" />
     <path d="M12.3 9.3c.18 1.25.95 2.02 2.2 2.2-1.25.18-2.02.95-2.2 2.2-.18-1.25-.95-2.02-2.2-2.2 1.25-.18 2.02-.95 2.2-2.2Z" />
   </svg>

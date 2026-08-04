@@ -10,9 +10,8 @@
 
 :host([data-wat-bubble]) {
   position: absolute;
-  inset: 0;
-  width: auto;
-  height: auto;
+  width: 18px;
+  height: 18px;
   overflow: visible;
   pointer-events: none;
 }
@@ -55,30 +54,34 @@ button {
 }
 
 .trigger.icon-only {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 28px;
-  height: 28px;
-  min-height: 28px;
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
   padding: 0;
-  border-radius: 50%;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
   opacity: 0;
   pointer-events: none;
-  box-shadow: 0 1px 4px rgba(11, 20, 26, 0.12);
+  transform: scale(0.92);
+  transition:
+    color 120ms ease,
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 :host([data-wat-hover]) .trigger.icon-only,
 :host .trigger.icon-only:focus-visible {
   opacity: 1;
   pointer-events: auto;
+  transform: scale(1);
 }
 
 .trigger.icon-only.ready {
-  opacity: 0.78;
+  opacity: 0.58;
   pointer-events: auto;
   color: var(--wat-green-strong);
-  border-color: color-mix(in srgb, var(--wat-green) 35%, transparent);
+  transform: scale(1);
 }
 
 :host([data-wat-hover]) .trigger.icon-only.ready,
@@ -94,12 +97,7 @@ button {
 }
 
 .trigger:hover {
-  border-color: color-mix(in srgb, var(--wat-green) 45%, transparent);
-  background: color-mix(
-    in srgb,
-    var(--wat-green) 9%,
-    var(--panel-background, #fff)
-  );
+  background: transparent;
   color: var(--wat-green-strong);
 }
 
@@ -118,24 +116,30 @@ button {
   stroke-linejoin: round;
 }
 
-.trigger svg path:first-child {
+.trigger.icon-only svg {
+  width: 13px;
+  height: 13px;
+}
+
+.trigger svg.spark-icon path {
   fill: currentColor;
   stroke: none;
 }
 
 .panel {
-  width: min(380px, calc(100vw - 96px));
-  margin-top: 2px;
-  padding: 12px;
-  border: 1px solid color-mix(in srgb, var(--icon, #54656f) 14%, transparent);
-  border-radius: 10px;
-  background: var(--panel-background, #fff);
-  box-shadow: 0 3px 12px rgba(11, 20, 26, 0.06);
+  width: 100%;
+  margin-top: 1px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 7.5px;
+  background: var(--incoming-background, var(--panel-background, #fff));
+  box-shadow: none;
   pointer-events: auto;
 }
 
 :host([data-wat-outgoing]) .panel {
   margin-left: auto;
+  background: var(--outgoing-background, var(--panel-background, #d9fdd3));
 }
 
 :host(:not([data-wat-outgoing])) .panel {

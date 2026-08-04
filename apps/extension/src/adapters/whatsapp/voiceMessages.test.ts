@@ -18,6 +18,8 @@ describe('WhatsApp voice message adapter', () => {
             <button aria-label="Reproduzir mensagem de voz"></button>
             <span data-icon="ptt-status"></span>
             <div role="slider"></div>
+            <div><span data-duration>0:04</span></div>
+            <div data-testid="msg-meta"><span>10:21</span></div>
             <button aria-label="Mudar velocidade de reprodução, no momento 2×"></button>
           </div>
         </div>
@@ -28,7 +30,14 @@ describe('WhatsApp voice message adapter', () => {
       '[data-testid="msg-container"]',
     )!;
     row.getBoundingClientRect = () =>
-      ({ left: 0, width: 800, top: 0, height: 80, right: 800, bottom: 80 }) as DOMRect;
+      ({
+        left: 0,
+        width: 800,
+        top: 0,
+        height: 80,
+        right: 800,
+        bottom: 80,
+      }) as DOMRect;
     bubble.getBoundingClientRect = () =>
       ({
         left: 450,
@@ -47,6 +56,7 @@ describe('WhatsApp voice message adapter', () => {
       outgoing: true,
     });
     expect(messages[0]?.bubble).toBe(bubble);
+    expect(messages[0]?.durationElement?.dataset.duration).toBe('');
     expect(messages[0]?.transportButton.getAttribute('aria-label')).toContain(
       'Reproduzir',
     );
@@ -60,6 +70,7 @@ describe('WhatsApp voice message adapter', () => {
             <button aria-label="Play voice message"></button>
             <span data-icon="ptt-status"></span>
             <div role="slider"></div>
+            <span data-duration>0:07</span>
           </div>
         </div>
       </div>
@@ -69,7 +80,14 @@ describe('WhatsApp voice message adapter', () => {
       '[data-testid="msg-container"]',
     )!;
     row.getBoundingClientRect = () =>
-      ({ left: 0, width: 800, top: 0, height: 80, right: 800, bottom: 80 }) as DOMRect;
+      ({
+        left: 0,
+        width: 800,
+        top: 0,
+        height: 80,
+        right: 800,
+        bottom: 80,
+      }) as DOMRect;
     bubble.getBoundingClientRect = () =>
       ({
         left: 40,
@@ -80,7 +98,10 @@ describe('WhatsApp voice message adapter', () => {
         bottom: 80,
       }) as DOMRect;
 
-    expect(findVoiceMessages()[0]?.outgoing).toBe(false);
+    const message = findVoiceMessages()[0];
+
+    expect(message?.outgoing).toBe(false);
+    expect(message?.durationElement?.dataset.duration).toBe('');
   });
 
   it('ignores ordinary messages', () => {
