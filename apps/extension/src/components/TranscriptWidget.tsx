@@ -18,9 +18,11 @@ import {
   type TransitionEvent,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { browser } from 'wxt/browser';
 import type { VoiceMessageDescriptor } from '../adapters/whatsapp/voiceMessages';
 import { captureVoiceAudio } from '../messaging/pageBridge';
 import { transcriptionClient } from '../messaging/transcriptionClient';
+import { FORMATTING_SETTINGS_STORAGE_KEY } from '../storage/formattingSettings';
 import {
   getTranscript,
   hashMessageKey,
@@ -256,6 +258,26 @@ export function TranscriptWidget({
       if (jobRef.current) transcriptionClient.cancel(jobRef.current);
     };
   }, [message.id]);
+
+  useEffect(() => {
+    const onStorageChanged = (
+      changes: Record<string, unknown>,
+      areaName: string,
+    ) => {
+      if (
+        areaName !== 'local' ||
+        !(FORMATTING_SETTINGS_STORAGE_KEY in changes) ||
+        jobRef.current
+      ) {
+        return;
+      }
+      setRecord(null);
+      setExpanded(false);
+      setPhase('idle');
+    };
+    browser.storage.onChanged.addListener(onStorageChanged);
+    return () => browser.storage.onChanged.removeListener(onStorageChanged);
+  }, []);
 
   const finishClose = () => {
     if (wantsOpen) return;

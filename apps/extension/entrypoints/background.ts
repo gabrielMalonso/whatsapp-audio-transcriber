@@ -14,6 +14,7 @@ import type {
   GroqConfigurationResponse,
   GroqStatus,
 } from '../src/providers/types';
+import { getFormattingSettings } from '../src/storage/formattingSettings';
 import {
   getGroqSettings,
   removeGroqApiKey,
@@ -208,7 +209,10 @@ export default defineBackground(() => {
 
   async function execute(job: Job) {
     try {
-      const settings = await getGroqSettings();
+      const [settings, formattingSettings] = await Promise.all([
+        getGroqSettings(),
+        getFormattingSettings(),
+      ]);
       if (!settings) {
         throw new GroqProviderError(
           'API_KEY_MISSING',
@@ -218,7 +222,7 @@ export default defineBackground(() => {
       }
       const audio = new Blob(job.chunks, { type: job.mimeType });
       job.chunks = [];
-      const provider = new GroqProvider(settings.apiKey);
+      const provider = new GroqProvider(settings.apiKey, formattingSettings);
       const result = await provider.transcribe(
         audio,
         job.language,

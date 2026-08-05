@@ -20,7 +20,7 @@
 
 ## Sobre
 
-O WhatsApp Audio Transcriber é uma extensão open source para Google Chrome que adiciona transcrições diretamente às mensagens de voz do WhatsApp Web. O áudio é processado pela API da Groq com `whisper-large-v3-turbo`; depois, `openai/gpt-oss-20b` ajusta somente pontuação, capitalização e parágrafos.
+O WhatsApp Audio Transcriber é uma extensão open source para Google Chrome que adiciona transcrições diretamente às mensagens de voz do WhatsApp Web. O áudio é processado pela API da Groq com `whisper-large-v3-turbo`; depois, `openai/gpt-oss-20b` aplica as preferências de formatação escolhidas no popup.
 
 Tudo acontece entre o navegador e a Groq: o projeto não opera servidor intermediário, não armazena os áudios e mantém a API key e as transcrições apenas no armazenamento local da extensão.
 
@@ -31,7 +31,9 @@ Tudo acontece entre o navegador e a Groq: o projeto não opera servidor intermed
 
 - transcrição integrada à interface do WhatsApp Web;
 - detecção automática do idioma do áudio;
-- formatação conservadora, sem resumir ou traduzir o conteúdo;
+- tom coloquial, natural ou formal;
+- ajustes opcionais de parágrafos, ponto final, datas, horas e listas;
+- formatação sem responder, resumir ou traduzir o conteúdo;
 - captura sem reprodução audível da mensagem de voz;
 - fila local com cancelamento e indicação de progresso;
 - cache local para evitar o reprocessamento de mensagens;

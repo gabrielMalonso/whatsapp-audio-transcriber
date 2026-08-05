@@ -1,5 +1,7 @@
 import type { TranscriptionResult } from '@wat/protocol';
 import { browser } from 'wxt/browser';
+import { formattingSettingsKey } from '../formatting/settings';
+import { getFormattingSettings } from './formattingSettings';
 
 export type TranscriptRecord = TranscriptionResult & {
   schemaVersion: 2;
@@ -28,9 +30,18 @@ export async function getTranscript(
   messageKeyHash: string,
 ): Promise<TranscriptRecord | null> {
   const key = `${PREFIX}${messageKeyHash}`;
-  const stored = await browser.storage.local.get(key);
+  const [stored, formattingSettings] = await Promise.all([
+    browser.storage.local.get(key),
+    getFormattingSettings(),
+  ]);
   const record = stored[key] as TranscriptRecord | undefined;
-  if (!record || record.schemaVersion !== 2) return null;
+  if (
+    !record ||
+    record.schemaVersion !== 2 ||
+    record.formattingSettingsKey !== formattingSettingsKey(formattingSettings)
+  ) {
+    return null;
+  }
   record.lastAccessedAt = Date.now();
   await browser.storage.local.set({ [key]: record });
   return record;

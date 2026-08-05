@@ -1,13 +1,29 @@
 import {
+  AlignLeft,
+  CalendarDays,
+  Clock3,
   Eye,
   EyeOff,
   ExternalLink,
   KeyRound,
+  List,
   RefreshCw,
+  SlidersHorizontal,
   Trash2,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { browser } from 'wxt/browser';
+import {
+  DEFAULT_FORMATTING_SETTINGS,
+  type FormattingSettings,
+  type FormattingTone,
+} from '../../src/formatting/settings';
 import type {
   GroqConfigurationResponse,
   GroqStatus,
@@ -16,9 +32,14 @@ import {
   cacheStats,
   clearTranscriptCache,
 } from '../../src/storage/transcripts';
+import {
+  getFormattingSettings,
+  saveFormattingSettings,
+} from '../../src/storage/formattingSettings';
 import appIcon from '../../assets/icon.png';
 
 type Health = 'checking' | 'ready' | 'unavailable' | 'unconfigured';
+type FormattingSaveState = 'loading' | 'saved' | 'saving' | 'error';
 
 const iconSm = { 'aria-hidden': true, size: 14, strokeWidth: 1.75 } as const;
 
@@ -33,6 +54,12 @@ export function App() {
   const [formError, setFormError] = useState('');
   const [count, setCount] = useState(0);
   const [bytes, setBytes] = useState(0);
+  const [formatting, setFormatting] = useState<FormattingSettings>(
+    DEFAULT_FORMATTING_SETTINGS,
+  );
+  const [formattingSaveState, setFormattingSaveState] =
+    useState<FormattingSaveState>('loading');
+  const formattingSaveVersion = useRef(0);
 
   const applyStatus = (status: GroqStatus) => {
     setLoaded(true);
@@ -49,14 +76,17 @@ export function App() {
 
   const refresh = useCallback(async () => {
     setHealth('checking');
-    const [response, stats] = await Promise.all([
+    const [response, stats, formattingSettings] = await Promise.all([
       browser.runtime.sendMessage<{ type: 'wat.groq.status' }, GroqStatus>({
         type: 'wat.groq.status',
       }),
       cacheStats(),
+      getFormattingSettings(),
     ]);
     setCount(stats.count);
     setBytes(stats.bytes);
+    setFormatting(formattingSettings);
+    setFormattingSaveState('saved');
     applyStatus(response);
   }, []);
 
@@ -105,6 +135,25 @@ export function App() {
     await clearTranscriptCache();
     setCount(0);
     setBytes(0);
+  };
+
+  const updateFormatting = (change: Partial<FormattingSettings>) => {
+    const next = { ...formatting, ...change };
+    const version = formattingSaveVersion.current + 1;
+    formattingSaveVersion.current = version;
+    setFormatting(next);
+    setFormattingSaveState('saving');
+    void saveFormattingSettings(next)
+      .then(() => {
+        if (formattingSaveVersion.current === version) {
+          setFormattingSaveState('saved');
+        }
+      })
+      .catch(() => {
+        if (formattingSaveVersion.current === version) {
+          setFormattingSaveState('error');
+        }
+      });
   };
 
   return (
@@ -168,8 +217,108 @@ export function App() {
       </section>
 
       <section
+        className="formatting-card reveal"
+        aria-labelledby="formatting-title"
+        style={{ '--d': '150ms' } as React.CSSProperties}
+      >
+        <div className="formatting-heading">
+          <div className="formatting-title">
+            <span className="formatting-mark" aria-hidden="true">
+              <SlidersHorizontal size={15} strokeWidth={1.8} />
+            </span>
+            <div>
+              <h2 id="formatting-title">Formatação</h2>
+              <p>Personalize o texto depois da transcrição</p>
+            </div>
+          </div>
+          <span
+            className={`save-state ${formattingSaveState}`}
+            role="status"
+            aria-live="polite"
+          >
+            {formattingSaveLabel(formattingSaveState)}
+          </span>
+        </div>
+
+        {formattingSaveState === 'loading' ? (
+          <div className="formatting-loading" aria-label="Carregando ajustes">
+            <span />
+            <span />
+            <span />
+          </div>
+        ) : (
+          <>
+            <div className="tone-block">
+              <div className="setting-label">
+                <strong>Tom</strong>
+                <span>{toneDescription(formatting.tone)}</span>
+              </div>
+              <div className="tone-selector" role="radiogroup" aria-label="Tom">
+                {(['colloquial', 'natural', 'formal'] as const).map((tone) => (
+                  <button
+                    key={tone}
+                    type="button"
+                    role="radio"
+                    aria-checked={formatting.tone === tone}
+                    className={
+                      formatting.tone === tone ? 'selected' : undefined
+                    }
+                    onClick={() => updateFormatting({ tone })}
+                  >
+                    {toneLabel(tone)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="formatting-options">
+              <FormattingToggle
+                icon={<AlignLeft size={15} strokeWidth={1.8} />}
+                label="Parágrafos"
+                detail="Separa ideias em blocos curtos"
+                checked={formatting.addParagraphs}
+                onChange={(addParagraphs) =>
+                  updateFormatting({ addParagraphs })
+                }
+              />
+              <FormattingToggle
+                icon={<span className="period-icon">.</span>}
+                label="Sem ponto final"
+                detail="Remove o último ponto de cada linha"
+                checked={formatting.removeFinalPeriod}
+                onChange={(removeFinalPeriod) =>
+                  updateFormatting({ removeFinalPeriod })
+                }
+              />
+              <FormattingToggle
+                icon={<CalendarDays size={15} strokeWidth={1.8} />}
+                label="Datas"
+                detail="Formata como DD/MM"
+                checked={formatting.formatDates}
+                onChange={(formatDates) => updateFormatting({ formatDates })}
+              />
+              <FormattingToggle
+                icon={<Clock3 size={15} strokeWidth={1.8} />}
+                label="Horas"
+                detail="Formata como HH:MMh"
+                checked={formatting.formatTimes}
+                onChange={(formatTimes) => updateFormatting({ formatTimes })}
+              />
+              <FormattingToggle
+                icon={<List size={15} strokeWidth={1.8} />}
+                label="Listas"
+                detail="Cria marcadores ao enumerar itens"
+                checked={formatting.formatLists}
+                onChange={(formatLists) => updateFormatting({ formatLists })}
+              />
+            </div>
+          </>
+        )}
+      </section>
+
+      <section
         className="reveal"
-        style={{ '--d': '160ms' } as React.CSSProperties}
+        style={{ '--d': '210ms' } as React.CSSProperties}
       >
         {!loaded ? (
           <div className="key-loading" aria-label="Carregando configuração">
@@ -263,7 +412,7 @@ export function App() {
 
       <section
         className="cache-row reveal"
-        style={{ '--d': '200ms' } as React.CSSProperties}
+        style={{ '--d': '250ms' } as React.CSSProperties}
       >
         <div className="cache-meta">
           <span>Transcrições salvas</span>
@@ -286,11 +435,46 @@ export function App() {
 
       <footer
         className="reveal"
-        style={{ '--d': '280ms' } as React.CSSProperties}
+        style={{ '--d': '300ms' } as React.CSSProperties}
       >
         <span>v0.2</span>
       </footer>
     </main>
+  );
+}
+
+function FormattingToggle({
+  icon,
+  label,
+  detail,
+  checked,
+  onChange,
+}: {
+  icon: ReactNode;
+  label: string;
+  detail: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      className="formatting-option"
+      onClick={() => onChange(!checked)}
+    >
+      <span className="option-icon" aria-hidden="true">
+        {icon}
+      </span>
+      <span className="option-copy">
+        <strong>{label}</strong>
+        <small>{detail}</small>
+      </span>
+      <span className="toggle-track" aria-hidden="true">
+        <span />
+      </span>
+    </button>
   );
 }
 
@@ -299,6 +483,25 @@ function healthTitle(health: Health) {
   if (health === 'checking') return 'Verificando…';
   if (health === 'unconfigured') return 'Configure a chave';
   return 'Indisponível';
+}
+
+function toneLabel(tone: FormattingTone) {
+  if (tone === 'colloquial') return 'Coloquial';
+  if (tone === 'formal') return 'Formal';
+  return 'Natural';
+}
+
+function toneDescription(tone: FormattingTone) {
+  if (tone === 'colloquial') return 'Preserva gírias e informalidade';
+  if (tone === 'formal') return 'Produz um texto escrito mais limpo';
+  return 'Remove vícios de fala e mantém leveza';
+}
+
+function formattingSaveLabel(state: FormattingSaveState) {
+  if (state === 'saving') return 'Salvando…';
+  if (state === 'error') return 'Não foi possível salvar';
+  if (state === 'saved') return 'Salvo';
+  return 'Carregando…';
 }
 
 function formatBytes(bytes: number) {

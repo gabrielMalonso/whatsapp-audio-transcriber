@@ -44,6 +44,7 @@ export const TranscriptionResultSchema = z.strictObject({
   transcriptionModel: z.literal(GROQ_TRANSCRIPTION_MODEL),
   formattingProvider: z.literal('groq'),
   formattingModel: z.literal(GROQ_FORMATTING_MODEL),
+  formattingSettingsKey: z.string().min(1).max(128),
 });
 
 export const TranscriptionCommandSchema = z.discriminatedUnion('type', [

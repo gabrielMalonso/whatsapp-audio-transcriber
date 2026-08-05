@@ -33,28 +33,30 @@ sequenceDiagram
     W-->>B: texto bruto + idioma + duração
     B-->>UI: formatting
     B->>G: texto bruto + regras editoriais
-    G-->>B: JSON estruturado com o texto formatado
+    G-->>B: texto formatado
     B-->>UI: job.complete
     UI->>UI: salva e exibe o texto
 ```
 
-## Formatação conservadora
+## Formatação configurável
 
-O `openai/gpt-oss-20b` é chamado com `reasoning_effort: low` e Structured Outputs em modo estrito. O schema aceita somente `{ "text": string }`.
+O `openai/gpt-oss-20b` é chamado a partir de 40 caracteres, com `reasoning_effort: low` e temperatura `0.3`. O prompt é montado dinamicamente a partir das preferências salvas no popup.
 
-O prompt permite apenas:
+O usuário pode escolher:
 
-- pontuação;
-- capitalização;
-- divisão em parágrafos.
+- tom coloquial, natural ou formal;
+- divisão em parágrafos;
+- remoção determinística do último ponto de cada linha;
+- formatação pt-BR de datas e horários;
+- conversão de enumerações em listas.
 
-Ele proíbe resumo, tradução, resposta ao conteúdo, títulos e informações novas. Instruções eventualmente faladas no áudio são delimitadas e tratadas como dados, reduzindo risco de prompt injection.
+As regras críticas proíbem resumo, tradução, resposta ao conteúdo e informações novas. A transcrição é delimitada por tags e tratada como dado, reduzindo risco de prompt injection.
 
 ## Estado e persistência
 
 O widget trabalha com `idle`, `notice`, `capturing`, `queued`, `working`, `success` e `error`. O cache usa SHA-256 do `data-id` como chave e guarda tanto `text` quanto `rawText`.
 
-A API key é manipulada somente pelo popup e pelo service worker. Ela permanece no armazenamento local da extensão; não é incorporada ao bundle nem enviada ao contexto da página.
+A API key e as preferências de formatação permanecem no armazenamento local da extensão. O cache registra a versão das preferências para não reutilizar um texto formatado com ajustes diferentes.
 
 ## Multiplataforma
 

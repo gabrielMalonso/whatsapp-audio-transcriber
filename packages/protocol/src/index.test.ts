@@ -36,6 +36,7 @@ describe('transcription protocol', () => {
           transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
           formattingProvider: 'groq',
           formattingModel: GROQ_FORMATTING_MODEL,
+          formattingSettingsKey: 'v1:natural:11111',
         },
       }),
     ).toMatchObject({ type: 'job.complete' });
