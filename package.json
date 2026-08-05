@@ -23,10 +23,17 @@
     "prepare": "pnpm --filter @wat/protocol build && pnpm --filter @wat/extension prepare",
     "test": "pnpm --filter @wat/protocol test && pnpm --filter @wat/extension test",
     "typecheck": "pnpm --filter @wat/protocol typecheck && pnpm --filter @wat/extension typecheck",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "prettier": "3.9.6"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.9.0",
+    "prettier": "3.9.6",
+    "typescript-eslint": "^8.66.0"
   }
 }

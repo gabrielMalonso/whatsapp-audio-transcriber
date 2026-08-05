@@ -357,7 +357,9 @@ export function TranscriptWidget({
           className={`trigger icon-only${phase === 'success' ? ' ready' : ''}`}
           type="button"
           onClick={
-            phase === 'idle' ? requestTranscription : () => setExpanded(true)
+            phase === 'idle'
+              ? () => void requestTranscription()
+              : () => setExpanded(true)
           }
           aria-label={phase === 'idle' ? 'Transcrever' : 'Ver transcrição'}
           title={phase === 'idle' ? 'Transcrever' : 'Ver transcrição'}
@@ -402,7 +404,7 @@ export function TranscriptWidget({
                       <button
                         className="primary"
                         type="button"
-                        onClick={acceptNotice}
+                        onClick={() => void acceptNotice()}
                       >
                         Continuar
                       </button>
@@ -445,7 +447,7 @@ export function TranscriptWidget({
                       <button
                         className="primary"
                         type="button"
-                        onClick={beginTranscription}
+                        onClick={() => void beginTranscription()}
                       >
                         Tentar novamente
                       </button>
@@ -475,7 +477,7 @@ export function TranscriptWidget({
                         <button
                           className="icon-button"
                           type="button"
-                          onClick={copy}
+                          onClick={() => void copy()}
                           aria-label={copied ? 'Copiado' : 'Copiar'}
                           title={copied ? 'Copiado' : 'Copiar'}
                         >
@@ -488,7 +490,7 @@ export function TranscriptWidget({
                         <button
                           className="icon-button"
                           type="button"
-                          onClick={beginTranscription}
+                          onClick={() => void beginTranscription()}
                           aria-label="Refazer"
                           title="Refazer"
                         >

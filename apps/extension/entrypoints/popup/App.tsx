@@ -50,9 +50,9 @@ export function App() {
   const refresh = useCallback(async () => {
     setHealth('checking');
     const [response, stats] = await Promise.all([
-      browser.runtime.sendMessage({
+      browser.runtime.sendMessage<{ type: 'wat.groq.status' }, GroqStatus>({
         type: 'wat.groq.status',
-      }) as Promise<GroqStatus>,
+      }),
       cacheStats(),
     ]);
     setCount(stats.count);
@@ -72,10 +72,13 @@ export function App() {
     }
     setSaving(true);
     setFormError('');
-    const response = (await browser.runtime.sendMessage({
+    const response = await browser.runtime.sendMessage<
+      { type: 'wat.groq.save-key'; apiKey: string },
+      GroqConfigurationResponse
+    >({
       type: 'wat.groq.save-key',
       apiKey: apiKey.trim(),
-    })) as GroqConfigurationResponse;
+    });
     setSaving(false);
     if (!response.saved) {
       setFormError(response.message);
@@ -88,9 +91,10 @@ export function App() {
 
   const removeKey = async () => {
     if (!window.confirm('Remover a API key salva nesta extensão?')) return;
-    const response = (await browser.runtime.sendMessage({
-      type: 'wat.groq.remove-key',
-    })) as GroqStatus;
+    const response = await browser.runtime.sendMessage<
+      { type: 'wat.groq.remove-key' },
+      GroqStatus
+    >({ type: 'wat.groq.remove-key' });
     setApiKey('');
     setEditing(true);
     applyStatus(response);
@@ -130,7 +134,7 @@ export function App() {
         <button
           type="button"
           className="icon-action"
-          onClick={refresh}
+          onClick={() => void refresh()}
           aria-label="Verificar novamente"
           title="Verificar novamente"
         >
@@ -173,7 +177,7 @@ export function App() {
             <span />
           </div>
         ) : editing ? (
-          <form className="key-form" onSubmit={saveKey}>
+          <form className="key-form" onSubmit={(event) => void saveKey(event)}>
             <div className="form-heading">
               <div className="form-title">
                 <KeyRound {...iconSm} />
@@ -246,7 +250,7 @@ export function App() {
               <button
                 type="button"
                 className="icon-action danger"
-                onClick={removeKey}
+                onClick={() => void removeKey()}
                 aria-label="Remover chave"
                 title="Remover"
               >
@@ -271,7 +275,7 @@ export function App() {
         <button
           type="button"
           className="icon-action"
-          onClick={clearCache}
+          onClick={() => void clearCache()}
           disabled={!count}
           aria-label="Limpar transcrições"
           title="Limpar"

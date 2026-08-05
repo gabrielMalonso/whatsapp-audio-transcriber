@@ -4,6 +4,11 @@ As mudanças relevantes deste projeto serão documentadas neste arquivo. O forma
 
 ## Não publicado
 
+### Adicionado
+
+- ESLint com regras tipadas para TypeScript e validação oficial dos Hooks do React;
+- verificação de lint na integração contínua.
+
 ## 0.2.0 - 2026-08-04
 
 ### Adicionado

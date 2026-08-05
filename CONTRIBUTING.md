@@ -49,6 +49,7 @@ Leia [docs/architecture.md](docs/architecture.md) antes de alterar a captura, a 
 
 ```bash
 pnpm format:check
+pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build

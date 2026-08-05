@@ -53,8 +53,10 @@ describe('GroqProvider', () => {
     });
     expect(fetcher).toHaveBeenCalledTimes(2);
     expect(fetcher.mock.calls[0]?.[0]).toContain('/audio/transcriptions');
+    const body = fetcher.mock.calls[1]?.[1]?.body;
+    expect(typeof body).toBe('string');
     const formattingBody = JSON.parse(
-      String(fetcher.mock.calls[1]?.[1]?.body),
+      typeof body === 'string' ? body : '',
     ) as Record<string, unknown>;
     expect(formattingBody).toMatchObject({
       model: GROQ_FORMATTING_MODEL,
@@ -116,6 +118,6 @@ function jsonResponse(value: unknown, status = 200): Response {
   return {
     ok: status >= 200 && status < 300,
     status,
-    json: async () => value,
+    json: () => Promise.resolve(value),
   } as Response;
 }

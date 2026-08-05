@@ -137,6 +137,7 @@ apps/extension/.output/chrome-mv3
 | `pnpm build`        | compila o protocolo e a extensão                 |
 | `pnpm test`         | executa os testes com Vitest                     |
 | `pnpm typecheck`    | verifica os tipos TypeScript                     |
+| `pnpm lint`         | verifica o código com ESLint                     |
 | `pnpm format:check` | verifica a formatação com Prettier               |
 | `pnpm format`       | formata os arquivos do projeto                   |
 

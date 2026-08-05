@@ -16,6 +16,8 @@ export default defineContentScript({
     pageWindow[stateKey] = true;
 
     let activeCapture: ActiveCapture | null = null;
+    // The method stays unbound so the intercepted media element can be its `this`.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalPlay = HTMLMediaElement.prototype.play;
 
     HTMLMediaElement.prototype.play = function (...args) {
@@ -55,20 +57,28 @@ export default defineContentScript({
       return Promise.resolve();
     };
 
-    window.addEventListener('message', (event) => {
+    window.addEventListener('message', (event: MessageEvent<unknown>) => {
       const data = event.data;
       if (
         event.source !== window ||
-        data?.channel !== PAGE_BRIDGE_CHANNEL ||
+        !data ||
+        typeof data !== 'object' ||
+        !('channel' in data) ||
+        data.channel !== PAGE_BRIDGE_CHANNEL ||
+        !('kind' in data) ||
         data.kind !== 'command' ||
+        !('requestId' in data) ||
         typeof data.requestId !== 'string'
       ) {
         return;
       }
 
-      if (data.action === 'arm') {
+      if ('action' in data && data.action === 'arm') {
         const timeoutMs = Math.min(
-          Math.max(Number(data.timeoutMs) || 10_000, 500),
+          Math.max(
+            Number('timeoutMs' in data ? data.timeoutMs : undefined) || 10_000,
+            500,
+          ),
           15_000,
         );
         activeCapture = {
@@ -79,6 +89,7 @@ export default defineContentScript({
       }
 
       if (
+        'action' in data &&
         data.action === 'disarm' &&
         activeCapture?.requestId === data.requestId
       ) {

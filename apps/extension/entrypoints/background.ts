@@ -74,8 +74,10 @@ export default defineBackground(() => {
     });
   });
 
-  browser.runtime.onMessage.addListener((message: unknown) =>
-    handlePopupMessage(message),
+  browser.runtime.onMessage.addListener(
+    // The returned promise carries the asynchronous response back to the popup.
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    (message: unknown) => handlePopupMessage(message),
   );
 
   function begin(
@@ -357,7 +359,9 @@ function postError(
 function safePost(port: ContentPort, event: TranscriptionEvent) {
   try {
     port.postMessage(event);
-  } catch {}
+  } catch {
+    // The content port may disconnect while a queued event is being delivered.
+  }
 }
 
 function readJobId(value: unknown) {
