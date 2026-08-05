@@ -34,16 +34,16 @@ const TONE_INSTRUCTIONS: Record<FormattingTone, string> = {
 };
 
 const PARAGRAPH_INSTRUCTION =
-  'Divida o texto em parágrafos curtos. Quebre o parágrafo quando houver mudança de assunto, mudança de contexto, transição temporal, novo argumento ou nova informação. Prefira parágrafos menores (2-4 frases) a blocos longos de texto. Cada ideia, argumento ou informação distinta deve estar em seu próprio parágrafo. Só mantenha frases no mesmo parágrafo se forem continuação direta uma da outra.';
+  'Divida o texto obrigatoriamente em parágrafos curtos. Quebre o parágrafo quando houver mudança de assunto, contexto, período temporal, argumento ou informação. Em textos longos, mantenha cada parágrafo entre 2 e 4 frases e nunca ultrapasse 4 frases. Mesmo sem uma mudança clara, inicie um novo parágrafo ao atingir esse limite. Separe os parágrafos com uma linha em branco.';
 
 const DATE_INSTRUCTION =
-  "Reconheça datas faladas no texto e formate-as no padrão DD/MM ou DD/MM/AAAA quando o ano for mencionado. Exemplos: '5 do 3' → '05/03', 'cinco de março' → '05/03', 'dia 10 do 12' → '10/12', 'primeiro de janeiro' → '01/01', '25 do 4 de 2026' → '25/04/2026'. Mantenha o contexto original da frase.";
+  "Reconheça datas faladas e preserve a forma usada para o mês: quando ele for falado como número, use DD/MM ou DD/MM/AAAA; quando for falado por extenso, use DD de mês ou DD de mês de AAAA. Exemplos: '5 do 3' → '05/03', '25 do 4 de 2026' → '25/04/2026', 'cinco de março' → '05 de março', 'primeiro de janeiro' → '01 de janeiro', 'vinte e cinco de abril de 2026' → '25 de abril de 2026'. Mantenha o contexto original da frase.";
 
 const TIME_INSTRUCTION =
   "Reconheça horários falados no texto e formate-os no padrão HH:MMh. Exemplos: 'nove e quarenta e cinco' → '09:45h', 'duas da tarde' → '14:00h', 'meio-dia' → '12:00h', 'meia-noite' → '00:00h', 'três e meia' → '03:30h', 'dez horas' → '10:00h'. Mantenha o contexto original da frase.";
 
 const LIST_INSTRUCTION =
-  "Quando o usuário estiver enumerando itens ou fazendo uma lista, formate como lista com marcadores (usando '- ' no início de cada item), com cada item em uma nova linha.";
+  "Quando houver intenção clara de enumerar itens independentes, formate-os como lista, usando '- ' no início de cada item e uma nova linha para cada um. Reconheça listas anunciadas por quantidades ou expressões como 'primeiro', 'segundo' e 'por último'. Não transforme sequências narrativas comuns em listas. Exemplo: 'comprar arroz, feijão e leite' → '- arroz\n- feijão\n- leite'.";
 
 export function buildSystemPrompt(options: FormattingSettings): string {
   let priorityIndex = 1;
@@ -65,7 +65,12 @@ export function buildSystemPrompt(options: FormattingSettings): string {
     '</task>',
   ];
   if (options.addParagraphs) {
-    tasks.push('', '<task id="paragraphs">', PARAGRAPH_INSTRUCTION, '</task>');
+    tasks.push(
+      '',
+      '<task id="paragraphs" priority="high">',
+      PARAGRAPH_INSTRUCTION,
+      '</task>',
+    );
   }
   if (options.formatDates) {
     tasks.push('', '<task id="dates">', DATE_INSTRUCTION, '</task>');
@@ -133,5 +138,5 @@ export function formattingSettingsKey(options: FormattingSettings): string {
   ]
     .map((enabled) => (enabled ? '1' : '0'))
     .join('');
-  return `v1:${options.tone}:${flags}`;
+  return `v3:${options.tone}:${flags}`;
 }

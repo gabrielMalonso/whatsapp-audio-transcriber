@@ -51,7 +51,7 @@ describe('GroqProvider', () => {
       durationMs: 2_400,
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
       formattingModel: GROQ_FORMATTING_MODEL,
-      formattingSettingsKey: 'v1:natural:1111',
+      formattingSettingsKey: 'v3:natural:1111',
     });
     expect(fetcher).toHaveBeenCalledTimes(2);
     expect(fetcher.mock.calls[0]?.[0]).toContain('/audio/transcriptions');
@@ -70,7 +70,9 @@ describe('GroqProvider', () => {
       role: string;
       content: string;
     }>;
-    expect(messages[0]?.content).toContain('<task id="paragraphs">');
+    expect(messages[0]?.content).toContain(
+      '<task id="paragraphs" priority="high">',
+    );
     expect(messages[1]?.content).toBe(
       '<transcription>\noi tudo bem isso é um teste que eu gravei agora no WhatsApp\n</transcription>',
     );

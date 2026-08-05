@@ -12,10 +12,16 @@ describe('formatting settings', () => {
     const prompt = buildSystemPrompt(DEFAULT_FORMATTING_SETTINGS);
 
     expect(prompt).toContain('<task id="formatting">');
-    expect(prompt).toContain('<task id="paragraphs">');
+    expect(prompt).toContain('<task id="paragraphs" priority="high">');
+    expect(prompt).toContain('nunca ultrapasse 4 frases');
+    expect(prompt).toContain('inicie um novo parágrafo ao atingir esse limite');
     expect(prompt).toContain('<task id="dates">');
+    expect(prompt).toContain("'cinco de março' → '05 de março'");
+    expect(prompt).toContain("'5 do 3' → '05/03'");
     expect(prompt).toContain('<task id="times">');
     expect(prompt).toContain('<task id="lists">');
+    expect(prompt).toContain('Não transforme sequências narrativas comuns');
+    expect(prompt).toContain('- arroz\n- feijão\n- leite');
     expect(prompt).toContain('7. Contrato de saída (sempre)');
   });
 
@@ -30,7 +36,7 @@ describe('formatting settings', () => {
     });
 
     expect(prompt).toContain('Preserve gírias');
-    expect(prompt).not.toContain('<task id="paragraphs">');
+    expect(prompt).not.toContain('<task id="paragraphs" priority="high">');
     expect(prompt).not.toContain('<task id="dates">');
     expect(prompt).not.toContain('<task id="times">');
     expect(prompt).not.toContain('<task id="lists">');
@@ -53,7 +59,7 @@ describe('formatting settings', () => {
 
   it('creates a stable cache key from all controls', () => {
     expect(formattingSettingsKey(DEFAULT_FORMATTING_SETTINGS)).toBe(
-      'v1:natural:1111',
+      'v3:natural:1111',
     );
   });
 });
