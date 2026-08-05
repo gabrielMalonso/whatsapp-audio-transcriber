@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('wxt/browser', () => ({
   browser: {
     runtime: {
+      getManifest: vi.fn(() => ({ version: '0.2.1' })),
       sendMessage: vi.fn(() => Promise.reject(new Error('worker unavailable'))),
     },
     storage: {

@@ -425,7 +425,14 @@ export function App() {
         className="reveal"
         style={{ '--d': '300ms' } as React.CSSProperties}
       >
-        <span>v0.2.1</span>
+        <a
+          href="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/blob/main/PRIVACY.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Privacidade
+        </a>
+        <span>v{browser.runtime.getManifest().version}</span>
       </footer>
     </main>
   );

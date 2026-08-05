@@ -13,6 +13,7 @@
   <p>
     <a href="#instalação">Instalação</a> ·
     <a href="#como-funciona">Como funciona</a> ·
+    <a href="PRIVACY.md">Privacidade</a> ·
     <a href="#desenvolvimento">Desenvolvimento</a> ·
     <a href="CONTRIBUTING.md">Contribuição</a>
   </p>
@@ -88,6 +89,8 @@ Descompacte a nova versão sobre a mesma pasta, clique em **Recarregar** em `chr
 
 A extensão solicita acesso apenas ao armazenamento local, ao WhatsApp Web e à API da Groq. A utilização da API está sujeita aos termos, limites e eventual cobrança da própria Groq.
 
+Consulte a [Política de Privacidade](PRIVACY.md) para conhecer todos os dados tratados, destinatários, prazos e controles disponíveis.
+
 Limites atuais:
 
 - até 25 MB por áudio;
@@ -133,15 +136,18 @@ apps/extension/.output/chrome-mv3
 
 ### Comandos
 
-| Comando             | Ação                                             |
-| ------------------- | ------------------------------------------------ |
-| `pnpm dev`          | inicia o ambiente de desenvolvimento da extensão |
-| `pnpm build`        | compila o protocolo e a extensão                 |
-| `pnpm test`         | executa os testes com Vitest                     |
-| `pnpm typecheck`    | verifica os tipos TypeScript                     |
-| `pnpm lint`         | verifica o código com ESLint                     |
-| `pnpm format:check` | verifica a formatação com Prettier               |
-| `pnpm format`       | formata os arquivos do projeto                   |
+| Comando                        | Ação                                             |
+| ------------------------------ | ------------------------------------------------ |
+| `pnpm dev`                     | inicia o ambiente de desenvolvimento da extensão |
+| `pnpm build`                   | compila o protocolo e a extensão                 |
+| `pnpm test`                    | executa os testes com Vitest                     |
+| `pnpm typecheck`               | verifica os tipos TypeScript                     |
+| `pnpm lint`                    | verifica o código com ESLint                     |
+| `pnpm format:check`            | verifica a formatação com Prettier               |
+| `pnpm format`                  | formata os arquivos do projeto                   |
+| `pnpm check`                   | executa todas as verificações e o build          |
+| `pnpm store:package`           | gera o ZIP da Chrome Web Store e seu SHA-256     |
+| `pnpm version:extension X.Y.Z` | sincroniza a versão da extensão                  |
 
 ### Estrutura
 

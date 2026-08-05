@@ -26,5 +26,5 @@ Não remova a extensão antes de atualizar. A API key e as transcrições ficam 
 SHA-256:
 
 ```text
-83781937c5ee61e5ceb90b9e5f1a4b7e577c75710a31ba6e4aba4c479bb7d8a5
+093550152f50219fd03fafb673766fe38e21d6afe09d72b1a93805b6e1e80805
 ```

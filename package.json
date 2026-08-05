@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "pnpm --filter @wat/protocol build && pnpm --filter @wat/extension build",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
     "dev": "pnpm --filter @wat/extension dev",
     "prepare": "pnpm --filter @wat/protocol build && pnpm --filter @wat/extension prepare",
     "test": "pnpm --filter @wat/protocol test && pnpm --filter @wat/extension test",
@@ -26,7 +27,9 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "store:package": "pnpm --filter @wat/protocol build && pnpm --filter @wat/extension exec wxt zip && node scripts/package-store.mjs",
+    "version:extension": "node scripts/version-extension.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

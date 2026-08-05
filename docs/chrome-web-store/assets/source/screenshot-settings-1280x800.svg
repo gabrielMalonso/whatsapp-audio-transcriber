@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102a24"/><stop offset="1" stop-color="#064f40"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#3ce6a7" stop-opacity=".34"/><stop offset="1" stop-color="#3ce6a7" stop-opacity="0"/></radialGradient>
+    <filter id="shadow2" x="-30%" y="-20%" width="160%" height="160%"><feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#001d17" flood-opacity=".4"/></filter>
+    <style>.sans{font-family:"Avenir Next",Avenir,Helvetica,sans-serif}.serif{font-family:Georgia,serif}.ink{fill:#15231f}.muted{fill:#70817b}.green{fill:#00a884}.deep{fill:#067a63}.small{font-size:13px}.body{font-size:15px}.label{font-size:12px;font-weight:600;letter-spacing:.1em}</style>
+  </defs>
+  <rect width="1280" height="800" fill="url(#bg2)"/>
+  <circle cx="1020" cy="96" r="380" fill="url(#glow)"/>
+  <circle cx="170" cy="770" r="300" fill="#caa66b" opacity=".12"/>
+  <path d="M0 680C260 585 382 740 648 640s383-28 632-132v292H0z" fill="#fff" opacity=".035"/>
+
+  <text x="92" y="146" class="sans label" fill="#7fe4c0">CONTROLE LOCAL</text>
+  <text x="88" y="212" class="serif" font-size="54" fill="#fff">Do seu jeito.</text>
+  <text x="88" y="272" class="serif" font-size="54" fill="#fff">No seu navegador.</text>
+  <text x="92" y="324" class="sans" font-size="18" fill="#c7ded6">Escolha o tom, organize o texto e mantenha</text>
+  <text x="92" y="352" class="sans" font-size="18" fill="#c7ded6">o histórico sob seu controle.</text>
+
+  <g class="sans">
+    <circle cx="105" cy="420" r="13" fill="#00a884"/><path d="m99 420 4 4 8-9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="132" y="426" font-size="16" fill="#eef9f5">Sem anúncios ou analytics</text>
+    <circle cx="105" cy="470" r="13" fill="#00a884"/><path d="m99 470 4 4 8-9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="132" y="476" font-size="16" fill="#eef9f5">Cache removível com um clique</text>
+    <circle cx="105" cy="520" r="13" fill="#00a884"/><path d="m99 520 4 4 8-9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="132" y="526" font-size="16" fill="#eef9f5">Conexão direta com a Groq</text>
+  </g>
+
+  <g filter="url(#shadow2)">
+    <rect x="680" y="46" width="420" height="708" rx="28" fill="#fdfcf8"/>
+  </g>
+  <circle cx="730" cy="106" r="28" fill="#14bd43"/>
+  <circle cx="730" cy="106" r="21" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <path d="M718 111v-10M724 115V96M730 112v-12M736 118V92M742 112v-12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+  <text x="723" y="114" class="serif" font-size="21" font-weight="700" fill="#fff">T</text>
+  <text x="773" y="98" class="sans label muted">WHATSAPP</text>
+  <text x="773" y="125" class="serif" font-size="31" fill="#15231f">Transcritor</text>
+
+  <rect x="716" y="159" width="348" height="66" rx="15" fill="#e5f6ef"/>
+  <circle cx="745" cy="192" r="6" fill="#00a884"/>
+  <text x="765" y="189" class="sans body ink" font-weight="600">Pronto</text><text x="765" y="209" class="sans small muted">Chave válida e modelos disponíveis</text>
+
+  <text x="716" y="267" class="sans label muted">FORMATAÇÃO</text>
+  <text x="716" y="302" class="sans body ink" font-weight="600">Tom</text><text x="750" y="302" class="sans small muted">Equilibrado e fiel ao áudio</text>
+  <rect x="716" y="319" width="348" height="47" rx="13" fill="#eef1ee"/>
+  <rect x="832" y="323" width="112" height="39" rx="10" fill="#fff" stroke="#cfe0d8"/>
+  <text x="739" y="348" class="sans small muted">Coloquial</text><text x="860" y="348" class="sans small deep" font-weight="600">Natural</text><text x="968" y="348" class="sans small muted">Formal</text>
+
+  <g class="sans">
+    <text x="716" y="410" class="body ink" font-weight="600">Parágrafos</text><text x="716" y="429" class="small muted">Separa ideias em blocos curtos</text><rect x="1016" y="402" width="48" height="27" rx="13.5" fill="#00a884"/><circle cx="1050" cy="415.5" r="10" fill="#fff"/>
+    <line x1="716" y1="452" x2="1064" y2="452" stroke="#e1e8e4"/>
+    <text x="716" y="485" class="body ink" font-weight="600">Datas e horas</text><text x="716" y="504" class="small muted">Padroniza DD/MM e HH:MMh</text><rect x="1016" y="477" width="48" height="27" rx="13.5" fill="#00a884"/><circle cx="1050" cy="490.5" r="10" fill="#fff"/>
+    <line x1="716" y1="527" x2="1064" y2="527" stroke="#e1e8e4"/>
+    <text x="716" y="560" class="body ink" font-weight="600">Listas</text><text x="716" y="579" class="small muted">Cria marcadores ao enumerar itens</text><rect x="1016" y="552" width="48" height="27" rx="13.5" fill="#d7dedb"/><circle cx="1030" cy="565.5" r="10" fill="#fff"/>
+  </g>
+  <line x1="716" y1="615" x2="1064" y2="615" stroke="#dce5e0"/>
+  <text x="716" y="644" class="sans small muted">Transcrições salvas</text>
+  <text x="716" y="685" class="serif" font-size="37" fill="#15231f">12</text><text x="763" y="682" class="sans small muted">18 KB</text>
+  <rect x="948" y="650" width="116" height="38" rx="12" fill="#f0f3f0"/><text x="977" y="674" class="sans small deep" font-weight="600">Limpar tudo</text>
+  <text x="716" y="726" class="sans" font-size="11" fill="#81908a">Privacidade</text><text x="1029" y="726" class="sans" font-size="11" fill="#81908a">v0.2.1</text>
+</svg>

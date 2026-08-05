@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560">
+  <defs>
+    <linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8f3e9"/><stop offset=".55" stop-color="#eff8f4"/><stop offset="1" stop-color="#d9eee6"/></linearGradient>
+    <filter id="ms" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#0c493b" flood-opacity=".18"/></filter>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#15382f" opacity=".05"/></pattern>
+    <style>.sans{font-family:"Avenir Next",Avenir,Helvetica,sans-serif}.serif{font-family:Georgia,serif}</style>
+  </defs>
+  <rect width="1400" height="560" fill="url(#mbg)"/>
+  <rect width="1400" height="560" fill="url(#dots)"/>
+  <circle cx="1330" cy="20" r="290" fill="#00a884" opacity=".10"/>
+  <circle cx="70" cy="570" r="240" fill="#caa66b" opacity=".12"/>
+  <circle cx="106" cy="100" r="35" fill="#14bd43"/>
+  <circle cx="106" cy="100" r="27" fill="none" stroke="#fff" stroke-width="3"/>
+  <path d="M91 106V94M99 111V89M106 106V95M113 113V87M121 106V94" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/>
+  <text x="98" y="109" class="serif" font-size="26" font-weight="700" fill="#fff">T</text>
+  <text x="157" y="92" class="sans" font-size="12" font-weight="600" letter-spacing="2" fill="#067a63">WHATSAPP</text><text x="157" y="122" class="serif" font-size="31" fill="#15231f">Transcritor</text>
+  <text x="74" y="240" class="serif" font-size="57" fill="#15231f">Mensagens de voz,</text>
+  <text x="74" y="304" class="serif" font-size="57" fill="#15231f">agora em texto.</text>
+  <text x="78" y="354" class="sans" font-size="19" fill="#61746d">Transcrição rápida, formatação inteligente</text><text x="78" y="383" class="sans" font-size="19" fill="#61746d">e tudo dentro da conversa.</text>
+  <rect x="78" y="426" width="150" height="42" rx="21" fill="#00a884"/><text x="111" y="453" class="sans" font-size="14" font-weight="600" fill="#fff">Grátis e open source</text>
+
+  <g filter="url(#ms)">
+    <rect x="782" y="68" width="536" height="424" rx="28" fill="#fffdf9"/>
+  </g>
+  <rect x="782" y="68" width="536" height="64" rx="28" fill="#f0f3f0"/><path d="M782 105v27h536v-27" fill="#f0f3f0"/>
+  <circle cx="815" cy="100" r="7" fill="#df766b"/><circle cx="838" cy="100" r="7" fill="#e8bd62"/><circle cx="861" cy="100" r="7" fill="#63bd7c"/>
+  <rect x="913" y="87" width="290" height="27" rx="13.5" fill="#fff"/><text x="939" y="105" class="sans" font-size="11" fill="#83928c">web.whatsapp.com</text>
+  <rect x="782" y="132" width="536" height="360" fill="#eeeae1"/>
+  <rect x="827" y="178" width="310" height="64" rx="13" fill="#fff"/><text x="849" y="207" class="sans" font-size="14" fill="#15231f">Você consegue revisar ainda hoje?</text><text x="1089" y="228" class="sans" font-size="10" fill="#89968f">10:40</text>
+  <rect x="933" y="265" width="339" height="71" rx="13" fill="#d9fdd3"/>
+  <circle cx="966" cy="300" r="18" fill="#00a884"/><path d="m962 292 12 8-12 8z" fill="#fff"/>
+  <g stroke="#4b6f64" stroke-width="2" stroke-linecap="round"><path d="M995 301v-8M1004 301v-17M1013 301v-10M1022 301v-23M1031 301v-13M1040 301v-20M1049 301v-9M1058 301v-16M1067 301v-11M1076 301v-22M1085 301v-8M1094 301v-18M1103 301v-11M1112 301v-20M1121 301v-9M1130 301v-15M1139 301v-8M1148 301v-17M1157 301v-10M1166 301v-14M1175 301v-8"/></g>
+  <rect x="877" y="356" width="395" height="103" rx="15" fill="#fffdf9" stroke="#cfe2da"/><rect x="877" y="356" width="7" height="103" rx="3.5" fill="#00a884"/>
+  <circle cx="909" cy="387" r="16" fill="#e0f5ed"/><text x="903" y="393" class="sans" font-size="16" font-weight="700" fill="#067a63">T</text>
+  <text x="935" y="383" class="sans" font-size="11" font-weight="600" letter-spacing="1.2" fill="#067a63">TRANSCRIÇÃO</text>
+  <text x="904" y="421" class="sans" font-size="14" fill="#15231f">Sim. Envio a versão final até as 16h</text><text x="904" y="444" class="sans" font-size="14" fill="#15231f">com os próximos passos organizados.</text>
+</svg>

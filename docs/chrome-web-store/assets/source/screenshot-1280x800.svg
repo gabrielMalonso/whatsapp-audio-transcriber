@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f7f3eb"/>
+      <stop offset="1" stop-color="#dcefe8"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#eff8f4"/>
+      <stop offset="1" stop-color="#fbfaf6"/>
+    </linearGradient>
+    <pattern id="grain" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="4" r="1" fill="#15231f" opacity=".035"/>
+      <circle cx="16" cy="14" r=".7" fill="#15231f" opacity=".03"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0d3f35" flood-opacity=".16"/>
+    </filter>
+    <style>
+      .sans{font-family:"Avenir Next",Avenir,Helvetica,sans-serif}.serif{font-family:Georgia,serif}.muted{fill:#6e7f79}.ink{fill:#15231f}.green{fill:#00a884}.deep{fill:#067a63}.line{stroke:#dce5e0;stroke-width:1}.small{font-size:12px}.body{font-size:14px}.label{font-size:11px;font-weight:600;letter-spacing:.08em}.title{font-size:28px;font-weight:600}.round{stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+  <rect width="1280" height="800" fill="url(#grain)"/>
+  <circle cx="1180" cy="-70" r="270" fill="#00a884" opacity=".10"/>
+  <circle cx="36" cy="760" r="220" fill="#caa66b" opacity=".12"/>
+
+  <g filter="url(#shadow)">
+    <rect x="52" y="36" width="1176" height="728" rx="22" fill="#fffdf9"/>
+    <rect x="52" y="36" width="1176" height="54" rx="22" fill="#fbfaf7"/>
+    <path d="M52 68v20a2 2 0 0 0 2 2h1172a2 2 0 0 0 2-2V68" fill="#fbfaf7"/>
+    <line x1="52" y1="90" x2="1228" y2="90" class="line"/>
+    <circle cx="79" cy="63" r="6" fill="#df766b"/><circle cx="99" cy="63" r="6" fill="#e8bd62"/><circle cx="119" cy="63" r="6" fill="#63bd7c"/>
+    <rect x="228" y="50" width="640" height="27" rx="13.5" fill="#f0f2ef"/>
+    <circle cx="249" cy="63.5" r="5" fill="none" stroke="#80908a" stroke-width="1.4"/>
+    <path d="m253 67 4 4" stroke="#80908a" stroke-width="1.4" stroke-linecap="round"/>
+    <text x="277" y="68" class="sans small muted">web.whatsapp.com</text>
+  </g>
+
+  <clipPath id="appClip"><rect x="52" y="90" width="1176" height="674" rx="0 0 22 22"/></clipPath>
+  <g clip-path="url(#appClip)">
+    <rect x="52" y="90" width="268" height="674" fill="#fbfcfa"/>
+    <rect x="320" y="90" width="572" height="674" fill="#efece4"/>
+    <rect x="320" y="90" width="572" height="674" fill="url(#grain)" opacity=".5"/>
+    <rect x="892" y="90" width="336" height="674" fill="url(#hero)"/>
+    <line x1="320" y1="90" x2="320" y2="764" class="line"/>
+    <line x1="892" y1="90" x2="892" y2="764" class="line"/>
+
+    <rect x="52" y="90" width="268" height="70" fill="#f0f3f0"/>
+    <circle cx="84" cy="125" r="20" fill="#d9e5df"/>
+    <path d="M76 131c5-8 12-8 17 0M78 120h12" fill="none" stroke="#6e8179" stroke-width="2" class="round"/>
+    <text x="114" y="123" class="sans body ink" font-weight="600">Conversas</text>
+    <text x="114" y="141" class="sans small muted">WhatsApp Web</text>
+    <rect x="68" y="174" width="236" height="38" rx="12" fill="#f0f2ef"/>
+    <circle cx="87" cy="193" r="6" fill="none" stroke="#81908b" stroke-width="1.4"/>
+    <path d="m91 197 4 4" stroke="#81908b" stroke-width="1.4"/>
+    <text x="106" y="198" class="sans small muted">Pesquisar</text>
+
+    <g class="sans">
+      <rect x="60" y="225" width="252" height="72" rx="12" fill="#e7f5ef"/>
+      <circle cx="90" cy="261" r="21" fill="#00a884" opacity=".18"/>
+      <text x="84" y="267" font-size="16" font-weight="700" fill="#067a63">G</text>
+      <text x="122" y="253" class="body ink" font-weight="600">Grupo do projeto</text>
+      <text x="122" y="273" class="small muted">Mensagem de voz · 0:37</text>
+      <text x="278" y="248" font-size="10" fill="#067a63">10:42</text>
+      <circle cx="90" cy="333" r="21" fill="#e7ddd2"/><text x="83" y="339" font-size="16" font-weight="700" fill="#776b60">M</text>
+      <text x="122" y="326" class="body ink" font-weight="600">Marina</text><text x="122" y="346" class="small muted">Fechado, obrigada!</text>
+      <circle cx="90" cy="405" r="21" fill="#dce7ec"/><text x="83" y="411" font-size="16" font-weight="700" fill="#526c79">R</text>
+      <text x="122" y="398" class="body ink" font-weight="600">Rafael</text><text x="122" y="418" class="small muted">Foto</text>
+      <circle cx="90" cy="477" r="21" fill="#eadfcf"/><text x="83" y="483" font-size="16" font-weight="700" fill="#826b4d">C</text>
+      <text x="122" y="470" class="body ink" font-weight="600">Casa</text><text x="122" y="490" class="small muted">Até mais tarde</text>
+    </g>
+
+    <rect x="320" y="90" width="572" height="70" fill="#f7f8f5"/>
+    <circle cx="354" cy="125" r="20" fill="#00a884" opacity=".16"/>
+    <text x="348" y="131" class="sans" font-size="16" font-weight="700" fill="#067a63">G</text>
+    <text x="384" y="122" class="sans body ink" font-weight="600">Grupo do projeto</text>
+    <text x="384" y="140" class="sans small muted">3 participantes</text>
+
+    <g class="sans">
+      <rect x="360" y="205" width="362" height="54" rx="12" fill="#fff"/>
+      <text x="378" y="228" class="body ink">Consegue revisar isso ainda hoje?</text><text x="675" y="249" font-size="10" fill="#87958f">10:40</text>
+      <rect x="480" y="286" width="370" height="76" rx="12" fill="#d9fdd3"/>
+      <circle cx="511" cy="323" r="18" fill="#00a884"/>
+      <path d="m507 314 13 9-13 9z" fill="#fff"/>
+      <g stroke="#4b6f64" stroke-width="2" stroke-linecap="round">
+        <path d="M542 323v-5M550 323v-13M558 323v-8M566 323v-18M574 323v-10M582 323v-22M590 323v-14M598 323v-7M606 323v-16M614 323v-11M622 323v-20M630 323v-8M638 323v-14M646 323v-5M654 323v-12M662 323v-8M670 323v-16M678 323v-6M686 323v-11M694 323v-5"/>
+      </g>
+      <text x="543" y="348" font-size="10" fill="#56736a">0:37</text><text x="803" y="350" font-size="10" fill="#56736a">10:41 ✓✓</text>
+
+      <rect x="460" y="378" width="390" height="190" rx="16" fill="#fffdf9" stroke="#cfe2da"/>
+      <rect x="460" y="378" width="7" height="190" rx="3.5" fill="#00a884"/>
+      <circle cx="491" cy="409" r="16" fill="#e0f5ed"/>
+      <text x="485" y="415" font-size="16" font-weight="700" fill="#067a63">T</text>
+      <text x="518" y="405" class="label deep">TRANSCRIÇÃO</text>
+      <text x="518" y="425" class="small muted">Português · 37 segundos</text>
+      <text x="488" y="462" class="body ink">Sim. Vou fechar a revisão até as 16h.</text>
+      <text x="488" y="486" class="body ink">Depois disso, envio a versão final e listo</text>
+      <text x="488" y="510" class="body ink">os próximos passos para publicação.</text>
+      <rect x="488" y="530" width="74" height="25" rx="12.5" fill="#e4f5ee"/><text x="507" y="547" class="small deep" font-weight="600">Copiar</text>
+      <text x="816" y="550" font-size="10" fill="#87958f">10:42</text>
+    </g>
+
+    <rect x="892" y="90" width="336" height="674" fill="#fdfcf8"/>
+    <circle cx="940" cy="139" r="25" fill="#14bd43"/>
+    <circle cx="940" cy="139" r="19" fill="none" stroke="#fff" stroke-width="2.4"/>
+    <path d="M928 144v-9M933 148v-17M938 145v-11M943 150v-22M948 145v-11M953 148v-17" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="934" y="146" class="serif" font-size="19" font-weight="700" fill="#fff">T</text>
+    <text x="980" y="129" class="sans label muted">WHATSAPP</text>
+    <text x="980" y="153" class="serif title ink">Transcritor</text>
+
+    <rect x="924" y="188" width="272" height="58" rx="14" fill="#e5f6ef"/>
+    <circle cx="948" cy="217" r="5" fill="#00a884"/>
+    <text x="966" y="214" class="sans body ink" font-weight="600">Pronto</text>
+    <text x="966" y="231" class="sans small muted">Groq conectada</text>
+
+    <text x="924" y="284" class="sans label muted">FORMATAÇÃO</text>
+    <text x="924" y="316" class="sans body ink" font-weight="600">Tom</text>
+    <rect x="924" y="330" width="272" height="38" rx="11" fill="#eef1ee"/>
+    <rect x="1015" y="334" width="88" height="30" rx="8" fill="#fff" stroke="#d4e1db"/>
+    <text x="941" y="354" class="sans small muted">Coloquial</text><text x="1036" y="354" class="sans small deep" font-weight="600">Natural</text><text x="1121" y="354" class="sans small muted">Formal</text>
+    <g class="sans body ink">
+      <text x="924" y="410">Parágrafos</text><rect x="1158" y="394" width="38" height="22" rx="11" fill="#00a884"/><circle cx="1185" cy="405" r="8" fill="#fff"/>
+      <text x="924" y="454">Datas</text><rect x="1158" y="438" width="38" height="22" rx="11" fill="#00a884"/><circle cx="1185" cy="449" r="8" fill="#fff"/>
+      <text x="924" y="498">Horas</text><rect x="1158" y="482" width="38" height="22" rx="11" fill="#00a884"/><circle cx="1185" cy="493" r="8" fill="#fff"/>
+      <text x="924" y="542">Listas</text><rect x="1158" y="526" width="38" height="22" rx="11" fill="#d8ddda"/><circle cx="1169" cy="537" r="8" fill="#fff"/>
+    </g>
+    <line x1="924" y1="579" x2="1196" y2="579" class="line"/>
+    <text x="924" y="606" class="sans small muted">Chave configurada</text><text x="1160" y="606" class="sans small deep" font-weight="600">Trocar</text>
+    <line x1="924" y1="628" x2="1196" y2="628" class="line"/>
+    <text x="924" y="654" class="sans small muted">Transcrições salvas</text><text x="924" y="689" class="serif" font-size="30" fill="#15231f">12</text><text x="962" y="687" class="sans small muted">18 KB</text>
+    <text x="924" y="730" class="sans" font-size="10" fill="#81908a">Privacidade</text><text x="1170" y="730" class="sans" font-size="10" fill="#81908a">v0.2.1</text>
+  </g>
+</svg>
