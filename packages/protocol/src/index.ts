@@ -33,6 +33,12 @@ export const ErrorCodeSchema = z.enum([
 ]);
 
 export const ProgressStageSchema = z.enum(['transcribing', 'formatting']);
+export const AudioMimeTypeSchema = z.enum([
+  'audio/ogg',
+  'audio/webm',
+  'audio/wav',
+  'audio/mpeg',
+]);
 
 export const TranscriptionResultSchema = z.strictObject({
   text: z.string().min(1).max(MAX_TRANSCRIPT_CHARS),
@@ -50,7 +56,7 @@ export const TranscriptionResultSchema = z.strictObject({
 export const TranscriptionCommandSchema = z.discriminatedUnion('type', [
   JobSchema.extend({
     type: z.literal('audio.begin'),
-    mimeType: z.string().min(1).max(128),
+    mimeType: AudioMimeTypeSchema,
     totalBytes: z.number().int().positive().max(MAX_AUDIO_BYTES),
     language: z.string().min(2).max(32).nullable(),
   }),

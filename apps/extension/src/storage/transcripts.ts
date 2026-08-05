@@ -62,6 +62,11 @@ export async function putTranscript(
     updatedAt: now,
     lastAccessedAt: now,
   };
+  const recordBytes = encodedSize(record);
+  if (recordBytes > MAX_CACHE_BYTES) {
+    throw new Error('A transcrição excede o espaço reservado para o cache.');
+  }
+  await pruneCache({ messageKeyHash, bytes: recordBytes });
   await browser.storage.local.set({ [key]: record });
   await pruneCache();
   return record;
@@ -90,19 +95,24 @@ export async function markCaptureNoticeSeen() {
   await browser.storage.local.set({ [NOTICE_KEY]: true });
 }
 
-async function pruneCache() {
-  const records = (await allRecords()).sort(
-    (a, b) => b.lastAccessedAt - a.lastAccessedAt,
-  );
-  let bytes = 0;
+async function pruneCache(reservation?: {
+  messageKeyHash: string;
+  bytes: number;
+}) {
+  const records = (await allRecords())
+    .filter((record) => record.messageKeyHash !== reservation?.messageKeyHash)
+    .sort((a, b) => b.lastAccessedAt - a.lastAccessedAt);
+  let bytes = reservation?.bytes ?? 0;
+  let count = reservation ? 1 : 0;
   const remove: string[] = [];
-  for (const [index, record] of records.entries()) {
+  for (const record of records) {
     const recordBytes = encodedSize(record);
-    if (index >= MAX_RECORDS || bytes + recordBytes > MAX_CACHE_BYTES) {
+    if (count >= MAX_RECORDS || bytes + recordBytes > MAX_CACHE_BYTES) {
       remove.push(`${PREFIX}${record.messageKeyHash}`);
       continue;
     }
     bytes += recordBytes;
+    count += 1;
   }
   if (remove.length) await browser.storage.local.remove(remove);
 }

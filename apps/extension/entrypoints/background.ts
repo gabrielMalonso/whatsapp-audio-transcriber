@@ -7,7 +7,7 @@ import {
   type ErrorCode,
   type TranscriptionEvent,
 } from '@wat/protocol';
-import { browser } from 'wxt/browser';
+import { browser, type Browser } from 'wxt/browser';
 import { TRANSCRIPTION_PORT_NAME } from '../src/messaging/constants';
 import { GroqProvider, GroqProviderError } from '../src/providers/groq';
 import type {
@@ -23,6 +23,7 @@ import {
 
 type ContentPort = ReturnType<typeof browser.runtime.connect>;
 type JobStatus = 'assembling' | 'queued' | 'running';
+const ASSEMBLY_TIMEOUT_MS = 30_000;
 
 type Job = {
   id: string;
@@ -35,6 +36,7 @@ type Job = {
   nextIndex: number;
   status: JobStatus;
   controller: AbortController;
+  assemblyTimeout: number | null;
 };
 
 export default defineBackground(() => {
@@ -61,15 +63,18 @@ export default defineBackground(() => {
 
       const command = parsed.data;
       if (command.type === 'audio.begin') begin(command, contentPort);
-      if (command.type === 'audio.chunk') append(command);
-      if (command.type === 'audio.end') enqueue(command.jobId);
-      if (command.type === 'transcription.cancel') cancel(command.jobId);
+      if (command.type === 'audio.chunk') append(command, contentPort);
+      if (command.type === 'audio.end') enqueue(command.jobId, contentPort);
+      if (command.type === 'transcription.cancel') {
+        cancel(command.jobId, contentPort);
+      }
     });
 
     contentPort.onDisconnect.addListener(() => {
       for (const job of jobs.values()) {
         if (job.owner !== contentPort) continue;
         job.controller.abort();
+        clearAssemblyTimeout(job);
         jobs.delete(job.id);
       }
     });
@@ -78,7 +83,7 @@ export default defineBackground(() => {
   browser.runtime.onMessage.addListener(
     // The returned promise carries the asynchronous response back to the popup.
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    (message: unknown) => handlePopupMessage(message),
+    (message: unknown, sender) => handlePopupMessage(message, sender),
   );
 
   function begin(
@@ -108,7 +113,7 @@ export default defineBackground(() => {
       );
       return;
     }
-    jobs.set(command.jobId, {
+    const job: Job = {
       id: command.jobId,
       owner,
       mimeType: command.mimeType,
@@ -119,7 +124,14 @@ export default defineBackground(() => {
       nextIndex: 0,
       status: 'assembling',
       controller: new AbortController(),
-    });
+      assemblyTimeout: null,
+    };
+    jobs.set(command.jobId, job);
+    job.assemblyTimeout = globalThis.setTimeout(() => {
+      if (jobs.get(job.id) === job && job.status === 'assembling') {
+        failAssembly(job, 'O envio do áudio demorou além do limite permitido.');
+      }
+    }, ASSEMBLY_TIMEOUT_MS);
   }
 
   function append(
@@ -127,8 +139,19 @@ export default defineBackground(() => {
       ReturnType<typeof TranscriptionCommandSchema.parse>,
       { type: 'audio.chunk' }
     >,
+    owner: ContentPort,
   ) {
     const job = jobs.get(command.jobId);
+    if (job && job.owner !== owner) {
+      postError(
+        owner,
+        command.jobId,
+        'INVALID_MESSAGE',
+        'Este trabalho pertence a outra conexão.',
+        false,
+      );
+      return;
+    }
     if (
       !job ||
       job.status !== 'assembling' ||
@@ -156,8 +179,18 @@ export default defineBackground(() => {
     job.nextIndex += 1;
   }
 
-  function enqueue(jobId: string) {
+  function enqueue(jobId: string, owner: ContentPort) {
     const job = jobs.get(jobId);
+    if (job && job.owner !== owner) {
+      postError(
+        owner,
+        jobId,
+        'INVALID_MESSAGE',
+        'Este trabalho pertence a outra conexão.',
+        false,
+      );
+      return;
+    }
     if (
       !job ||
       job.status !== 'assembling' ||
@@ -166,6 +199,7 @@ export default defineBackground(() => {
       if (job) failAssembly(job, 'O áudio chegou incompleto.');
       return;
     }
+    clearAssemblyTimeout(job);
     job.status = 'queued';
     waiting.push(job.id);
     safePost(job.owner, {
@@ -176,10 +210,11 @@ export default defineBackground(() => {
     drain();
   }
 
-  function cancel(jobId: string) {
+  function cancel(jobId: string, owner: ContentPort) {
     const job = jobs.get(jobId);
-    if (!job) return;
+    if (!job || job.owner !== owner) return;
     job.controller.abort();
+    clearAssemblyTimeout(job);
     if (job.status !== 'running') {
       jobs.delete(job.id);
       safePost(job.owner, {
@@ -201,6 +236,7 @@ export default defineBackground(() => {
     activeJobId = job.id;
     job.status = 'running';
     void execute(job).finally(() => {
+      clearAssemblyTimeout(job);
       jobs.delete(job.id);
       activeJobId = null;
       drain();
@@ -271,12 +307,28 @@ export default defineBackground(() => {
   }
 
   function failAssembly(job: Job, message: string) {
+    clearAssemblyTimeout(job);
     jobs.delete(job.id);
     postError(job.owner, job.id, 'INVALID_MESSAGE', message, false);
   }
+
+  function clearAssemblyTimeout(job: Job) {
+    if (job.assemblyTimeout === null) return;
+    globalThis.clearTimeout(job.assemblyTimeout);
+    job.assemblyTimeout = null;
+  }
 });
 
-async function handlePopupMessage(message: unknown) {
+async function handlePopupMessage(
+  message: unknown,
+  sender: Browser.runtime.MessageSender,
+) {
+  if (
+    sender.id !== browser.runtime.id ||
+    sender.url !== browser.runtime.getURL('/popup.html')
+  ) {
+    return undefined;
+  }
   if (!message || typeof message !== 'object' || !('type' in message)) {
     return undefined;
   }

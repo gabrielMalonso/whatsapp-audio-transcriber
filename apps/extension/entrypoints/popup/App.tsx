@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { browser } from 'wxt/browser';
 import {
   DEFAULT_FORMATTING_SETTINGS,
+  formattingSettingsKey,
   type FormattingSettings,
   type FormattingTone,
 } from '../../src/formatting/settings';
@@ -46,6 +47,7 @@ export function App() {
     DEFAULT_FORMATTING_SETTINGS,
   );
   const [formattingLoaded, setFormattingLoaded] = useState(false);
+  const [operationError, setOperationError] = useState('');
 
   const applyStatus = (status: GroqStatus) => {
     setLoaded(true);
@@ -62,18 +64,30 @@ export function App() {
 
   const refresh = useCallback(async () => {
     setHealth('checking');
-    const [response, stats, formattingSettings] = await Promise.all([
-      browser.runtime.sendMessage<{ type: 'wat.groq.status' }, GroqStatus>({
-        type: 'wat.groq.status',
-      }),
-      cacheStats(),
-      getFormattingSettings(),
-    ]);
-    setCount(stats.count);
-    setBytes(stats.bytes);
-    setFormatting(formattingSettings);
+    setOperationError('');
+    const [statusResult, statsResult, formattingResult] =
+      await Promise.allSettled([
+        browser.runtime.sendMessage<{ type: 'wat.groq.status' }, GroqStatus>({
+          type: 'wat.groq.status',
+        }),
+        cacheStats(),
+        getFormattingSettings(),
+      ]);
+    if (statsResult.status === 'fulfilled') {
+      setCount(statsResult.value.count);
+      setBytes(statsResult.value.bytes);
+    }
+    if (formattingResult.status === 'fulfilled') {
+      setFormatting(formattingResult.value);
+    }
     setFormattingLoaded(true);
-    applyStatus(response);
+    if (statusResult.status === 'fulfilled') {
+      applyStatus(statusResult.value);
+    } else {
+      setLoaded(true);
+      setHealth('unavailable');
+      setDetail('Não foi possível consultar o service worker da extensão.');
+    }
   }, []);
 
   useEffect(() => {
@@ -88,45 +102,68 @@ export function App() {
     }
     setSaving(true);
     setFormError('');
-    const response = await browser.runtime.sendMessage<
-      { type: 'wat.groq.save-key'; apiKey: string },
-      GroqConfigurationResponse
-    >({
-      type: 'wat.groq.save-key',
-      apiKey: apiKey.trim(),
-    });
-    setSaving(false);
-    if (!response.saved) {
-      setFormError(response.message);
-      return;
+    try {
+      const response = await browser.runtime.sendMessage<
+        { type: 'wat.groq.save-key'; apiKey: string },
+        GroqConfigurationResponse
+      >({
+        type: 'wat.groq.save-key',
+        apiKey: apiKey.trim(),
+      });
+      if (!response.saved) {
+        setFormError(response.message);
+        return;
+      }
+      setApiKey('');
+      setEditing(false);
+      applyStatus(response);
+    } catch {
+      setFormError('Não foi possível salvar a chave. Tente novamente.');
+    } finally {
+      setSaving(false);
     }
-    setApiKey('');
-    setEditing(false);
-    applyStatus(response);
   };
 
   const removeKey = async () => {
     if (!window.confirm('Remover a API key salva nesta extensão?')) return;
-    const response = await browser.runtime.sendMessage<
-      { type: 'wat.groq.remove-key' },
-      GroqStatus
-    >({ type: 'wat.groq.remove-key' });
-    setApiKey('');
-    setEditing(true);
-    applyStatus(response);
+    setOperationError('');
+    try {
+      const response = await browser.runtime.sendMessage<
+        { type: 'wat.groq.remove-key' },
+        GroqStatus
+      >({ type: 'wat.groq.remove-key' });
+      setApiKey('');
+      setEditing(true);
+      applyStatus(response);
+    } catch {
+      setOperationError('Não foi possível remover a API key.');
+    }
   };
 
   const clearCache = async () => {
     if (!window.confirm('Apagar todas as transcrições salvas?')) return;
-    await clearTranscriptCache();
-    setCount(0);
-    setBytes(0);
+    setOperationError('');
+    try {
+      await clearTranscriptCache();
+      setCount(0);
+      setBytes(0);
+    } catch {
+      setOperationError('Não foi possível limpar as transcrições salvas.');
+    }
   };
 
   const updateFormatting = (change: Partial<FormattingSettings>) => {
     const next = { ...formatting, ...change };
     setFormatting(next);
-    void saveFormattingSettings(next);
+    setOperationError('');
+    void saveFormattingSettings(next).catch(() => {
+      setFormatting((current) =>
+        formattingSettingsKey(current) === formattingSettingsKey(next)
+          ? formatting
+          : current,
+      );
+      setOperationError('Não foi possível salvar as opções de formatação.');
+    });
   };
 
   return (
@@ -378,11 +415,17 @@ export function App() {
         </button>
       </section>
 
+      {operationError && (
+        <p className="operation-error" role="alert">
+          {operationError}
+        </p>
+      )}
+
       <footer
         className="reveal"
         style={{ '--d': '300ms' } as React.CSSProperties}
       >
-        <span>v0.2</span>
+        <span>v0.2.1</span>
       </footer>
     </main>
   );

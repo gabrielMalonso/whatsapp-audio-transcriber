@@ -20,6 +20,19 @@ describe('transcription protocol', () => {
     ).toMatchObject({ type: 'audio.chunk', index: 0 });
   });
 
+  it('rejects unsupported audio MIME types', () => {
+    expect(() =>
+      TranscriptionCommandSchema.parse({
+        v: PROTOCOL_VERSION,
+        type: 'audio.begin',
+        jobId: 'job-1',
+        mimeType: 'text/html',
+        totalBytes: 4,
+        language: null,
+      }),
+    ).toThrow();
+  });
+
   it('accepts the Groq pipeline result', () => {
     expect(
       TranscriptionEventSchema.parse({

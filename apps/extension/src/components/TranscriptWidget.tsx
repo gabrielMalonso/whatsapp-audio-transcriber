@@ -1,4 +1,8 @@
-import type { ProgressStage, TranscriptionEvent } from '@wat/protocol';
+import type {
+  ProgressStage,
+  TranscriptionEvent,
+  TranscriptionResult,
+} from '@wat/protocol';
 import {
   AlignLeft,
   BotMessageSquare,
@@ -216,9 +220,11 @@ export function TranscriptWidget({
   const [stage, setStage] = useState<ProgressStage>('transcribing');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [cacheWarning, setCacheWarning] = useState('');
   const [shellVisible, setShellVisible] = useState(false);
   const [shellOpen, setShellOpen] = useState(false);
   const jobRef = useRef<string | null>(null);
+  const captureRef = useRef<AbortController | null>(null);
   const cancelledRef = useRef(false);
   const lastViewRef = useRef<PanelView>('status');
 
@@ -255,7 +261,11 @@ export function TranscriptWidget({
     });
     return () => {
       active = false;
-      if (jobRef.current) transcriptionClient.cancel(jobRef.current);
+      captureRef.current?.abort();
+      if (jobRef.current) {
+        transcriptionClient.cancel(jobRef.current);
+        transcriptionClient.release(jobRef.current);
+      }
     };
   }, [message.id]);
 
@@ -272,6 +282,7 @@ export function TranscriptWidget({
         return;
       }
       setRecord(null);
+      setCacheWarning('');
       setExpanded(false);
       setPhase('idle');
     };
@@ -296,24 +307,34 @@ export function TranscriptWidget({
   };
 
   const beginTranscription = async () => {
+    captureRef.current?.abort();
+    const captureController = new AbortController();
+    captureRef.current = captureController;
     cancelledRef.current = false;
     setError('');
+    setCacheWarning('');
     setPhase('capturing');
     try {
-      const audio = await captureVoiceAudio(message.transportButton);
-      if (cancelledRef.current) return;
-      const jobId = await transcriptionClient.transcribe(audio, {
+      const audio = await captureVoiceAudio(
+        message.transportButton,
+        captureController.signal,
+      );
+      if (cancelledRef.current || captureController.signal.aborted) return;
+      const jobId = transcriptionClient.transcribe(audio, {
         onMessage: handleHostMessage,
       });
       jobRef.current = jobId;
       setPhase('queued');
     } catch (caught) {
+      if (captureController.signal.aborted) return;
       setError(
         caught instanceof Error
           ? caught.message
           : 'Não foi possível iniciar a transcrição.',
       );
       setPhase('error');
+    } finally {
+      if (captureRef.current === captureController) captureRef.current = null;
     }
   };
 
@@ -324,11 +345,19 @@ export function TranscriptWidget({
       setPhase('working');
     }
     if (hostMessage.type === 'job.complete') {
-      void putTranscript(messageHash, hostMessage.result).then((saved) => {
-        setRecord(saved);
-        setExpanded(true);
-        setPhase('success');
-      });
+      setRecord(transientRecord(messageHash, hostMessage.result));
+      setExpanded(true);
+      setPhase('success');
+      void putTranscript(messageHash, hostMessage.result)
+        .then((saved) => {
+          setRecord(saved);
+          setCacheWarning('');
+        })
+        .catch(() => {
+          setCacheWarning(
+            'A transcrição está disponível, mas não pôde ser salva no cache.',
+          );
+        });
       finishJob(hostMessage.jobId);
     }
     if (hostMessage.type === 'job.error') {
@@ -349,7 +378,12 @@ export function TranscriptWidget({
 
   const cancel = () => {
     cancelledRef.current = true;
-    if (jobRef.current) transcriptionClient.cancel(jobRef.current);
+    captureRef.current?.abort();
+    if (jobRef.current) {
+      const jobId = jobRef.current;
+      transcriptionClient.cancel(jobId);
+      finishJob(jobId);
+    }
     setExpanded(false);
     setPhase(record ? 'success' : 'idle');
   };
@@ -378,11 +412,11 @@ export function TranscriptWidget({
         <button
           className={`trigger icon-only${phase === 'success' ? ' ready' : ''}`}
           type="button"
-          onClick={
-            phase === 'idle'
-              ? () => void requestTranscription()
-              : () => setExpanded(true)
-          }
+          onClick={(event) => {
+            if (!isTrustedUserAction(event)) return;
+            if (phase === 'idle') void requestTranscription();
+            else setExpanded(true);
+          }}
           aria-label={phase === 'idle' ? 'Transcrever' : 'Ver transcrição'}
           title={phase === 'idle' ? 'Transcrever' : 'Ver transcrição'}
         >
@@ -429,7 +463,9 @@ export function TranscriptWidget({
                       <button
                         className="primary"
                         type="button"
-                        onClick={() => void acceptNotice()}
+                        onClick={(event) => {
+                          if (isTrustedUserAction(event)) void acceptNotice();
+                        }}
                       >
                         Continuar
                       </button>
@@ -472,7 +508,11 @@ export function TranscriptWidget({
                       <button
                         className="primary"
                         type="button"
-                        onClick={() => void beginTranscription()}
+                        onClick={(event) => {
+                          if (isTrustedUserAction(event)) {
+                            void beginTranscription();
+                          }
+                        }}
                       >
                         Tentar novamente
                       </button>
@@ -497,6 +537,9 @@ export function TranscriptWidget({
                       </button>
                     </div>
                     <p className="transcript">{record.text}</p>
+                    {cacheWarning && (
+                      <p className="cache-warning">{cacheWarning}</p>
+                    )}
                     <div className="transcript-foot">
                       <div className="inline-actions">
                         <button
@@ -515,7 +558,11 @@ export function TranscriptWidget({
                         <button
                           className="icon-button"
                           type="button"
-                          onClick={() => void beginTranscription()}
+                          onClick={(event) => {
+                            if (isTrustedUserAction(event)) {
+                              void beginTranscription();
+                            }
+                          }}
                           aria-label="Refazer"
                           title="Refazer"
                         >
@@ -551,4 +598,25 @@ function resolvePanelView(
 function statusLabel(phase: Phase, stage: ProgressStage) {
   if (stage === 'formatting' && phase === 'working') return 'Formatando…';
   return 'Transcrevendo…';
+}
+
+export function isTrustedUserAction(event: {
+  nativeEvent: Pick<Event, 'isTrusted'>;
+}): boolean {
+  return event.nativeEvent.isTrusted;
+}
+
+function transientRecord(
+  messageKeyHash: string,
+  result: TranscriptionResult,
+): TranscriptRecord {
+  const now = Date.now();
+  return {
+    ...result,
+    schemaVersion: 2,
+    messageKeyHash,
+    createdAt: now,
+    updatedAt: now,
+    lastAccessedAt: now,
+  };
 }

@@ -9,6 +9,14 @@ As mudanças relevantes deste projeto serão documentadas neste arquivo. O forma
 - ESLint com regras tipadas para TypeScript e validação oficial dos Hooks do React;
 - verificação de lint na integração contínua.
 
+### Corrigido
+
+- cancelamento imediato durante a captura e a montagem do áudio;
+- validação do arquivo capturado e isolamento do canal acionado pela página;
+- timeout, ownership e limpeza dos trabalhos ainda incompletos;
+- exibição do resultado mesmo quando a persistência no cache falha;
+- tratamento de falhas assíncronas no popup e pré-liberação do cache.
+
 ## 0.2.0 - 2026-08-04
 
 ### Adicionado

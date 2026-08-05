@@ -144,7 +144,7 @@ function teardown(widget: MountedWidget | undefined) {
 }
 
 function attachShadowApp(host: HTMLElement): HTMLElement {
-  const shadow = host.attachShadow({ mode: 'open' });
+  const shadow = host.attachShadow({ mode: 'closed' });
   const stylesheet = document.createElement('style');
   stylesheet.textContent = styles;
   const app = document.createElement('div');

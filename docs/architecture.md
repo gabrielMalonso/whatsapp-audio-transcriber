@@ -2,14 +2,15 @@
 
 ## Componentes
 
-| Componente                 | Responsabilidade                                                                                                     |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `whatsapp-main.content.ts` | Intercepta `HTMLMediaElement.play` no contexto MAIN, lê o `Blob` e bloqueia a reprodução durante uma captura armada. |
-| `whatsapp.content`         | Observa o DOM, encontra mensagens de voz e monta a UI React em Shadow DOM.                                           |
-| `transcriptionClient.ts`   | Divide o áudio em blocos base64 e mantém um `runtime.Port` com o service worker.                                     |
-| `background.ts`            | Remonta o áudio, mantém a fila serial, permite cancelamento e executa o provider.                                    |
-| `GroqProvider`             | Faz a transcrição com Whisper e passa o texto bruto para formatação estruturada pelo GPT-OSS.                        |
-| `packages/protocol`        | Define contratos Zod, modelos, estados, limites e erros compartilhados.                                              |
+| Componente                 | Responsabilidade                                                                                            |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `whatsapp-main.content.ts` | Intercepta `HTMLMediaElement.play` no contexto MAIN e aceita somente fontes `blob:` do próprio WhatsApp.    |
+| `whatsapp.content`         | Exige ações reais do usuário e monta a UI React em Shadow DOM fechado.                                      |
+| `pageBridge.ts`            | Arma a captura, permite cancelamento e valida tamanho, contêiner e assinatura do áudio recebido.            |
+| `transcriptionClient.ts`   | Divide o áudio em blocos com backpressure, cancelamento imediato e um `runtime.Port` com o service worker.  |
+| `background.ts`            | Remonta o áudio, valida ownership, expira montagens incompletas, mantém a fila serial e executa o provider. |
+| `GroqProvider`             | Faz a transcrição com Whisper e passa o texto bruto para formatação estruturada pelo GPT-OSS.               |
+| `packages/protocol`        | Define contratos Zod, modelos, estados, limites e erros compartilhados.                                     |
 
 ## Fluxo
 

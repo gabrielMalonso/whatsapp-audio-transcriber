@@ -5,6 +5,8 @@ type ActiveCapture = {
   expiresAt: number;
 };
 
+const MAX_CAPTURE_BYTES = 25 * 1024 * 1024;
+
 export default defineContentScript({
   matches: ['https://web.whatsapp.com/*'],
   runAt: 'document_start',
@@ -29,9 +31,9 @@ export default defineContentScript({
 
       activeCapture = null;
       const source = this.currentSrc || this.src;
-      if (!source) {
+      if (!isWhatsAppBlobSource(source)) {
         post('error', capture.requestId, {
-          message: 'A mensagem ainda não disponibilizou uma fonte de áudio.',
+          message: 'A mensagem não disponibilizou um áudio local válido.',
         });
         return Promise.resolve();
       }
@@ -43,6 +45,9 @@ export default defineContentScript({
         })
         .then((blob) => {
           if (!blob.size) throw new Error('O áudio recebido está vazio.');
+          if (blob.size > MAX_CAPTURE_BYTES) {
+            throw new Error('O áudio excede o limite de 25 MB.');
+          }
           post('capture', capture.requestId, { blob });
         })
         .catch((error: unknown) => {
@@ -85,7 +90,7 @@ export default defineContentScript({
           requestId: data.requestId,
           expiresAt: Date.now() + timeoutMs,
         };
-        post('response', data.requestId);
+        post('response', data.requestId, { action: 'arm' });
       }
 
       if (
@@ -94,7 +99,7 @@ export default defineContentScript({
         activeCapture?.requestId === data.requestId
       ) {
         activeCapture = null;
-        post('response', data.requestId);
+        post('response', data.requestId, { action: 'disarm' });
       }
     });
 
@@ -110,8 +115,19 @@ export default defineContentScript({
           requestId,
           ...payload,
         },
-        '*',
+        window.location.origin,
       );
+    }
+
+    function isWhatsAppBlobSource(source: string): boolean {
+      try {
+        const url = new URL(source);
+        return (
+          url.protocol === 'blob:' && url.origin === window.location.origin
+        );
+      } catch {
+        return false;
+      }
     }
   },
 });

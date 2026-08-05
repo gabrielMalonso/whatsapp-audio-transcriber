@@ -175,14 +175,20 @@ button {
 
 .notice-copy,
 .error-copy,
+.cache-warning,
 .transcript {
   margin: 7px 0 0;
 }
 
 .notice-copy,
-.error-copy {
+.error-copy,
+.cache-warning {
   color: var(--secondary, #54656f);
   font-size: 12.5px;
+}
+
+.cache-warning {
+  color: #b26a00;
 }
 
 .actions {

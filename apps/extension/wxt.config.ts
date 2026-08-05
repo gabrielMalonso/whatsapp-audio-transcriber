@@ -6,7 +6,7 @@ export default defineConfig({
     name: 'Transcrição de áudios do WhatsApp',
     description:
       'Transcreve e formata mensagens de voz usando Whisper e GPT-OSS na Groq.',
-    version: '0.2.0',
+    version: '0.2.1',
     permissions: ['storage'],
     host_permissions: ['https://web.whatsapp.com/*', 'https://api.groq.com/*'],
     action: {
