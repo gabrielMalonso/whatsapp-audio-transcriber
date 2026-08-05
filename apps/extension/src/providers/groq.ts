@@ -205,7 +205,6 @@ export class GroqProvider implements TranscriptionProvider {
     }
     const text = postProcessFormattedText(
       chat.data.choices[0]!.message.content,
-      this.formattingSettings,
     );
     if (!text) {
       throw new GroqProviderError(

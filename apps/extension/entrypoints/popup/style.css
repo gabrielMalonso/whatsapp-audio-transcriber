@@ -285,84 +285,16 @@ h1 {
 }
 
 .formatting-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
   padding: 13px 13px 11px;
 }
 
-.formatting-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-}
-
-.formatting-mark {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--green) 16%, transparent);
-  border-radius: 9px;
-  background: var(--green-soft);
-  color: var(--green-deep);
-}
-
-.formatting-title h2,
-.formatting-title p {
+.formatting-heading h2 {
   margin: 0;
-}
-
-.formatting-title h2 {
   font-family: Fraunces, Georgia, serif;
   font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.1;
-}
-
-.formatting-title p {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.3;
-}
-
-.save-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  flex: 0 0 auto;
-  color: #7b8e87;
-  font-size: 9px;
-  font-weight: 500;
-}
-
-.save-state::before {
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: #a8b7b2;
-  content: '';
-}
-
-.save-state.saved::before {
-  background: var(--green);
-}
-
-.save-state.saving::before {
-  animation: pulse 600ms ease-in-out infinite alternate;
-}
-
-.save-state.error {
-  color: var(--danger);
-}
-
-.save-state.error::before {
-  background: var(--danger);
 }
 
 .tone-block {
@@ -438,10 +370,10 @@ h1 {
 .formatting-option {
   display: grid;
   width: 100%;
-  grid-template-columns: 28px 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 9px;
-  padding: 8px 13px;
+  gap: 12px;
+  padding: 9px 13px;
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
   background: transparent;
@@ -457,32 +389,6 @@ h1 {
 
 .formatting-option:hover {
   background: color-mix(in srgb, var(--green) 5%, transparent);
-}
-
-.option-icon {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--ink) 5%, transparent);
-  color: var(--muted);
-  transition:
-    background 140ms ease,
-    color 140ms ease;
-}
-
-.formatting-option[aria-checked='true'] .option-icon {
-  background: var(--green-soft);
-  color: var(--green-deep);
-}
-
-.period-icon {
-  height: 18px;
-  font-family: Fraunces, Georgia, serif;
-  font-size: 23px;
-  font-weight: 600;
-  line-height: 0.45;
 }
 
 .option-copy {
@@ -829,8 +735,7 @@ footer {
   .spin,
   .status-dot.checking,
   .key-loading span,
-  .formatting-loading span,
-  .save-state.saving::before {
+  .formatting-loading span {
     animation: none;
   }
 }

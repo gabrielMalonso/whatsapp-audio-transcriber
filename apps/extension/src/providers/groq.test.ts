@@ -45,13 +45,13 @@ describe('GroqProvider', () => {
 
     expect(stages).toEqual(['transcribing', 'formatting']);
     expect(result).toMatchObject({
-      text: 'Oi, tudo bem? Isso é um teste que eu gravei agora no WhatsApp',
+      text: 'Oi, tudo bem? Isso é um teste que eu gravei agora no WhatsApp.',
       rawText: 'oi tudo bem isso é um teste que eu gravei agora no WhatsApp',
       language: 'pt',
       durationMs: 2_400,
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
       formattingModel: GROQ_FORMATTING_MODEL,
-      formattingSettingsKey: 'v1:natural:11111',
+      formattingSettingsKey: 'v1:natural:1111',
     });
     expect(fetcher).toHaveBeenCalledTimes(2);
     expect(fetcher.mock.calls[0]?.[0]).toContain('/audio/transcriptions');

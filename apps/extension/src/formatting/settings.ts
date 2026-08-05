@@ -3,7 +3,6 @@ export type FormattingTone = 'colloquial' | 'natural' | 'formal';
 export type FormattingSettings = {
   tone: FormattingTone;
   addParagraphs: boolean;
-  removeFinalPeriod: boolean;
   formatDates: boolean;
   formatTimes: boolean;
   formatLists: boolean;
@@ -12,7 +11,6 @@ export type FormattingSettings = {
 export const DEFAULT_FORMATTING_SETTINGS: FormattingSettings = {
   tone: 'natural',
   addParagraphs: true,
-  removeFinalPeriod: true,
   formatDates: true,
   formatTimes: true,
   formatLists: true,
@@ -117,30 +115,18 @@ export function wrapTranscription(text: string): string {
   return `<transcription>\n${escaped}\n</transcription>`;
 }
 
-export function postProcessFormattedText(
-  text: string,
-  options: Pick<FormattingSettings, 'removeFinalPeriod'>,
-): string {
-  let result = text
+export function postProcessFormattedText(text: string): string {
+  return text
     .replace(
       /<\/?(transcription|rules|task|output-rules|role|instruction_priority|output-contract|guardrail)(\s[^>]*)?>/g,
       '',
     )
     .trim();
-  if (options.removeFinalPeriod) {
-    result = result
-      .split('\n')
-      .map((line) => line.replace(/(?<!\.)\.(\s*)$/, '$1'))
-      .join('\n')
-      .trimEnd();
-  }
-  return result;
 }
 
 export function formattingSettingsKey(options: FormattingSettings): string {
   const flags = [
     options.addParagraphs,
-    options.removeFinalPeriod,
     options.formatDates,
     options.formatTimes,
     options.formatLists,

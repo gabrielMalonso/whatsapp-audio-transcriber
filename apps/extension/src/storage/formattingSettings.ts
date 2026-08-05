@@ -7,10 +7,9 @@ import {
 
 export const FORMATTING_SETTINGS_STORAGE_KEY = 'wat.formatting-settings.v1';
 
-const FormattingSettingsSchema = z.strictObject({
+const FormattingSettingsSchema = z.object({
   tone: z.enum(['colloquial', 'natural', 'formal']),
   addParagraphs: z.boolean(),
-  removeFinalPeriod: z.boolean(),
   formatDates: z.boolean(),
   formatTimes: z.boolean(),
   formatLists: z.boolean(),

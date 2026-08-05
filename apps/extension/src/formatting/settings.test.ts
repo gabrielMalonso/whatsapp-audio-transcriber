@@ -37,13 +37,12 @@ describe('formatting settings', () => {
     expect(prompt).toContain('3. Contrato de saída (sempre)');
   });
 
-  it('removes only a single final period from each line', () => {
+  it('strips residual prompt markup from the model output', () => {
     expect(
       postProcessFormattedText(
-        'Primeira linha.\nPergunta?\nReticências...\nÚltima linha.',
-        { removeFinalPeriod: true },
+        '<transcription>Primeira linha.\nÚltima linha.</transcription>',
       ),
-    ).toBe('Primeira linha\nPergunta?\nReticências...\nÚltima linha');
+    ).toBe('Primeira linha.\nÚltima linha.');
   });
 
   it('wraps spoken markup as transcription data', () => {
@@ -54,7 +53,7 @@ describe('formatting settings', () => {
 
   it('creates a stable cache key from all controls', () => {
     expect(formattingSettingsKey(DEFAULT_FORMATTING_SETTINGS)).toBe(
-      'v1:natural:11111',
+      'v1:natural:1111',
     );
   });
 });

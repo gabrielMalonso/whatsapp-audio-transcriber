@@ -32,7 +32,7 @@ Tudo acontece entre o navegador e a Groq: o projeto não opera servidor intermed
 - transcrição integrada à interface do WhatsApp Web;
 - detecção automática do idioma do áudio;
 - tom coloquial, natural ou formal;
-- ajustes opcionais de parágrafos, ponto final, datas, horas e listas;
+- ajustes opcionais de parágrafos, datas, horas e listas;
 - formatação sem responder, resumir ou traduzir o conteúdo;
 - captura sem reprodução audível da mensagem de voz;
 - fila local com cancelamento e indicação de progresso;

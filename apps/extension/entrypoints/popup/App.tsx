@@ -1,23 +1,12 @@
 import {
-  AlignLeft,
-  CalendarDays,
-  Clock3,
   Eye,
   EyeOff,
   ExternalLink,
   KeyRound,
-  List,
   RefreshCw,
-  SlidersHorizontal,
   Trash2,
 } from 'lucide-react';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { browser } from 'wxt/browser';
 import {
   DEFAULT_FORMATTING_SETTINGS,
@@ -39,7 +28,6 @@ import {
 import appIcon from '../../assets/icon.png';
 
 type Health = 'checking' | 'ready' | 'unavailable' | 'unconfigured';
-type FormattingSaveState = 'loading' | 'saved' | 'saving' | 'error';
 
 const iconSm = { 'aria-hidden': true, size: 14, strokeWidth: 1.75 } as const;
 
@@ -57,9 +45,7 @@ export function App() {
   const [formatting, setFormatting] = useState<FormattingSettings>(
     DEFAULT_FORMATTING_SETTINGS,
   );
-  const [formattingSaveState, setFormattingSaveState] =
-    useState<FormattingSaveState>('loading');
-  const formattingSaveVersion = useRef(0);
+  const [formattingLoaded, setFormattingLoaded] = useState(false);
 
   const applyStatus = (status: GroqStatus) => {
     setLoaded(true);
@@ -86,7 +72,7 @@ export function App() {
     setCount(stats.count);
     setBytes(stats.bytes);
     setFormatting(formattingSettings);
-    setFormattingSaveState('saved');
+    setFormattingLoaded(true);
     applyStatus(response);
   }, []);
 
@@ -139,21 +125,8 @@ export function App() {
 
   const updateFormatting = (change: Partial<FormattingSettings>) => {
     const next = { ...formatting, ...change };
-    const version = formattingSaveVersion.current + 1;
-    formattingSaveVersion.current = version;
     setFormatting(next);
-    setFormattingSaveState('saving');
-    void saveFormattingSettings(next)
-      .then(() => {
-        if (formattingSaveVersion.current === version) {
-          setFormattingSaveState('saved');
-        }
-      })
-      .catch(() => {
-        if (formattingSaveVersion.current === version) {
-          setFormattingSaveState('error');
-        }
-      });
+    void saveFormattingSettings(next);
   };
 
   return (
@@ -222,25 +195,10 @@ export function App() {
         style={{ '--d': '150ms' } as React.CSSProperties}
       >
         <div className="formatting-heading">
-          <div className="formatting-title">
-            <span className="formatting-mark" aria-hidden="true">
-              <SlidersHorizontal size={15} strokeWidth={1.8} />
-            </span>
-            <div>
-              <h2 id="formatting-title">Formatação</h2>
-              <p>Personalize o texto depois da transcrição</p>
-            </div>
-          </div>
-          <span
-            className={`save-state ${formattingSaveState}`}
-            role="status"
-            aria-live="polite"
-          >
-            {formattingSaveLabel(formattingSaveState)}
-          </span>
+          <h2 id="formatting-title">Formatação</h2>
         </div>
 
-        {formattingSaveState === 'loading' ? (
+        {!formattingLoaded ? (
           <div className="formatting-loading" aria-label="Carregando ajustes">
             <span />
             <span />
@@ -273,7 +231,6 @@ export function App() {
 
             <div className="formatting-options">
               <FormattingToggle
-                icon={<AlignLeft size={15} strokeWidth={1.8} />}
                 label="Parágrafos"
                 detail="Separa ideias em blocos curtos"
                 checked={formatting.addParagraphs}
@@ -282,30 +239,18 @@ export function App() {
                 }
               />
               <FormattingToggle
-                icon={<span className="period-icon">.</span>}
-                label="Sem ponto final"
-                detail="Remove o último ponto de cada linha"
-                checked={formatting.removeFinalPeriod}
-                onChange={(removeFinalPeriod) =>
-                  updateFormatting({ removeFinalPeriod })
-                }
-              />
-              <FormattingToggle
-                icon={<CalendarDays size={15} strokeWidth={1.8} />}
                 label="Datas"
                 detail="Formata como DD/MM"
                 checked={formatting.formatDates}
                 onChange={(formatDates) => updateFormatting({ formatDates })}
               />
               <FormattingToggle
-                icon={<Clock3 size={15} strokeWidth={1.8} />}
                 label="Horas"
                 detail="Formata como HH:MMh"
                 checked={formatting.formatTimes}
                 onChange={(formatTimes) => updateFormatting({ formatTimes })}
               />
               <FormattingToggle
-                icon={<List size={15} strokeWidth={1.8} />}
                 label="Listas"
                 detail="Cria marcadores ao enumerar itens"
                 checked={formatting.formatLists}
@@ -444,13 +389,11 @@ export function App() {
 }
 
 function FormattingToggle({
-  icon,
   label,
   detail,
   checked,
   onChange,
 }: {
-  icon: ReactNode;
   label: string;
   detail: string;
   checked: boolean;
@@ -464,9 +407,6 @@ function FormattingToggle({
       className="formatting-option"
       onClick={() => onChange(!checked)}
     >
-      <span className="option-icon" aria-hidden="true">
-        {icon}
-      </span>
       <span className="option-copy">
         <strong>{label}</strong>
         <small>{detail}</small>
@@ -495,13 +435,6 @@ function toneDescription(tone: FormattingTone) {
   if (tone === 'colloquial') return 'Preserva gírias e informalidade';
   if (tone === 'formal') return 'Produz um texto escrito mais limpo';
   return 'Remove vícios de fala e mantém leveza';
-}
-
-function formattingSaveLabel(state: FormattingSaveState) {
-  if (state === 'saving') return 'Salvando…';
-  if (state === 'error') return 'Não foi possível salvar';
-  if (state === 'saved') return 'Salvo';
-  return 'Carregando…';
 }
 
 function formatBytes(bytes: number) {
