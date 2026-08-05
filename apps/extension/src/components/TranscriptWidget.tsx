@@ -402,7 +402,10 @@ export function TranscriptWidget({
             contentKey={renderedView}
             onClosed={finishClose}
           >
-            <section className="panel" aria-live="polite">
+            <section
+              className={`panel${renderedView === 'transcript' ? ' transcript-panel' : ''}`}
+              aria-live="polite"
+            >
               <div className="panel-body" key={renderedView}>
                 {renderedView === 'notice' && (
                   <>

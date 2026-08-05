@@ -112,7 +112,7 @@ button {
 }
 
 .panel {
-  width: 100%;
+  width: min(100%, var(--wat-bubble-width, 100%));
   margin-top: 1px;
   padding: 10px 12px;
   border: 0;
@@ -120,6 +120,10 @@ button {
   background: var(--incoming-background, var(--panel-background, #fff));
   box-shadow: none;
   pointer-events: auto;
+}
+
+.panel.transcript-panel {
+  width: 100%;
 }
 
 .panel-shell {
