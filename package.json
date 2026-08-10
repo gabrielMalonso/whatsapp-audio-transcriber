@@ -1,7 +1,7 @@
 {
   "name": "whatsapp-audio-transcriber",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Extensão Chrome open source para transcrever mensagens de voz do WhatsApp Web com a Groq.",
   "license": "MIT",
   "author": "Gabriel Alonso",

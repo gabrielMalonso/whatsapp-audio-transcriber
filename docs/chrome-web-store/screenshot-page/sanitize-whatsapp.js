@@ -493,7 +493,9 @@
   clearPrivateAttributes(footer);
   const composer = footer.querySelector('[contenteditable="true"]');
   if (composer) composer.setAttribute('aria-label', 'Digite uma mensagem');
-  const ownPhoto = document.querySelector('[data-testid="navbar-item-me-tab-photo"]');
+  const ownPhoto = document.querySelector(
+    '[data-testid="navbar-item-me-tab-photo"]',
+  );
   setImage(
     ownPhoto?.matches('img') ? ownPhoto : ownPhoto?.querySelector('img'),
     safeAvatar('EU', '#596b78', '#8ea3af'),
@@ -511,4 +513,4 @@
     viewport: { width: innerWidth, height: innerHeight },
   };
   return window.__watScreenshotModeMetrics;
-}
+};

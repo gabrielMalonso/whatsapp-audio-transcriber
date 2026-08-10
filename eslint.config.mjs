@@ -20,6 +20,12 @@ export default defineConfig(
     },
   },
   {
+    files: ['docs/chrome-web-store/screenshot-page/**/*.js'],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked],
     languageOptions: {
