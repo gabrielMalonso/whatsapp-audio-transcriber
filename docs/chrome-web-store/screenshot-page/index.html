@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>WhatsApp Audio Transcriber — Screenshot</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="symbol-library" aria-hidden="true">
+      <symbol id="icon-chat" viewBox="0 0 24 24">
+        <path
+          d="M20 15a4 4 0 0 1-4 4H8l-5 3 1.6-4.8A7.5 7.5 0 0 1 3 12V8a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4z"
+        />
+      </symbol>
+      <symbol id="icon-phone" viewBox="0 0 24 24">
+        <path
+          d="M7.8 3.5 10 7.8 7.4 10a15 15 0 0 0 6.6 6.6L16.2 14l4.3 2.2-.8 4.1c-.2.9-1 1.5-1.9 1.4C9.7 20.8 3.2 14.3 2.3 6.2c-.1-.9.5-1.7 1.4-1.9z"
+        />
+      </symbol>
+      <symbol id="icon-status" viewBox="0 0 24 24">
+        <path
+          d="M7 3.7A9.5 9.5 0 0 1 12 2m5 1.7A9.5 9.5 0 0 1 22 12m-1.7 5A9.5 9.5 0 0 1 12 22m-5-1.7A9.5 9.5 0 0 1 2 12M2.8 8A9.5 9.5 0 0 1 4 5.8"
+        />
+        <circle cx="12" cy="12" r="3.2" />
+      </symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24">
+        <circle cx="8" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path
+          d="M2.5 20c.3-4 2.2-6 5.5-6s5.2 2 5.5 6m.5-4.8c.8-1 1.8-1.5 3.3-1.5 2.6 0 4 1.6 4.2 4.8"
+        />
+      </symbol>
+      <symbol id="icon-sparkle" viewBox="0 0 24 24">
+        <path
+          d="m12 2 1.3 4.7L18 8l-4.7 1.3L12 14l-1.3-4.7L6 8l4.7-1.3zM19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"
+        />
+      </symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <circle cx="10.8" cy="10.8" r="6.3" />
+        <path d="m15.5 15.5 4.5 4.5" />
+      </symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24">
+        <circle cx="12" cy="5" r="1" />
+        <circle cx="12" cy="12" r="1" />
+        <circle cx="12" cy="19" r="1" />
+      </symbol>
+      <symbol id="icon-video" viewBox="0 0 24 24">
+        <rect x="3" y="6" width="13" height="12" rx="3" />
+        <path d="m16 10 5-3v10l-5-3z" />
+      </symbol>
+      <symbol id="icon-play" viewBox="0 0 24 24">
+        <path d="m9 7 8 5-8 5z" />
+      </symbol>
+      <symbol id="icon-mic" viewBox="0 0 24 24">
+        <rect x="9" y="3" width="6" height="12" rx="3" />
+        <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3m-4 0h8" />
+      </symbol>
+      <symbol id="icon-smile" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9h.01M15 9h.01" />
+      </symbol>
+      <symbol id="icon-attach" viewBox="0 0 24 24">
+        <path
+          d="m9.5 12.5 5.8-5.8a3 3 0 0 1 4.2 4.2l-8.2 8.2a5 5 0 0 1-7.1-7.1l8.2-8.2"
+        />
+      </symbol>
+      <symbol id="icon-copy" viewBox="0 0 24 24">
+        <rect x="8" y="8" width="11" height="11" rx="2" />
+        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+      </symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24">
+        <path d="M20 7v5h-5M4 17v-5h5" />
+        <path d="M18.4 9A7 7 0 0 0 6.2 6.2L4 9m2 6a7 7 0 0 0 11.8 2.8L20 15" />
+      </symbol>
+      <symbol id="icon-transcript" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 12h11M4 17h8" />
+      </symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="10" rx="2" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+      </symbol>
+    </svg>
+
+    <main
+      class="whatsapp-demo"
+      aria-label="Demonstração fictícia do WhatsApp Web"
+    >
+      <aside class="primary-rail" aria-label="Navegação principal">
+        <div class="rail-stack">
+          <button class="rail-button active" aria-label="Conversas">
+            <svg><use href="#icon-chat" /></svg>
+            <span class="notification-dot">3</span>
+          </button>
+          <button class="rail-button" aria-label="Ligações">
+            <svg><use href="#icon-phone" /></svg>
+          </button>
+          <button class="rail-button" aria-label="Status">
+            <svg><use href="#icon-status" /></svg>
+          </button>
+          <button class="rail-button" aria-label="Comunidades">
+            <svg><use href="#icon-users" /></svg>
+          </button>
+          <button class="rail-button" aria-label="Meta AI">
+            <svg><use href="#icon-sparkle" /></svg>
+          </button>
+        </div>
+        <div class="rail-stack rail-bottom">
+          <button class="rail-button" aria-label="Configurações">
+            <span class="gear">⚙</span>
+          </button>
+          <div class="avatar avatar-owner" aria-label="Perfil de demonstração">
+            D
+          </div>
+        </div>
+      </aside>
+
+      <section
+        class="chat-list-panel"
+        aria-label="Lista de conversas fictícias"
+      >
+        <header class="list-header">
+          <div class="wordmark">WhatsApp</div>
+          <div class="header-actions">
+            <button aria-label="Nova conversa">
+              <svg><use href="#icon-plus" /></svg>
+            </button>
+            <button aria-label="Mais opções">
+              <svg><use href="#icon-menu" /></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="list-controls">
+          <label class="search-field">
+            <svg><use href="#icon-search" /></svg>
+            <span>Pesquisar ou começar uma nova conversa</span>
+          </label>
+          <div class="filters" aria-label="Filtros">
+            <span class="filter active">Tudo</span>
+            <span class="filter">Não lidas <b>3</b></span>
+            <span class="filter">Favoritas</span>
+            <span class="filter">Grupos</span>
+          </div>
+        </div>
+
+        <div class="conversation-list">
+          <article class="conversation selected">
+            <div class="avatar avatar-emerald">EP</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Equipe Produto</strong><time>10:42</time>
+              </div>
+              <div class="conversation-preview">
+                <svg><use href="#icon-mic" /></svg><span>Mensagem de voz</span>
+              </div>
+            </div>
+          </article>
+          <article class="conversation">
+            <div class="avatar avatar-coral">AD</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Ana Demo</strong><time>10:18</time>
+              </div>
+              <div class="conversation-preview">
+                <span>Arquivo revisado, obrigada!</span>
+              </div>
+            </div>
+          </article>
+          <article class="conversation">
+            <div class="avatar avatar-blue">TD</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Time de Design</strong><time>09:54</time>
+              </div>
+              <div class="conversation-preview">
+                <span>Você: envio a versão final hoje.</span>
+              </div>
+            </div>
+          </article>
+          <article class="conversation">
+            <div class="avatar avatar-gold">BE</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Bruno Exemplo</strong><time>Ontem</time>
+              </div>
+              <div class="conversation-preview">
+                <span>Perfeito, combinado!</span>
+              </div>
+            </div>
+          </article>
+          <article class="conversation">
+            <div class="avatar avatar-violet">PD</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Projeto Demo</strong><time>Ontem</time>
+              </div>
+              <div class="conversation-preview"><span>Foto</span></div>
+            </div>
+          </article>
+          <article class="conversation">
+            <div class="avatar avatar-mint">CE</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Clara Exemplo</strong><time>sexta-feira</time>
+              </div>
+              <div class="conversation-preview"><span>Até amanhã!</span></div>
+            </div>
+          </article>
+          <article class="conversation">
+            <div class="avatar avatar-slate">GE</div>
+            <div class="conversation-copy">
+              <div class="conversation-line">
+                <strong>Grupo Exemplo</strong><time>quinta-feira</time>
+              </div>
+              <div class="conversation-preview">
+                <span>Reunião confirmada.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="privacy-note">
+          <svg><use href="#icon-lock" /></svg
+          ><span
+            >Suas mensagens pessoais são protegidas com criptografia de ponta a
+            ponta</span
+          >
+        </div>
+      </section>
+
+      <section
+        class="conversation-panel"
+        aria-label="Conversa fictícia da Equipe Produto"
+      >
+        <header class="conversation-header">
+          <div class="contact-heading">
+            <div class="avatar avatar-emerald">EP</div>
+            <div>
+              <strong>Equipe Produto</strong><span>5 participantes</span>
+            </div>
+          </div>
+          <div class="header-actions conversation-actions">
+            <button aria-label="Ligação de vídeo">
+              <svg><use href="#icon-video" /></svg>
+            </button>
+            <button aria-label="Ligação de voz">
+              <svg><use href="#icon-phone" /></svg>
+            </button>
+            <button aria-label="Pesquisar">
+              <svg><use href="#icon-search" /></svg>
+            </button>
+            <button aria-label="Mais opções">
+              <svg><use href="#icon-menu" /></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="chat-wallpaper">
+          <div class="message-scrollbar"><span></span></div>
+          <div class="day-pill">Hoje</div>
+          <div class="message-lane">
+            <div class="message-row incoming">
+              <div class="message-bubble text-bubble">
+                <p>Pessoal, o material da demonstração já está pronto.</p>
+                <div class="message-meta">10:39</div>
+              </div>
+            </div>
+
+            <div class="message-row outgoing">
+              <div class="message-bubble text-bubble">
+                <p>Ótimo! Vou revisar a última versão agora.</p>
+                <div class="message-meta">
+                  10:40 <span class="read-check">✓✓</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="message-row incoming voice-and-transcript">
+              <div class="message-bubble voice-bubble">
+                <button
+                  class="play-button"
+                  aria-label="Reproduzir mensagem de voz"
+                >
+                  <svg><use href="#icon-play" /></svg>
+                </button>
+                <div class="voice-track">
+                  <div class="waveform" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                  </div>
+                  <span>0:37</span>
+                </div>
+                <div class="avatar voice-avatar avatar-coral">
+                  AD<span class="mic-badge"
+                    ><svg><use href="#icon-mic" /></svg
+                  ></span>
+                </div>
+                <div class="message-meta">10:41</div>
+              </div>
+
+              <section
+                class="transcript-panel"
+                aria-label="Transcrição fictícia"
+              >
+                <header class="transcript-header">
+                  <div class="transcript-title">
+                    <svg><use href="#icon-transcript" /></svg
+                    ><span>Transcrição</span>
+                  </div>
+                  <button aria-label="Fechar transcrição">×</button>
+                </header>
+                <p>
+                  Fechamos a revisão. Vou organizar os arquivos, conferir os
+                  detalhes e enviar a versão final ainda hoje.
+                </p>
+                <footer class="transcript-footer">
+                  <button aria-label="Copiar transcrição">
+                    <svg><use href="#icon-copy" /></svg>
+                  </button>
+                  <button aria-label="Gerar novamente">
+                    <svg><use href="#icon-refresh" /></svg>
+                  </button>
+                </footer>
+              </section>
+            </div>
+
+            <div class="message-row outgoing final-message">
+              <div class="message-bubble text-bubble">
+                <p>Perfeito, obrigado!</p>
+                <div class="message-meta">
+                  10:42 <span class="read-check">✓✓</span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="message-row outgoing outgoing-voice-message sent-voice-and-transcript"
+            >
+              <div class="message-bubble voice-bubble sent-voice-bubble">
+                <div class="avatar voice-avatar avatar-owner">
+                  EU<span class="mic-badge"
+                    ><svg><use href="#icon-mic" /></svg
+                  ></span>
+                </div>
+                <button
+                  class="play-button"
+                  aria-label="Reproduzir mensagem de voz enviada"
+                >
+                  <svg><use href="#icon-play" /></svg>
+                </button>
+                <div class="voice-track">
+                  <div class="waveform" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                  </div>
+                  <span>0:22</span>
+                </div>
+                <div class="message-meta">
+                  10:43 <span class="read-check">✓✓</span>
+                </div>
+              </div>
+
+              <section
+                class="transcript-panel sent-transcript-panel"
+                aria-label="Transcrição fictícia da mensagem enviada"
+              >
+                <header class="transcript-header">
+                  <div class="transcript-title">
+                    <svg><use href="#icon-transcript" /></svg
+                    ><span>Transcrição</span>
+                  </div>
+                  <button aria-label="Fechar transcrição">×</button>
+                </header>
+                <p>
+                  Sim, já revisei tudo. Vou encaminhar a versão final para o
+                  time ainda hoje.
+                </p>
+                <footer class="transcript-footer">
+                  <button aria-label="Copiar transcrição">
+                    <svg><use href="#icon-copy" /></svg>
+                  </button>
+                  <button aria-label="Gerar novamente">
+                    <svg><use href="#icon-refresh" /></svg>
+                  </button>
+                </footer>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <footer class="composer">
+          <button aria-label="Anexar">
+            <svg><use href="#icon-attach" /></svg>
+          </button>
+          <button aria-label="Emojis">
+            <svg><use href="#icon-smile" /></svg>
+          </button>
+          <div class="composer-input">Digite uma mensagem</div>
+          <button aria-label="Mensagem de voz">
+            <svg><use href="#icon-mic" /></svg>
+          </button>
+        </footer>
+      </section>
+    </main>
+  </body>
+</html>

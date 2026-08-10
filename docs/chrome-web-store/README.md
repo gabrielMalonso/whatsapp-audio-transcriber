@@ -9,6 +9,7 @@ Este diretório reúne tudo que precisa ser copiado ou enviado ao Chrome Web Sto
 - `REVIEW-INSTRUCTIONS.md`: roteiro privado para a equipe de revisão;
 - `SUBMISSION-CHECKLIST.md`: sequência completa da primeira publicação e updates;
 - `RELEASE-WORKFLOW.md`: geração do ZIP e automação futura;
+- `screenshot-page/`: página local sanitizada baseada nas proporções do WhatsApp Web;
 - `assets/`: imagens prontas para upload e fontes SVG editáveis.
 
 ## Fontes oficiais consultadas

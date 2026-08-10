@@ -8,7 +8,6 @@ import {
 import styles from '../../../entrypoints/whatsapp.content/style.css?inline';
 
 const TRIGGER_SIZE = 18;
-const PANEL_EDGE_GAP = 12;
 const PANEL_MAX_WIDTH = 920;
 // WhatsApp paints the audio content at z-index 200.
 const TRIGGER_Z_INDEX = 201;
@@ -195,9 +194,9 @@ function bindWidgetGeometry(
   bubbleHost: HTMLElement,
   panelHost: HTMLElement,
 ): { sync: () => void; dispose: () => void } {
+  const panelContainer = panelHost.parentElement ?? message.row;
   const sync = () => {
     const bubbleRect = message.bubble.getBoundingClientRect();
-    const rowRect = message.row.getBoundingClientRect();
     const sliderRect = message.slider.getBoundingClientRect();
     const durationRect = message.durationElement?.getBoundingClientRect();
     const metaRect = message.bubble
@@ -209,9 +208,8 @@ function bindWidgetGeometry(
     };
     const geometry = calculateWidgetGeometry(
       bubbleRect,
-      rowRect,
+      getContentWidth(panelContainer),
       anchor,
-      message.outgoing,
       metaRect,
     );
 
@@ -225,6 +223,7 @@ function bindWidgetGeometry(
   };
 
   const observer = new ResizeObserver(sync);
+  observer.observe(panelContainer);
   observer.observe(message.bubble);
   observer.observe(message.slider);
   if (message.durationElement) observer.observe(message.durationElement);
@@ -242,9 +241,8 @@ function bindWidgetGeometry(
 
 export function calculateWidgetGeometry(
   bubble: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>,
-  row: Pick<DOMRect, 'left' | 'width'>,
+  panelContentWidth: number,
   anchor: Pick<DOMRect, 'right' | 'top'>,
-  outgoing: boolean,
   meta?: Pick<DOMRect, 'left'>,
 ) {
   const edge = 4;
@@ -254,10 +252,6 @@ export function calculateWidgetGeometry(
     ? meta.left - bubble.left - TRIGGER_SIZE - gap
     : maxFromBubble;
   const maxLeft = Math.max(edge, Math.min(maxFromBubble, maxFromMeta));
-  const rowRight = row.left + row.width;
-  const availablePanelWidth = outgoing
-    ? bubble.left + bubble.width - row.left - PANEL_EDGE_GAP
-    : rowRight - bubble.left - PANEL_EDGE_GAP;
 
   return {
     triggerLeft: Math.max(
@@ -270,8 +264,15 @@ export function calculateWidgetGeometry(
     ),
     panelWidth: Math.max(
       bubble.width,
-      Math.min(PANEL_MAX_WIDTH, availablePanelWidth),
+      Math.min(PANEL_MAX_WIDTH, panelContentWidth),
     ),
     bubbleWidth: bubble.width,
   };
+}
+
+function getContentWidth(element: HTMLElement): number {
+  const style = getComputedStyle(element);
+  const paddingLeft = Number.parseFloat(style.paddingLeft) || 0;
+  const paddingRight = Number.parseFloat(style.paddingRight) || 0;
+  return Math.max(0, element.clientWidth - paddingLeft - paddingRight);
 }
