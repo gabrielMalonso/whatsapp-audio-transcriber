@@ -5,6 +5,7 @@ Este diretório reúne tudo que precisa ser copiado ou enviado ao Chrome Web Sto
 ## Arquivos
 
 - `LISTING-PT-BR.md`: nome, resumo, descrição e URLs públicas;
+- `LISTING-EN.md`: versão localizada da listagem em inglês;
 - `PRIVACY-DISCLOSURES.md`: finalidade, permissões, dados e certificações;
 - `REVIEW-INSTRUCTIONS.md`: roteiro privado para a equipe de revisão;
 - `SUBMISSION-CHECKLIST.md`: sequência completa da primeira publicação e updates;
@@ -28,4 +29,4 @@ Este diretório reúne tudo que precisa ser copiado ou enviado ao Chrome Web Sto
 
 ## Estado atual
 
-O conteúdo local está pronto. Antes de enviar para revisão, ainda é necessário publicar `PRIVACY.md` em uma URL HTTPS acessível, cadastrar a conta de desenvolvedor e preencher/aceitar os campos privados do dashboard.
+O item está publicado e a documentação acompanha as próximas atualizações da Chrome Web Store.

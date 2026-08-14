@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "Transcriber for WhatsApp — Voice to Text",
+    "description": "Extension name shown in Chrome and the Chrome Web Store."
+  },
+  "extensionDescription": {
+    "message": "Transcribe WhatsApp Web voice messages with Whisper and smart formatting. Open source, ad-free, with no intermediary server.",
+    "description": "Summary shown in the extension manager and Chrome Web Store search results."
+  },
+  "extensionActionTitle": {
+    "message": "Open Transcriber for WhatsApp",
+    "description": "Accessible label for the extension button in the Chrome toolbar."
+  }
+}

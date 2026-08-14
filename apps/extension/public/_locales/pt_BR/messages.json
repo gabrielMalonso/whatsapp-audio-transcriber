@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "Transcritor para WhatsApp — Áudio em Texto",
+    "description": "Nome da extensão exibido no Chrome e na Chrome Web Store."
+  },
+  "extensionDescription": {
+    "message": "Transcreva áudios do WhatsApp Web em texto com Whisper e formatação inteligente. Open source, sem anúncios e sem servidor próprio.",
+    "description": "Resumo exibido no gerenciador de extensões e nos resultados da Chrome Web Store."
+  },
+  "extensionActionTitle": {
+    "message": "Abrir o Transcritor para WhatsApp",
+    "description": "Texto acessível do botão da extensão na barra do Chrome."
+  }
+}

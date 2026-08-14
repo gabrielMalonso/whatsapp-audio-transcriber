@@ -2,7 +2,7 @@ import { GROQ_FORMATTING_MODEL, GROQ_TRANSCRIPTION_MODEL } from '@wat/protocol';
 import { browser } from 'wxt/browser';
 import { z } from 'zod';
 
-const STORAGE_KEY = 'wat.groq-settings.v1';
+export const GROQ_SETTINGS_STORAGE_KEY = 'wat.groq-settings.v1';
 const ApiKeySchema = z.string().trim().min(20).max(512);
 
 export type GroqSettings = {
@@ -12,8 +12,8 @@ export type GroqSettings = {
 };
 
 export async function getGroqSettings(): Promise<GroqSettings | null> {
-  const stored = await browser.storage.local.get(STORAGE_KEY);
-  const value = stored[STORAGE_KEY];
+  const stored = await browser.storage.local.get(GROQ_SETTINGS_STORAGE_KEY);
+  const value = stored[GROQ_SETTINGS_STORAGE_KEY];
   if (!value || typeof value !== 'object' || !('apiKey' in value)) return null;
   const parsed = ApiKeySchema.safeParse(value.apiKey);
   if (!parsed.success) return null;
@@ -31,10 +31,10 @@ export async function saveGroqApiKey(apiKey: string): Promise<GroqSettings> {
     transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
     formattingModel: GROQ_FORMATTING_MODEL,
   };
-  await browser.storage.local.set({ [STORAGE_KEY]: settings });
+  await browser.storage.local.set({ [GROQ_SETTINGS_STORAGE_KEY]: settings });
   return settings;
 }
 
 export async function removeGroqApiKey() {
-  await browser.storage.local.remove(STORAGE_KEY);
+  await browser.storage.local.remove(GROQ_SETTINGS_STORAGE_KEY);
 }

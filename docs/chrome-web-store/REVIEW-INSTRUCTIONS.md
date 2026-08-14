@@ -10,10 +10,10 @@ Não há conta, login ou servidor do próprio projeto. A extensão usa a sessão
 
 ## Roteiro de teste
 
-1. Instale a extensão e abra seu popup.
-2. Cole uma API key da Groq e selecione **Salvar e testar**. O status deve mudar para **Pronto**.
-3. Abra ou atualize `https://web.whatsapp.com/` e entre em uma conversa que contenha uma mensagem de voz.
-4. Acione o botão de transcrição exibido junto à mensagem.
+1. Instale a extensão sem configurar uma chave.
+2. Abra ou atualize `https://web.whatsapp.com/`, entre em uma conversa com uma mensagem de voz e acione o botão de transcrição. Confirme que o painel oferece links para criar a chave na Groq e abrir a configuração da extensão sem capturar o áudio.
+3. No popup, cole uma API key da Groq e selecione **Salvar e testar**. O status deve mudar para **Pronto**.
+4. Acione novamente o botão de transcrição exibido junto à mensagem.
 5. Na primeira vez, confirme o aviso de que o áudio será enviado diretamente à Groq.
 6. Aguarde as etapas de captura, fila, transcrição e formatação.
 7. Confirme que o texto aparece junto à mensagem e que pode ser copiado.

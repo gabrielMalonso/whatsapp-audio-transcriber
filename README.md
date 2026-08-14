@@ -4,6 +4,7 @@
   <p>Transcreva mensagens de voz do WhatsApp Web sem sair da conversa.</p>
 
   <p>
+    <a href="https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp"><img src="https://img.shields.io/badge/Chrome%20Web%20Store-instalar-4285f4.svg" alt="Instalar pela Chrome Web Store" /></a>
     <a href="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/actions/workflows/ci.yml"><img src="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-2f6f65.svg" alt="Licença MIT" /></a>
     <a href="https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3"><img src="https://img.shields.io/badge/Chrome-Manifest%20V3-caa66b.svg" alt="Chrome Manifest V3" /></a>
@@ -38,6 +39,7 @@ Tudo acontece entre o navegador e a Groq: o projeto não opera servidor intermed
 - captura sem reprodução audível da mensagem de voz;
 - fila local com cancelamento e indicação de progresso;
 - cache local para evitar o reprocessamento de mensagens;
+- onboarding guiado para criar e configurar a API key da Groq;
 - mesma extensão para Chrome no macOS, Windows e Linux;
 - nenhum Python, FFmpeg, Whisper local ou host nativo.
 
@@ -66,12 +68,14 @@ Os detalhes estão em [Arquitetura](docs/architecture.md) e [Pesquisa do DOM do 
 
 ### Usando um pacote pronto
 
-1. Baixe e descompacte o pacote mais recente na página de [Releases](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/releases).
+Instale pela [Chrome Web Store](https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp), abra o popup da extensão, informe uma [API key da Groq](https://console.groq.com/keys) e clique em **Salvar e testar**.
+
+Para instalar manualmente uma versão específica:
+
+1. Baixe e descompacte o pacote na página de [Releases](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/releases).
 2. Abra `chrome://extensions` no Google Chrome.
 3. Ative o **Modo do desenvolvedor**.
 4. Clique em **Carregar sem compactação** e selecione a pasta que contém `manifest.json`.
-5. Abra o popup da extensão, informe uma [API key da Groq](https://console.groq.com/keys) e clique em **Salvar e testar**.
-6. Abra ou atualize o [WhatsApp Web](https://web.whatsapp.com/).
 
 Se ainda não houver um pacote publicado, gere o build local seguindo a seção de desenvolvimento.
 

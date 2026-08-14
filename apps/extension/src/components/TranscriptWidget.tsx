@@ -8,7 +8,9 @@ import {
   BotMessageSquare,
   Check,
   Copy,
+  ExternalLink,
   Info,
+  KeyRound,
   RefreshCw,
   TriangleAlert,
   X,
@@ -28,6 +30,10 @@ import { captureVoiceAudio } from '../messaging/pageBridge';
 import { transcriptionClient } from '../messaging/transcriptionClient';
 import { FORMATTING_SETTINGS_STORAGE_KEY } from '../storage/formattingSettings';
 import {
+  getGroqSettings,
+  GROQ_SETTINGS_STORAGE_KEY,
+} from '../storage/groqSettings';
+import {
   getTranscript,
   hashMessageKey,
   hasSeenCaptureNotice,
@@ -39,6 +45,7 @@ import {
 type Phase =
   | 'loading'
   | 'idle'
+  | 'setup'
   | 'notice'
   | 'capturing'
   | 'queued'
@@ -46,7 +53,7 @@ type Phase =
   | 'success'
   | 'error';
 
-type PanelView = 'notice' | 'status' | 'error' | 'transcript';
+type PanelView = 'setup' | 'notice' | 'status' | 'error' | 'transcript';
 
 const iconProps = {
   absoluteStrokeWidth: false,
@@ -274,13 +281,11 @@ export function TranscriptWidget({
       changes: Record<string, unknown>,
       areaName: string,
     ) => {
-      if (
-        areaName !== 'local' ||
-        !(FORMATTING_SETTINGS_STORAGE_KEY in changes) ||
-        jobRef.current
-      ) {
-        return;
+      if (areaName !== 'local' || jobRef.current) return;
+      if (GROQ_SETTINGS_STORAGE_KEY in changes) {
+        setPhase((current) => (current === 'setup' ? 'idle' : current));
       }
+      if (!(FORMATTING_SETTINGS_STORAGE_KEY in changes)) return;
       setRecord(null);
       setCacheWarning('');
       setExpanded(false);
@@ -299,6 +304,10 @@ export function TranscriptWidget({
 
   const requestTranscription = async () => {
     if (!messageHash) return;
+    if (!(await getGroqSettings())) {
+      setPhase('setup');
+      return;
+    }
     if (!(await hasSeenCaptureNotice())) {
       setPhase('notice');
       return;
@@ -393,6 +402,14 @@ export function TranscriptWidget({
     await beginTranscription();
   };
 
+  const openSettings = async () => {
+    try {
+      await browser.runtime.sendMessage({ type: 'wat.open-popup' });
+    } catch {
+      window.open(browser.runtime.getURL('/popup.html'), '_blank', 'noopener');
+    }
+  };
+
   const copy = async () => {
     if (!record) return;
     await navigator.clipboard.writeText(record.text);
@@ -441,6 +458,55 @@ export function TranscriptWidget({
               aria-live="polite"
             >
               <div className="panel-body" key={renderedView}>
+                {renderedView === 'setup' && (
+                  <>
+                    <div className="panel-title">
+                      <KeyRound {...iconProps} />
+                      Configure a Groq para começar
+                    </div>
+                    <ol className="setup-steps">
+                      <li>
+                        <span>1</span>
+                        <div>
+                          <strong>Crie uma API key na Groq</strong>
+                          <small>Leva só um minuto.</small>
+                        </div>
+                      </li>
+                      <li>
+                        <span>2</span>
+                        <div>
+                          <strong>Cole a chave no Transcritor</strong>
+                          <small>Ela fica salva apenas nesta extensão.</small>
+                        </div>
+                      </li>
+                    </ol>
+                    <div className="actions setup-actions">
+                      <a
+                        className="quiet action-link"
+                        href="https://console.groq.com/keys"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Criar chave
+                        <ExternalLink
+                          size={12}
+                          strokeWidth={1.8}
+                          aria-hidden="true"
+                        />
+                      </a>
+                      <button
+                        className="primary"
+                        type="button"
+                        onClick={(event) => {
+                          if (isTrustedUserAction(event)) void openSettings();
+                        }}
+                      >
+                        Configurar extensão
+                      </button>
+                    </div>
+                  </>
+                )}
+
                 {renderedView === 'notice' && (
                   <>
                     <div className="panel-title">
@@ -586,6 +652,7 @@ function resolvePanelView(
   expanded: boolean,
   record: TranscriptRecord | null,
 ): PanelView | null {
+  if (phase === 'setup') return 'setup';
   if (phase === 'notice') return 'notice';
   if (phase === 'capturing' || phase === 'queued' || phase === 'working') {
     return 'status';

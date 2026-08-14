@@ -7,7 +7,10 @@ As mudanças relevantes deste projeto serão documentadas neste arquivo. O forma
 ### Adicionado
 
 - ESLint com regras tipadas para TypeScript e validação oficial dos Hooks do React;
-- verificação de lint na integração contínua.
+- verificação de lint na integração contínua;
+- links para a Chrome Web Store e o repositório no popup;
+- metadados localizados em português e inglês para a Chrome Web Store;
+- onboarding no WhatsApp para criar e configurar a API key da Groq antes da captura do áudio.
 
 ### Corrigido
 

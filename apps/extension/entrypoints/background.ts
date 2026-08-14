@@ -81,9 +81,9 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onMessage.addListener(
-    // The returned promise carries the asynchronous response back to the popup.
+    // The returned promise carries the asynchronous response back to extension UI.
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    (message: unknown, sender) => handlePopupMessage(message, sender),
+    (message: unknown, sender) => handleRuntimeMessage(message, sender),
   );
 
   function begin(
@@ -319,19 +319,28 @@ export default defineBackground(() => {
   }
 });
 
-async function handlePopupMessage(
+async function handleRuntimeMessage(
   message: unknown,
   sender: Browser.runtime.MessageSender,
 ) {
-  if (
-    sender.id !== browser.runtime.id ||
-    sender.url !== browser.runtime.getURL('/popup.html')
-  ) {
-    return undefined;
-  }
+  if (sender.id !== browser.runtime.id) return undefined;
   if (!message || typeof message !== 'object' || !('type' in message)) {
     return undefined;
   }
+
+  if (
+    message.type === 'wat.open-popup' &&
+    sender.url?.startsWith('https://web.whatsapp.com/')
+  ) {
+    try {
+      await browser.action.openPopup();
+    } catch {
+      await browser.tabs.create({ url: browser.runtime.getURL('/popup.html') });
+    }
+    return { opened: true };
+  }
+
+  if (sender.url !== browser.runtime.getURL('/popup.html')) return undefined;
   if (message.type === 'wat.groq.status') return groqStatus();
   if (message.type === 'wat.groq.remove-key') {
     await removeGroqApiKey();

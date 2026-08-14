@@ -2,41 +2,44 @@
 
 ## Nome
 
-Transcrição de áudios do WhatsApp
+Transcritor para WhatsApp — Áudio em Texto
 
 ## Resumo
 
-Transcreva mensagens de voz do WhatsApp Web com Whisper e formatação inteligente, direto na conversa.
+Transcreva áudios do WhatsApp Web em texto com Whisper e formatação inteligente. Open source, sem anúncios e sem servidor próprio.
 
 ## Descrição detalhada
 
-Transforme mensagens de voz em texto sem sair do WhatsApp Web.
+Transcreva áudios e mensagens de voz do WhatsApp Web sem sair da conversa.
 
-A extensão adiciona um botão às mensagens de voz. Ao acioná-lo, o áudio escolhido é enviado diretamente à Groq, transcrito com Whisper Large v3 Turbo e, quando necessário, organizado com GPT-OSS 20B. O resultado aparece junto da própria mensagem e pode ser copiado com um clique.
+O Transcritor para WhatsApp adiciona um botão às mensagens de voz. Com um clique, o áudio escolhido é enviado diretamente à Groq, convertido em texto pelo Whisper Large v3 Turbo e, quando necessário, organizado pelo GPT-OSS 20B. A transcrição aparece junto da mensagem e pode ser copiada imediatamente.
 
-RECURSOS
+POR QUE USAR
 
+• Leia áudios quando não puder ouvi-los
 • Transcrição integrada ao WhatsApp Web
-• Detecção automática do idioma
-• Tom coloquial, natural ou formal
+• Detecção automática do idioma falado
+• Escolha entre tom coloquial, natural ou formal
 • Formatação opcional de parágrafos, datas, horas e listas
-• Cache local para evitar reprocessamentos
+• Cache local que evita transcrever a mesma mensagem novamente
+• Passo a passo para criar e configurar a API key da Groq
 • Cancelamento e indicação de progresso
 • Sem anúncios, analytics ou servidor intermediário
 
 PRIVACIDADE
 
-O áudio só é processado após uma ação sua. Antes da primeira transcrição, a extensão informa que o áudio será enviado à Groq e pede sua confirmação. A API key e as transcrições ficam no armazenamento local da extensão; o projeto não opera servidor próprio. Você pode limpar o cache e remover a chave a qualquer momento.
+Nada é transcrito automaticamente. O áudio só é enviado à Groq depois que você clica para transcrever e confirma o aviso inicial. Sua API key e as transcrições ficam no armazenamento local da extensão; você pode apagar o cache e remover a chave quando quiser.
 
 REQUISITO
 
-É necessário usar sua própria API key da Groq. O uso da API está sujeito aos limites e aos termos da Groq.
+Você precisa usar sua própria API key da Groq. O uso da API está sujeito aos limites e termos da Groq.
 
-LIMITAÇÕES
+CÓDIGO ABERTO
 
-Transcrições automáticas podem conter erros, principalmente em nomes e números. Mudanças no WhatsApp Web podem exigir uma atualização da extensão.
+Projeto open source sob licença MIT. Consulte o código, reporte problemas ou contribua:
+https://github.com/gabrielMalonso/whatsapp-audio-transcriber
 
-Projeto open source e independente, sem vínculo com WhatsApp, Meta ou Groq.
+Projeto independente, sem vínculo com WhatsApp, Meta ou Groq. Transcrições automáticas podem conter erros, principalmente em nomes e números.
 
 ## Campos recomendados
 

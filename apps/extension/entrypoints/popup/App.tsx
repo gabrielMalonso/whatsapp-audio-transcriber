@@ -32,6 +32,11 @@ type Health = 'checking' | 'ready' | 'unavailable' | 'unconfigured';
 
 const iconSm = { 'aria-hidden': true, size: 14, strokeWidth: 1.75 } as const;
 
+const CHROME_WEB_STORE_URL =
+  'https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp';
+const GITHUB_URL =
+  'https://github.com/gabrielMalonso/whatsapp-audio-transcriber';
+
 export function App() {
   const [health, setHealth] = useState<Health>('checking');
   const [loaded, setLoaded] = useState(false);
@@ -425,13 +430,23 @@ export function App() {
         className="reveal"
         style={{ '--d': '300ms' } as React.CSSProperties}
       >
-        <a
-          href="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/blob/main/PRIVACY.md"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Privacidade
-        </a>
+        <nav aria-label="Links do projeto">
+          <a href={CHROME_WEB_STORE_URL} target="_blank" rel="noreferrer">
+            Chrome Web Store
+          </a>
+          <span aria-hidden="true">·</span>
+          <a href={GITHUB_URL} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+          <span aria-hidden="true">·</span>
+          <a
+            href={`${GITHUB_URL}/blob/main/PRIVACY.md`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Privacidade
+          </a>
+        </nav>
         <span>v{browser.runtime.getManifest().version}</span>
       </footer>
     </main>
