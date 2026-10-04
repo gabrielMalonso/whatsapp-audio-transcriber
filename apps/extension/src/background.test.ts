@@ -1,4 +1,9 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { GROQ_FORMATTING_MODEL, GROQ_TRANSCRIPTION_MODEL } from '@wat/protocol';
+import { GroqProvider } from './providers/groq';
+import * as groqSettings from './storage/groqSettings';
+import * as formattingSettings from './storage/formattingSettings';
+import { DEFAULT_FORMATTING_SETTINGS } from './formatting/settings';
 
 type Listener = (value: unknown, sender?: unknown) => unknown;
 
@@ -7,7 +12,13 @@ const runtimeHarness = vi.hoisted(() => {
   const messageListeners: Listener[] = [];
   const openPopup = vi.fn(() => Promise.resolve());
   const createTab = vi.fn(() => Promise.resolve());
-  return { connectListeners, messageListeners, openPopup, createTab };
+  return {
+    connectListeners,
+    messageListeners,
+    openPopup,
+    createTab,
+    origin: 'chrome-extension://test-extension',
+  };
 });
 
 vi.mock('wxt/browser', () => ({
@@ -17,7 +28,7 @@ vi.mock('wxt/browser', () => ({
     },
     runtime: {
       id: 'test-extension',
-      getURL: (path: string) => `chrome-extension://test-extension${path}`,
+      getURL: (path: string) => `${runtimeHarness.origin}${path}`,
       onConnect: {
         addListener: (listener: (port: unknown) => void) =>
           runtimeHarness.connectListeners.push(listener),
@@ -41,7 +52,86 @@ describe('background job assembly', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
     vi.clearAllMocks();
+    runtimeHarness.origin = 'chrome-extension://test-extension';
+  });
+
+  it('reassembles Base64 chunks into the exact audio sent to Groq', async () => {
+    vi.spyOn(groqSettings, 'getGroqSettings').mockResolvedValue({
+      apiKey: 'test-api-key-with-no-real-credentials',
+      transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
+      formattingModel: GROQ_FORMATTING_MODEL,
+    });
+    vi.spyOn(formattingSettings, 'getFormattingSettings').mockResolvedValue(
+      DEFAULT_FORMATTING_SETTINGS,
+    );
+    const transcribe = vi
+      .spyOn(GroqProvider.prototype, 'transcribe')
+      .mockResolvedValue({
+        text: 'Teste',
+        rawText: 'Teste',
+        language: 'pt',
+        durationMs: 1000,
+        audioSha256: '0'.repeat(64),
+        transcriptionProvider: 'groq',
+        transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
+        formattingProvider: 'groq',
+        formattingModel: GROQ_FORMATTING_MODEL,
+        formattingSettingsKey: 'test',
+      });
+    const port = createPort();
+    runtimeHarness.connectListeners[0]?.(port);
+    port.emit({
+      v: 1,
+      type: 'audio.begin',
+      jobId: 'complete-job',
+      mimeType: 'audio/ogg',
+      totalBytes: 8,
+      language: null,
+    });
+    port.emit({
+      v: 1,
+      type: 'audio.chunk',
+      jobId: 'complete-job',
+      index: 0,
+      data: 'T2dnUw==',
+    });
+    port.emit({
+      v: 1,
+      type: 'audio.chunk',
+      jobId: 'complete-job',
+      index: 1,
+      data: 'AAECAw==',
+    });
+    port.emit({ v: 1, type: 'audio.end', jobId: 'complete-job' });
+    await vi.waitFor(() =>
+      expect(port.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'job.complete' }),
+      ),
+    );
+    const audio = transcribe.mock.calls[0]?.[0];
+    if (!audio) throw new Error('Missing captured audio');
+    expect(audio.type).toBe('audio/ogg');
+    expect(new Uint8Array(await audio.arrayBuffer())).toEqual(
+      new Uint8Array([0x4f, 0x67, 0x67, 0x53, 0, 1, 2, 3]),
+    );
+  });
+
+  it.each([
+    'chrome-extension://test-extension',
+    'moz-extension://test-extension',
+  ])('responds asynchronously to the popup at %s', async (origin) => {
+    runtimeHarness.origin = origin;
+    vi.spyOn(groqSettings, 'getGroqSettings').mockResolvedValue(null);
+    const response = runtimeHarness.messageListeners[0]?.(
+      { type: 'wat.groq.status' },
+      { id: 'test-extension', url: `${origin}/popup.html` },
+    );
+    await expect(response).resolves.toMatchObject({
+      configured: false,
+      healthy: false,
+    });
   });
 
   it('expires an audio upload that never finishes', async () => {

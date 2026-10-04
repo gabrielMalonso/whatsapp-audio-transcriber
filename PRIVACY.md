@@ -1,6 +1,6 @@
 # Política de Privacidade — Transcrição de áudios do WhatsApp
 
-Última atualização: 5 de agosto de 2026.
+Última atualização: 4 de outubro de 2026.
 
 Esta política descreve como a extensão **Transcrição de áudios do WhatsApp** trata dados. A extensão é um projeto independente, sem vínculo com WhatsApp, Meta ou Groq.
 
@@ -35,7 +35,7 @@ Esse processamento também está sujeito à [Política de Privacidade da Groq](h
 
 ## Armazenamento e retenção local
 
-Os dados locais são armazenados por `chrome.storage.local`:
+Os dados locais são armazenados por `browser.storage.local` via WXT (Chrome, Firefox e Zen):
 
 - a API key permanece salva até ser removida no popup da extensão ou até a extensão ser desinstalada;
 - as preferências permanecem salvas até serem alteradas ou até a extensão ser desinstalada;

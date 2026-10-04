@@ -1,30 +1,13 @@
-# WhatsApp Transcritor v0.2.1
+# Instalação e atualização
 
-O mesmo pacote funciona no Google Chrome para macOS e Windows.
+Os pacotes Chrome existentes nesta pasta continuam sendo específicos do Chrome. Firefox e Zen usam o mesmo build Firefox, gerado por `pnpm build:firefox` ou `pnpm zip:firefox`; o ZIP fica em `apps/extension/.output` e não está assinado.
 
-## Instalação
+- **Chrome:** descompacte o ZIP, abra `chrome://extensions`, ative o modo de desenvolvedor e use **Carregar sem compactação** na pasta com `manifest.json`.
+- **Firefox/Zen temporário:** abra `about:debugging#/runtime/this-firefox`, clique em **Carregar extensão temporária…** e selecione `apps/extension/.output/firefox-mv3/manifest.json`. É removida ao fechar o navegador.
+- **Firefox/Zen permanente:** obtenha o XPI assinado pela Mozilla, abra `about:addons` e use a engrenagem → **Instalar extensão de um arquivo…**. Renomear um ZIP para XPI não substitui a assinatura.
 
-1. Copie `WhatsApp-Transcritor-v0.2.1.zip` para o computador.
-2. Descompacte o arquivo em uma pasta permanente, como `Documentos/WhatsApp-Transcritor`.
-3. Abra `chrome://extensions` no Google Chrome.
-4. Ative o **Modo do desenvolvedor**.
-5. Clique em **Carregar sem compactação**.
-6. Selecione a pasta descompactada que contém `manifest.json`.
-7. Abra a extensão, informe sua API key da Groq e clique em **Salvar e testar**.
-8. Atualize a aba do WhatsApp Web.
+Abra o popup, configure sua API key da Groq e recarregue o WhatsApp Web. No Firefox/Zen, confirme também as permissões dos sites WhatsApp e Groq em `about:addons`.
 
-## Atualização futura
+Para atualizar, recarregue a extensão na mesma pasta (Chrome ou Firefox/Zen temporário), ou instale o novo XPI assinado com o mesmo ID e versão maior (permanente). Não desinstale antes de atualizar se quiser preservar chave, preferências e cache. Instalação temporária não garante persistência entre sessões do navegador.
 
-1. Descompacte a nova versão sobre a mesma pasta usada na instalação.
-2. Em `chrome://extensions`, clique em **Recarregar** na extensão.
-3. Atualize a aba do WhatsApp Web.
-
-Não remova a extensão antes de atualizar. A API key e as transcrições ficam armazenadas localmente em cada instalação e não estão incluídas no ZIP.
-
-## Verificação do arquivo
-
-SHA-256:
-
-```text
-093550152f50219fd03fafb673766fe38e21d6afe09d72b1a93805b6e1e80805
-```
+As instruções completas de build, assinatura AMO/unlisted e atualização estão no [README](../README.md#instalação).
