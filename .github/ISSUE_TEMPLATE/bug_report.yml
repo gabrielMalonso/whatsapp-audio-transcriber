@@ -1,16 +1,16 @@
-name: Relatar um bug
-description: Informe um problema reproduzível na extensão.
+name: Report a bug
+description: Report a reproducible issue in the extension.
 title: '[Bug]: '
 body:
   - type: markdown
     attributes:
       value: |
-        Obrigado pelo relato. Não publique API keys, áudios, transcrições ou dados pessoais.
+        Thank you for your report. Do not publish API keys, audio, transcripts, or personal data.
 
   - type: input
     id: version
     attributes:
-      label: Versão da extensão
+      label: Extension version
       placeholder: '0.2.0'
     validations:
       required: true
@@ -18,39 +18,39 @@ body:
   - type: dropdown
     id: operating-system
     attributes:
-      label: Sistema operacional
+      label: Operating system
       options:
         - macOS
         - Windows
         - Linux
-        - Outro
+        - Other
     validations:
       required: true
 
   - type: input
     id: chrome-version
     attributes:
-      label: Versão do Chrome
-      description: Disponível em chrome://version.
-      placeholder: 'Ex.: 140.0.7339.0'
+      label: Chrome version
+      description: Available at chrome://version.
+      placeholder: 'E.g.: 140.0.7339.0'
     validations:
       required: true
 
   - type: textarea
     id: description
     attributes:
-      label: O que aconteceu?
-      description: Descreva o comportamento observado e o que você esperava.
+      label: What happened?
+      description: Describe the observed behavior and what you expected.
     validations:
       required: true
 
   - type: textarea
     id: steps
     attributes:
-      label: Como reproduzir
+      label: Steps to reproduce
       placeholder: |
-        1. Abra uma conversa...
-        2. Clique em...
+        1. Open a conversation...
+        2. Click...
         3. Observe...
     validations:
       required: true
@@ -58,18 +58,18 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Logs relevantes
-      description: Remova credenciais, conteúdo de mensagens e outros dados pessoais.
+      label: Relevant logs
+      description: Remove credentials, message content, and other personal data.
       render: shell
 
   - type: checkboxes
     id: checks
     attributes:
-      label: Verificações
+      label: Checks
       options:
-        - label: Procurei por issues semelhantes.
+        - label: I searched for similar issues.
           required: true
-        - label: Removi credenciais e dados pessoais deste relato.
+        - label: I removed credentials and personal data from this report.
           required: true
-        - label: Este relato não descreve uma vulnerabilidade de segurança.
+        - label: This report does not describe a security vulnerability.
           required: true

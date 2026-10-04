@@ -1,29 +1,29 @@
-# Pesquisa do DOM do WhatsApp Web
+# WhatsApp Web DOM research
 
-Observação realizada no WhatsApp Web atual com mensagens de voz enviadas e recebidas.
+Observations made in the current WhatsApp Web interface with sent and received voice messages.
 
-## Sinais estáveis usados
+## Stable signals used
 
-- contêiner virtualizado `div[role="row"]`
-- identificador da mensagem em `[data-id]`
-- bolha em `[data-testid="msg-container"]`
-- marcador de voz `[data-icon="ptt-status"]`
-- progresso em `[role="slider"]`
-- botão de transporte localizado estruturalmente antes do slider
+- Virtualized container `div[role="row"]`;
+- Message identifier in `[data-id]`;
+- Message bubble in `[data-testid="msg-container"]`;
+- Voice marker `[data-icon="ptt-status"]`;
+- Progress in `[role="slider"]`;
+- Playback button located structurally before the slider.
 
-As classes CSS geradas e o texto localizado dos `aria-label` não são usados como seletores principais. O texto do botão de velocidade é apenas um filtro auxiliar em português, inglês e espanhol.
+Generated CSS classes and localized `aria-label` text are not used as primary selectors. The playback speed button's text is only an auxiliary filter in Portuguese, English, and Spanish.
 
-## Descobertas
+## Findings
 
-- Mensagens enviadas e recebidas têm a mesma estrutura essencial.
-- `tail-in` e `tail-out` aparecem apenas em algumas mensagens agrupadas e não são confiáveis.
-- Não existe um elemento `<audio>` persistente no DOM em repouso.
-- Ao acionar o controle, o WhatsApp cria ou reutiliza um media element com uma URL `blob:`.
-- Interceptar `HTMLMediaElement.play()` no contexto MAIN permite obter um Blob `audio/ogg` válido começando por `OggS` sem tocar som.
-- A captura controlada manteve o slider em zero e o botão no estado de reprodução.
+- Sent and received messages share the same essential structure.
+- `tail-in` and `tail-out` appear only in some grouped messages and are unreliable.
+- There is no persistent `<audio>` element in the DOM while idle.
+- When the control is triggered, WhatsApp creates or reuses a media element with a `blob:` URL.
+- Intercepting `HTMLMediaElement.play()` in the MAIN context allows capture of a valid `audio/ogg` Blob starting with `OggS` without playing sound.
+- Controlled capture kept the slider at zero and the button in the play state.
 
-## Estratégia de resiliência
+## Resilience strategy
 
-O `MutationObserver` apenas agenda uma varredura por frame. A varredura reconcilia os widgets pelo `data-id`, remove raízes ligadas a linhas virtualizadas antigas e mantém a UI isolada em Shadow DOM.
+The `MutationObserver` only schedules one scan per frame. The scan reconciles widgets by `data-id`, removes roots attached to old virtualized rows, and keeps the UI isolated in Shadow DOM.
 
-Se o WhatsApp alterar a estrutura, o popup continuará servindo como diagnóstico do host; o teste `voiceMessages.test.ts` protege a combinação de sinais estruturais usada atualmente.
+If WhatsApp changes its structure, the popup will continue to serve as a host diagnostic tool; `voiceMessages.test.ts` protects the combination of structural signals currently used.

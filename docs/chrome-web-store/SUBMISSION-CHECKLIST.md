@@ -1,50 +1,50 @@
-# Checklist de publicação
+# Submission checklist
 
-## Antes do painel
+## Before using the dashboard
 
-- [ ] Criar ou escolher uma conta Google dedicada ao publicador.
-- [ ] Ativar a verificação em duas etapas nessa conta.
-- [ ] Fazer o cadastro no Chrome Web Store Developer Dashboard e pagar a taxa única exibida no cadastro.
-- [ ] Definir o nome público do publicador e verificar o e-mail.
-- [ ] Publicar `PRIVACY.md` no branch `main` para que a URL seja pública.
-- [ ] Confirmar que versão do manifesto, `package.json` raiz e pacote da extensão são iguais.
-- [ ] Executar `pnpm check` e `pnpm store:package`.
+- [ ] Create or choose a Google account dedicated to the publisher.
+- [ ] Enable two-step verification on that account.
+- [ ] Register in the Chrome Web Store Developer Dashboard and pay the one-time fee shown during registration.
+- [ ] Set the publisher's public name and verify the email address.
+- [ ] Publish `PRIVACY.md` on the `main` branch so the URL is public.
+- [ ] Confirm that the manifest, root `package.json`, and extension package versions match.
+- [ ] Run `pnpm check` and `pnpm store:package`.
 
-## Criar o item
+## Create the item
 
-- [ ] Abrir o Developer Dashboard e selecionar **Add new item**.
-- [ ] Enviar `release/WhatsApp-Transcritor-vX.Y.Z.zip`.
-- [ ] Conferir o aviso de permissões calculado pela loja.
-- [ ] Preencher a aba **Store listing** com `LISTING-PT-BR.md` e os arquivos de `assets/`.
-- [ ] Preencher a aba **Privacy** com `PRIVACY-DISCLOSURES.md`.
-- [ ] Preencher **Test instructions** com `REVIEW-INSTRUCTIONS.md`.
-- [ ] Em **Distribution**, escolher **Public**, todas as regiões desejadas e distribuição gratuita.
-- [ ] Usar publicação adiada se quiser revisar a aprovação antes de tornar o item público.
-- [ ] Enviar para revisão.
+- [ ] Open the Developer Dashboard and select **Add new item**.
+- [ ] Upload `release/WhatsApp-Transcritor-vX.Y.Z.zip`.
+- [ ] Check the permissions notice calculated by the store.
+- [ ] Fill in the **Store listing** tab with `LISTING-EN.md` for the English locale and files from `assets/`. `LISTING-PT-BR.md` is now an English translation of the original listing, not Portuguese publishing copy.
+- [ ] Fill in the **Privacy** tab with `PRIVACY-DISCLOSURES.md`.
+- [ ] Fill in **Test instructions** with `REVIEW-INSTRUCTIONS.md`.
+- [ ] Under **Distribution**, choose **Public**, all desired regions, and free distribution.
+- [ ] Use deferred publishing if you want to review the approval before making the item public.
+- [ ] Submit for review.
 
-## Depois da aprovação
+## After approval
 
-- [ ] Publicar o item, caso a publicação tenha sido adiada.
-- [ ] Salvar o ID definitivo da extensão e a URL da loja na documentação do projeto.
-- [ ] Atualizar o README com o botão **Adicionar ao Chrome**.
-- [ ] Manter o ZIP e o checksum da versão publicada.
-- [ ] Acompanhar e-mails do publicador e o status no dashboard.
+- [ ] Publish the item if publication was deferred.
+- [ ] Save the definitive extension ID and store URL in the project documentation.
+- [ ] Update the README with the **Add to Chrome** button.
+- [ ] Keep the ZIP and checksum of the published version.
+- [ ] Monitor publisher emails and dashboard status.
 
-## Para cada atualização
+## For each update
 
-- [ ] Alterar código e testes.
-- [ ] Incrementar a versão em todos os locais com `pnpm version:extension X.Y.Z`.
-- [ ] Revisar política e disclosures se permissões ou dados mudarem.
-- [ ] Executar `pnpm check`.
-- [ ] Gerar o ZIP com `pnpm store:package`.
-- [ ] No item existente, abrir **Package → Upload new package**.
-- [ ] Enviar o novo ZIP e revisar as alterações do dashboard.
-- [ ] Enviar para revisão; nunca criar outro item para uma atualização normal.
+- [ ] Update code and tests.
+- [ ] Increment the version everywhere with `pnpm version:extension X.Y.Z`.
+- [ ] Review the policy and disclosures if permissions or data processing change.
+- [ ] Run `pnpm check`.
+- [ ] Generate the ZIP with `pnpm store:package`.
+- [ ] In the existing item, open **Package → Upload new package**.
+- [ ] Upload the new ZIP and review the dashboard changes.
+- [ ] Submit for review; never create another item for a normal update.
 
-## Bloqueios que ainda dependem do publicador
+## Steps that still depend on the publisher
 
-- conta Google e taxa de cadastro;
-- nome público e e-mail do publicador;
-- aceite das declarações legais no dashboard;
-- eventual credencial temporária para a revisão;
-- clique final em **Submit for review** e **Publish**.
+- Google account and registration fee;
+- Publisher's public name and email address;
+- Acceptance of legal declarations in the dashboard;
+- A temporary review credential, if requested;
+- Final clicks on **Submit for review** and **Publish**.

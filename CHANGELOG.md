@@ -1,35 +1,35 @@
 # Changelog
 
-As mudanças relevantes deste projeto serão documentadas neste arquivo. O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o versionamento segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+Notable changes to this project will be documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versioning follows [Semantic Versioning](https://semver.org/).
 
-## Não publicado
+## Unreleased
 
-### Adicionado
+### Added
 
-- ESLint com regras tipadas para TypeScript e validação oficial dos Hooks do React;
-- verificação de lint na integração contínua;
-- links para a Chrome Web Store e o repositório no popup;
-- metadados localizados em português e inglês para a Chrome Web Store;
-- onboarding no WhatsApp para criar e configurar a API key da Groq antes da captura do áudio.
+- ESLint with type-aware TypeScript rules and official React Hooks validation;
+- Lint checks in continuous integration;
+- Links to the Chrome Web Store and repository in the popup;
+- Localized Portuguese and English metadata for the Chrome Web Store;
+- WhatsApp onboarding to create and configure a Groq API key before audio capture.
 
-### Corrigido
+### Fixed
 
-- cancelamento imediato durante a captura e a montagem do áudio;
-- validação do arquivo capturado e isolamento do canal acionado pela página;
-- timeout, ownership e limpeza dos trabalhos ainda incompletos;
-- exibição do resultado mesmo quando a persistência no cache falha;
-- tratamento de falhas assíncronas no popup e pré-liberação do cache.
+- Immediate cancellation during audio capture and assembly;
+- Captured file validation and isolation of the channel triggered by the page;
+- Timeouts, ownership validation, and cleanup of incomplete jobs;
+- Result display even when cache persistence fails;
+- Asynchronous failure handling in the popup and early cache eviction.
 
 ## 0.2.0 - 2026-08-04
 
-### Adicionado
+### Added
 
-- extensão Manifest V3 para transcrição de mensagens de voz do WhatsApp Web;
-- captura silenciosa de áudio OGG/Opus no contexto da página;
-- transcrição com Whisper Large v3 Turbo pela Groq;
-- formatação conservadora com GPT-OSS 20B e saída estruturada;
-- fila serial, cancelamento, progresso e tratamento de erros;
-- cache local de transcrições e gerenciamento da API key;
-- popup de configuração e widgets isolados com Shadow DOM;
-- testes do protocolo, provider e identificação de mensagens de voz;
-- pacote de distribuição manual para Chrome no macOS e Windows.
+- Manifest V3 extension for transcribing WhatsApp Web voice messages;
+- Silent OGG/Opus audio capture in the page context;
+- Transcription with Whisper Large v3 Turbo through Groq;
+- Conservative formatting with GPT-OSS 20B and structured output;
+- Serial queue, cancellation, progress, and error handling;
+- Local transcript cache and API key management;
+- Settings popup and widgets isolated with Shadow DOM;
+- Tests for the protocol, provider, and voice message identification;
+- Manual distribution package for Chrome on macOS and Windows.

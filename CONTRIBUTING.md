@@ -1,25 +1,25 @@
-# Contribuindo
+# Contributing
 
-Obrigado por considerar uma contribuição para o WhatsApp Audio Transcriber. Correções, melhorias de documentação, testes e propostas de novos recursos são bem-vindos.
+Thank you for considering a contribution to WhatsApp Audio Transcriber. Bug fixes, documentation improvements, tests, and proposals for new features are welcome.
 
-Ao participar, siga o [Código de Conduta](CODE_OF_CONDUCT.md).
+When participating, follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## Antes de começar
+## Before you start
 
-- Pesquise as [issues existentes](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/issues) para evitar duplicidade.
-- Para correções pequenas, abra diretamente um pull request.
-- Para mudanças grandes, abra uma issue primeiro para alinhar escopo e abordagem.
-- Nunca inclua API keys, áudios privados, transcrições reais ou outros dados pessoais em código, testes ou logs.
+- Search [existing issues](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/issues) to avoid duplicates.
+- For small fixes, open a pull request directly.
+- For larger changes, open an issue first to agree on the scope and approach.
+- Never include API keys, private audio, real transcripts, or other personal data in code, tests, or logs.
 
-Vulnerabilidades devem ser relatadas conforme a [Política de Segurança](SECURITY.md), nunca em uma issue pública.
+Report vulnerabilities according to the [Security Policy](SECURITY.md), never in a public issue.
 
-## Ambiente local
+## Local environment
 
-Requisitos:
+Requirements:
 
-- Node.js 22 ou superior;
+- Node.js 22 or later;
 - pnpm 11;
-- Chrome ou Firefox 140+ / Zen com base Firefox 140+.
+- Chrome or Firefox 140+ / Zen based on Firefox 140+.
 
 ```bash
 git clone https://github.com/gabrielMalonso/whatsapp-audio-transcriber.git
@@ -29,25 +29,25 @@ pnpm install
 pnpm dev
 ```
 
-Para Firefox/Zen, use `pnpm dev:firefox` / `pnpm dev:zen` e carregue o manifesto temporariamente em `about:debugging`. Veja instalação, assinatura e validação manual no [README](README.md).
+For Firefox/Zen, use `pnpm dev:firefox` / `pnpm dev:zen` and load the manifest temporarily in `about:debugging`. See the [README](README.md) for installation, signing, and manual validation.
 
-Carregue `apps/extension/.output/chrome-mv3` em `chrome://extensions` com o modo de desenvolvedor habilitado.
+Load `apps/extension/.output/chrome-mv3` in `chrome://extensions` with Developer mode enabled.
 
-## Organização do projeto
+## Project organization
 
-- `apps/extension`: extensão Manifest V3 construída com WXT e React;
-- `packages/protocol`: contratos, limites e tipos compartilhados;
-- `docs`: decisões de arquitetura e pesquisa sobre o DOM do WhatsApp;
-- `release`: artefatos e instruções de instalação manual.
+- `apps/extension`: Manifest V3 extension built with WXT and React;
+- `packages/protocol`: Shared contracts, limits, and types;
+- `docs`: Architecture decisions and WhatsApp DOM research;
+- `release`: Artifacts and manual installation instructions.
 
-Leia [docs/architecture.md](docs/architecture.md) antes de alterar a captura, a mensageria ou o pipeline de transcrição.
+Read [docs/architecture.md](docs/architecture.md) before changing capture, messaging, or the transcription pipeline.
 
-## Enviando uma mudança
+## Submitting a change
 
-1. Crie uma branch curta a partir de `main`.
-2. Faça mudanças focadas e adicione testes quando houver alteração de comportamento.
-3. Atualize a documentação se a interface, instalação, privacidade ou arquitetura mudar.
-4. Execute as verificações locais:
+1. Create a short-lived branch from `main`.
+2. Make focused changes and add tests when behavior changes.
+3. Update the documentation if the interface, installation, privacy, or architecture changes.
+4. Run the local checks:
 
 ```bash
 pnpm format:check
@@ -58,18 +58,18 @@ pnpm build:chrome
 pnpm build:firefox
 ```
 
-5. Abra o pull request explicando o problema, a solução e como a mudança foi validada.
+5. Open a pull request explaining the problem, the solution, and how the change was validated.
 
-Para alterações nos seletores do WhatsApp, inclua fixtures anonimizadas e testes para mensagens enviadas e recebidas. Prefira atributos estruturais estáveis a classes CSS geradas ou textos localizados.
+For changes to WhatsApp selectors, include anonymized fixtures and tests for sent and received messages. Prefer stable structural attributes over generated CSS classes or localized text.
 
 ## Pull requests
 
-Um pull request deve:
+A pull request should:
 
-- tratar um problema ou objetivo bem definido;
-- manter o escopo pequeno sempre que possível;
-- passar pela integração contínua;
-- não aumentar permissões da extensão sem justificativa explícita;
-- preservar a formatação conservadora e a privacidade descritas no README.
+- Address a well-defined problem or goal;
+- Keep the scope small whenever possible;
+- Pass continuous integration;
+- Avoid increasing extension permissions without explicit justification;
+- Preserve the conservative formatting and privacy described in the README.
 
-Ao enviar uma contribuição, você concorda em licenciá-la sob os termos da [licença MIT](LICENSE) deste projeto.
+By submitting a contribution, you agree to license it under this project's [MIT License](LICENSE).

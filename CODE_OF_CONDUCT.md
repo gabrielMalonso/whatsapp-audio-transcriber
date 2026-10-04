@@ -1,33 +1,33 @@
-# Código de Conduta
+# Code of Conduct
 
-## Nosso compromisso
+## Our commitment
 
-Queremos uma comunidade aberta, acolhedora e livre de assédio para todas as pessoas, independentemente de experiência, identidade, aparência, condição, nacionalidade, crença ou contexto pessoal.
+We want an open, welcoming, and harassment-free community for everyone, regardless of experience, identity, appearance, circumstances, nationality, beliefs, or personal background.
 
-## Comportamentos esperados
+## Expected behavior
 
-- comunicar-se com respeito e empatia;
-- aceitar críticas técnicas de forma construtiva;
-- focar no que é melhor para o projeto e sua comunidade;
-- reconhecer erros, corrigir impactos e aprender com a experiência;
-- respeitar a privacidade e os limites das outras pessoas.
+- Communicate with respect and empathy;
+- Accept technical criticism constructively;
+- Focus on what is best for the project and its community;
+- Acknowledge mistakes, address their impact, and learn from the experience;
+- Respect other people's privacy and boundaries.
 
-## Comportamentos inaceitáveis
+## Unacceptable behavior
 
-- intimidação, assédio, discriminação ou ataques pessoais;
-- linguagem ou imagens sexualizadas e atenção sexual indesejada;
-- exposição de informações privadas sem permissão;
-- trolling, insultos ou interrupção deliberada de discussões;
-- qualquer conduta que seria inadequada em um ambiente profissional.
+- Intimidation, harassment, discrimination, or personal attacks;
+- Sexualized language or imagery and unwanted sexual attention;
+- Disclosure of private information without permission;
+- Trolling, insults, or deliberate disruption of discussions;
+- Any conduct that would be inappropriate in a professional environment.
 
-## Escopo
+## Scope
 
-Este código se aplica aos espaços do projeto e também quando alguém representa publicamente o projeto, incluindo issues, pull requests, discussões, revisões e outros canais comunitários.
+This code applies to project spaces and when someone publicly represents the project, including issues, pull requests, discussions, reviews, and other community channels.
 
-## Aplicação
+## Enforcement
 
-Relate comportamentos abusivos ao mantenedor pelo e-mail [gabriel_alonso_@outlook.com](mailto:gabriel_alonso_@outlook.com). As denúncias serão analisadas de forma justa e, sempre que possível, confidencial.
+Report abusive behavior to the maintainer at [gabriel_alonso_@outlook.com](mailto:gabriel_alonso_@outlook.com). Reports will be reviewed fairly and, whenever possible, confidentially.
 
-O mantenedor pode editar ou remover contribuições e restringir temporária ou permanentemente a participação de quem adotar comportamento inadequado. A resposta será proporcional ao contexto, à gravidade, à recorrência e ao impacto da conduta.
+The maintainer may edit or remove contributions and temporarily or permanently restrict participation by anyone who behaves inappropriately. The response will be proportional to the context, severity, recurrence, and impact of the conduct.
 
-Casos sem intenção clara podem receber primeiro uma orientação privada. Violações graves ou recorrentes podem resultar em advertência pública, restrição temporária ou banimento permanente.
+Cases with unclear intent may first receive private guidance. Serious or repeated violations may result in a public warning, temporary restriction, or permanent ban.

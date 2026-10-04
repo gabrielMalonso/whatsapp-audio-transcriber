@@ -1,146 +1,146 @@
 <div align="center">
-  <img src="apps/extension/assets/icon.png" alt="Ícone do WhatsApp Audio Transcriber" width="112" />
+  <img src="apps/extension/assets/icon.png" alt="WhatsApp Audio Transcriber icon" width="112" />
   <h1>WhatsApp Audio Transcriber</h1>
-  <p>Transcreva mensagens de voz do WhatsApp Web sem sair da conversa.</p>
+  <p>Transcribe WhatsApp Web voice messages without leaving the conversation.</p>
 
   <p>
-    <a href="https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp"><img src="https://img.shields.io/badge/Chrome%20Web%20Store-instalar-4285f4.svg" alt="Instalar pela Chrome Web Store" /></a>
+    <a href="https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp"><img src="https://img.shields.io/badge/Chrome%20Web%20Store-install-4285f4.svg" alt="Install from the Chrome Web Store" /></a>
     <a href="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/actions/workflows/ci.yml"><img src="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-2f6f65.svg" alt="Licença MIT" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2f6f65.svg" alt="MIT License" /></a>
     <a href="https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3"><img src="https://img.shields.io/badge/Chrome-Manifest%20V3-caa66b.svg" alt="Chrome Manifest V3" /></a>
     <a href="https://groq.com/"><img src="https://img.shields.io/badge/Groq-Whisper%20%2B%20GPT--OSS-f2ede3.svg" alt="Groq" /></a>
   </p>
 
   <p>
-    <a href="#instalação">Instalação</a> ·
-    <a href="#como-funciona">Como funciona</a> ·
-    <a href="PRIVACY.md">Privacidade</a> ·
-    <a href="#desenvolvimento">Desenvolvimento</a> ·
-    <a href="CONTRIBUTING.md">Contribuição</a>
+    <a href="#installation">Installation</a> ·
+    <a href="#how-it-works">How it works</a> ·
+    <a href="PRIVACY.md">Privacy</a> ·
+    <a href="#development">Development</a> ·
+    <a href="CONTRIBUTING.md">Contributing</a>
   </p>
 </div>
 
-## Sobre
+## About
 
-O WhatsApp Audio Transcriber é uma extensão open source para Chrome, Firefox e Zen Browser que adiciona transcrições diretamente às mensagens de voz do WhatsApp Web. O áudio é processado pela API da Groq com `whisper-large-v3-turbo`; depois, `openai/gpt-oss-20b` aplica as preferências de formatação escolhidas no popup.
+WhatsApp Audio Transcriber is an open-source extension for Chrome, Firefox, and Zen Browser that adds transcripts directly to WhatsApp Web voice messages. Audio is processed through the Groq API with `whisper-large-v3-turbo`; then `openai/gpt-oss-20b` applies the formatting preferences selected in the popup.
 
-Tudo acontece entre o navegador e a Groq: o projeto não opera servidor intermediário, não armazena os áudios e mantém a API key e as transcrições apenas no armazenamento local da extensão.
+Everything happens between the browser and Groq: the project runs no intermediary server, does not store audio, and keeps the API key and transcripts only in the extension's local storage.
 
 > [!IMPORTANT]
-> Este é um projeto independente, sem vínculo com WhatsApp, Meta ou Groq. Mudanças no WhatsApp Web podem afetar temporariamente o funcionamento da extensão.
+> This is an independent project, not affiliated with WhatsApp, Meta, or Groq. Changes to WhatsApp Web may temporarily affect the extension.
 
-## Recursos
+## Features
 
-- transcrição integrada à interface do WhatsApp Web;
-- detecção automática do idioma do áudio;
-- tom coloquial, natural ou formal;
-- ajustes opcionais de parágrafos, datas, horas e listas;
-- formatação sem responder, resumir ou traduzir o conteúdo;
-- captura sem reprodução audível da mensagem de voz;
-- fila local com cancelamento e indicação de progresso;
-- cache local para evitar o reprocessamento de mensagens;
-- onboarding guiado para criar e configurar a API key da Groq;
-- uma base de código, com builds para Chrome e Firefox/Zen no macOS, Windows e Linux;
-- nenhum Python, FFmpeg, Whisper local ou host nativo.
+- Transcription integrated into the WhatsApp Web interface;
+- Automatic detection of the audio's language;
+- Colloquial, natural, or formal tone;
+- Optional formatting for paragraphs, dates, times, and lists;
+- Formatting without answering, summarizing, or translating the content;
+- Audio capture without audible playback of the voice message;
+- Local queue with cancellation and progress indicators;
+- Local cache to avoid reprocessing messages;
+- Guided onboarding to create and configure a Groq API key;
+- One codebase, with builds for Chrome and Firefox/Zen on macOS, Windows, and Linux;
+- No Python, FFmpeg, local Whisper, or native host required.
 
-## Como funciona
+## How it works
 
 ```mermaid
 flowchart LR
-    A[Mensagem de voz] --> B[Extensão no WhatsApp Web]
-    B -->|áudio OGG/Opus| C[Background]
-    C -->|HTTPS| D[Whisper na Groq]
-    D --> E[GPT-OSS na Groq]
-    E --> F[Transcrição formatada]
-    F --> G[(Cache local)]
+    A[Voice message] --> B[Extension in WhatsApp Web]
+    B -->|OGG/Opus audio| C[Background]
+    C -->|HTTPS| D[Whisper on Groq]
+    D --> E[GPT-OSS on Groq]
+    E --> F[Formatted transcript]
+    F --> G[(Local cache)]
     F --> B
 ```
 
-1. A extensão identifica mensagens de voz por atributos estruturais do WhatsApp Web.
-2. Ao solicitar a transcrição, um script no contexto MAIN captura os bytes do áudio e bloqueia sua reprodução.
-3. O background envia o áudio diretamente à Groq e processa uma transcrição por vez.
-4. A transcrição bruta é formatada com regras estritas e exibida em um componente isolado por Shadow DOM.
-5. O resultado fica em cache local para as próximas visitas à conversa.
+1. The extension identifies voice messages using structural attributes in WhatsApp Web.
+2. When you request a transcript, a script in the MAIN context captures the audio bytes and blocks playback.
+3. The background sends the audio directly to Groq and processes one transcription at a time.
+4. The raw transcript is formatted with strict rules and displayed in a component isolated by Shadow DOM.
+5. The result is cached locally for subsequent visits to the conversation.
 
-Os detalhes estão em [Arquitetura](docs/architecture.md) e [Pesquisa do DOM do WhatsApp](docs/whatsapp-dom.md).
+See [Architecture](docs/architecture.md) and [WhatsApp DOM research](docs/whatsapp-dom.md) for details.
 
-## Instalação
+## Installation
 
-### Usando um pacote pronto
+### Using a ready-made package
 
-Instale pela [Chrome Web Store](https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp), abra o popup da extensão, informe uma [API key da Groq](https://console.groq.com/keys) e clique em **Salvar e testar**.
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp), open the extension popup, enter a [Groq API key](https://console.groq.com/keys), and click **Save and test** (shown as **Salvar e testar** in the current Portuguese interface).
 
-Para instalar manualmente uma versão específica:
+To install a specific version manually:
 
-1. Baixe e descompacte o pacote na página de [Releases](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/releases).
-2. Abra `chrome://extensions` no Google Chrome.
-3. Ative o **Modo do desenvolvedor**.
-4. Clique em **Carregar sem compactação** e selecione a pasta que contém `manifest.json`.
+1. Download and extract the package from the [Releases](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/releases) page.
+2. Open `chrome://extensions` in Google Chrome.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the folder containing `manifest.json`.
 
-Se ainda não houver um pacote publicado, gere o build local seguindo a seção de desenvolvimento.
+If no package has been published yet, create a local build by following the development section.
 
-### Firefox e Zen Browser: instalação temporária
+### Firefox and Zen Browser: temporary installation
 
-O Zen usa o mesmo build do Firefox. Gere `pnpm build:firefox` (ou `pnpm build:zen`) e, no navegador desejado:
+Zen uses the same build as Firefox. Run `pnpm build:firefox` (or `pnpm build:zen`), then in your chosen browser:
 
-1. Abra `about:debugging#/runtime/this-firefox`.
-2. Clique em **Carregar extensão temporária… / Load Temporary Add-on…**.
-3. Selecione `apps/extension/.output/firefox-mv3/manifest.json`.
-4. Abra o popup, configure a API key e clique em **Salvar e testar**.
-5. Recarregue o WhatsApp Web. Verifique em `about:addons` que o acesso a `web.whatsapp.com` e `api.groq.com` está permitido.
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on…**.
+3. Select `apps/extension/.output/firefox-mv3/manifest.json`.
+4. Open the popup, configure the API key, and click **Save and test** (shown as **Salvar e testar** in the current Portuguese interface).
+5. Refresh WhatsApp Web. Check in `about:addons` that access to `web.whatsapp.com` and `api.groq.com` is allowed.
 
-A instalação temporária aceita o build sem assinatura e termina quando o navegador é fechado. Não conte com ela para persistir configuração ou cache entre sessões. Recarregar uma extensão temporária na mesma sessão preserva os dados locais.
+Temporary installation accepts the unsigned build and ends when the browser closes. Do not rely on it to preserve settings or cache between sessions. Reloading a temporary extension within the same session preserves local data.
 
-### Firefox e Zen Browser: instalação permanente e assinatura
+### Firefox and Zen Browser: permanent installation and signing
 
-`pnpm zip:firefox` (ou `pnpm zip:zen`) gera `apps/extension/.output/watextension-0.2.3-firefox.zip`. Esse ZIP **não é assinado**; renomeá-lo para `.xpi` não o torna instalável permanentemente.
+`pnpm zip:firefox` (or `pnpm zip:zen`) generates `apps/extension/.output/watextension-0.2.3-firefox.zip`. This ZIP is **unsigned**; renaming it to `.xpi` does not make it permanently installable.
 
-Para distribuição, envie o pacote ao [portal de desenvolvedores da Mozilla](https://addons.mozilla.org/developers/) e escolha publicação no AMO ou distribuição própria (**unlisted / On your own**). Ambas passam por assinatura e validação da Mozilla. O WXT também gera `watextension-0.2.3-sources.zip` com o workspace, protocolo e lockfile para revisão. Como o código é compilado, forneça esse código-fonte e as instruções para reproduzir o build quando solicitados. Use Node 22+, pnpm 11, `pnpm install --frozen-lockfile` e `pnpm zip:firefox`.
+For distribution, submit the package to the [Mozilla developer portal](https://addons.mozilla.org/developers/) and choose publication on AMO or self-distribution (**unlisted / On your own**). Both undergo Mozilla signing and validation. WXT also generates `watextension-0.2.3-sources.zip` with the workspace, protocol, and lockfile for review. Because the code is compiled, provide this source code and instructions to reproduce the build when requested. Use Node 22+, pnpm 11, `pnpm install --frozen-lockfile`, and `pnpm zip:firefox`.
 
-Depois de obter o `.xpi` assinado, abra `about:addons`, use a engrenagem → **Instalar extensão de um arquivo…** e selecione o XPI, tanto no Firefox quanto no Zen. Não é necessário desativar verificações de assinatura. Ainda não há pacote Firefox assinado ou publicação AMO neste projeto.
+After obtaining the signed `.xpi`, open `about:addons`, use the gear menu → **Install Add-on From File…**, and select the XPI in either Firefox or Zen. There is no need to disable signature checks. This project does not yet have a signed Firefox package or AMO listing.
 
-O Firefox release/beta exige [assinatura da Mozilla](https://extensionworkshop.com/documentation/publish/signing-and-distribution-overview/). Para Zen, distribua também o XPI assinado. O manifesto declara ID fixo `whatsapp-audio-transcriber@gabrielalonso.dev`, mínimo Firefox 140 e [consentimento nativo de transmissão de dados](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/): chave de autenticação, comunicação pessoal e gravação de voz enviados à Groq. O aviso da extensão antes da primeira transcrição continua presente.
+Firefox release/beta requires [Mozilla signing](https://extensionworkshop.com/documentation/publish/signing-and-distribution-overview/). Distribute the signed XPI for Zen as well. The manifest declares the fixed ID `whatsapp-audio-transcriber@gabrielalonso.dev`, a minimum Firefox version of 140, and [native data transmission consent](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/): an authentication key, personal communication, and voice recordings sent to Groq. The extension's notice before the first transcription remains in place.
 
-### Atualizando
+### Updating
 
-Descompacte a nova versão sobre a mesma pasta, clique em **Recarregar** em `chrome://extensions` e atualize o WhatsApp Web. Não remova a extensão antes da atualização se quiser preservar a configuração e o cache locais.
+Extract the new version into the same folder, click **Reload** in `chrome://extensions`, and refresh WhatsApp Web. Do not remove the extension before updating if you want to preserve your local settings and cache.
 
-No Firefox/Zen temporário, gere o build novamente, clique em **Recarregar** no cartão da extensão em `about:debugging` e recarregue o WhatsApp Web. Para instalações permanentes, aumente a versão com `pnpm version:extension X.Y.Z`, gere e assine o novo pacote com o **mesmo ID** e instale o novo XPI sem desinstalar o anterior. AMO permite atualização automática; distribuição própria só atualiza automaticamente se houver um `update_url` e manifesto de atualização configurados (não incluídos neste projeto). Caso contrário, instale o novo XPI manualmente.
+For temporary Firefox/Zen installations, rebuild, click **Reload** on the extension card in `about:debugging`, and refresh WhatsApp Web. For permanent installations, increase the version with `pnpm version:extension X.Y.Z`, build and sign the new package with the **same ID**, and install the new XPI without uninstalling the previous one. AMO supports automatic updates; self-distribution updates automatically only if an `update_url` and update manifest are configured (not included in this project). Otherwise, install the new XPI manually.
 
-## Privacidade
+## Privacy
 
-| Dado                          | Destino                              | Persistência                      |
-| ----------------------------- | ------------------------------------ | --------------------------------- |
-| API key                       | Groq, para autenticar as requisições | `browser.storage.local` via WXT   |
-| Áudio selecionado             | Groq, para transcrição               | não é salvo pelo projeto          |
-| Transcrição bruta e formatada | somente a extensão                   | cache local, removível pelo popup |
+| Data                         | Destination                    | Persistence                         |
+| ---------------------------- | ------------------------------ | ----------------------------------- |
+| API key                      | Groq, to authenticate requests | `browser.storage.local` via WXT     |
+| Selected audio               | Groq, for transcription        | Not saved by the project            |
+| Raw and formatted transcript | Only the extension             | Local cache, cleared from the popup |
 
-A extensão solicita acesso apenas ao armazenamento local, ao WhatsApp Web e à API da Groq. A utilização da API está sujeita aos termos, limites e eventual cobrança da própria Groq.
+The extension requests access only to local storage, WhatsApp Web, and the Groq API. API usage is subject to Groq's own terms, limits, and any applicable charges.
 
-Consulte a [Política de Privacidade](PRIVACY.md) para conhecer todos os dados tratados, destinatários, prazos e controles disponíveis.
+See the [Privacy Policy](PRIVACY.md) for all data processed, recipients, retention periods, and available controls.
 
-Limites atuais:
+Current limits:
 
-- até 25 MB por áudio;
-- até 10 trabalhos na fila e uma transcrição ativa por vez;
-- até 500 transcrições ou aproximadamente 8 MB no cache local.
+- Up to 25 MB per audio file;
+- Up to 10 queued jobs and one active transcription at a time;
+- Up to 500 transcripts or approximately 8 MB in the local cache.
 
-## Limitações conhecidas
+## Known limitations
 
-- a extensão depende de uma conta e de uma API key da Groq;
-- transcrições automáticas podem conter erros, especialmente em nomes e números importantes;
-- somente mensagens de voz do WhatsApp Web são suportadas;
-- alterações na interface do WhatsApp podem exigir uma atualização da extensão;
-- instalações manuais não são atualizadas automaticamente pelo Chrome.
+- The extension requires a Groq account and API key;
+- Automatic transcripts may contain errors, especially in important names and numbers;
+- Only WhatsApp Web voice messages are supported;
+- Changes to the WhatsApp interface may require an extension update;
+- Manual installations are not automatically updated by Chrome.
 
-## Desenvolvimento
+## Development
 
-### Requisitos
+### Requirements
 
-- Node.js 22 ou superior;
+- Node.js 22 or later;
 - pnpm 11;
-- Chrome ou Firefox 140+ (Zen com base Firefox 140+);
-- API key da Groq para testar o fluxo real.
+- Chrome or Firefox 140+ (Zen based on Firefox 140+);
+- A Groq API key to test the actual workflow.
 
 ```bash
 git clone https://github.com/gabrielMalonso/whatsapp-audio-transcriber.git
@@ -150,66 +150,66 @@ pnpm install
 pnpm dev
 ```
 
-O ambiente de desenvolvimento é gerado por WXT. `pnpm dev:firefox` e `pnpm dev:zen` usam o target `firefox` em MV3; carregue `apps/extension/.output/firefox-mv3-dev/manifest.json` temporariamente. Os comandos Zen são aliases do Firefox: não existe um terceiro bundle. Sem um runner de navegador instalado, o WXT gera os arquivos e mantém o servidor de desenvolvimento; abra o navegador e carregue a extensão manualmente, sem adicionar dependências.
+The development environment is generated by WXT. `pnpm dev:firefox` and `pnpm dev:zen` use the `firefox` target in MV3; load `apps/extension/.output/firefox-mv3-dev/manifest.json` temporarily. Zen commands are aliases for Firefox: there is no third bundle. Without an installed browser runner, WXT generates the files and keeps the development server running; open the browser and load the extension manually, without adding dependencies.
 
-Para uma compilação de produção:
+For a production build:
 
 ```bash
 pnpm build
 ```
 
-Carregue no Chrome a pasta:
+Load this folder in Chrome:
 
 ```text
 apps/extension/.output/chrome-mv3
 ```
 
-### Comandos
+### Commands
 
-| Comando                                 | Ação                                             |
-| --------------------------------------- | ------------------------------------------------ |
-| `pnpm dev`                              | inicia o ambiente de desenvolvimento da extensão |
-| `pnpm build`                            | compila o protocolo e a extensão                 |
-| `pnpm test`                             | executa os testes com Vitest                     |
-| `pnpm typecheck`                        | verifica os tipos TypeScript                     |
-| `pnpm lint`                             | verifica o código com ESLint                     |
-| `pnpm format:check`                     | verifica a formatação com Prettier               |
-| `pnpm format`                           | formata os arquivos do projeto                   |
-| `pnpm dev:chrome`                       | alias de `pnpm dev` para Chrome                  |
-| `pnpm dev:firefox` / `pnpm dev:zen`     | desenvolvimento Firefox/Zen, MV3                 |
-| `pnpm build:chrome`                     | build Chrome em `.output/chrome-mv3`             |
-| `pnpm build:firefox` / `pnpm build:zen` | build Firefox/Zen em `.output/firefox-mv3`       |
-| `pnpm zip:chrome`                       | build e ZIP Chrome em `.output`                  |
-| `pnpm zip:firefox` / `pnpm zip:zen`     | build e ZIP Firefox/Zen sem assinatura           |
-| `pnpm check`                            | executa todas as verificações e os dois builds   |
-| `pnpm store:package`                    | gera o ZIP da Chrome Web Store e seu SHA-256     |
-| `pnpm version:extension X.Y.Z`          | sincroniza a versão da extensão                  |
+| Command                                 | Action                                             |
+| --------------------------------------- | -------------------------------------------------- |
+| `pnpm dev`                              | Starts the extension development environment       |
+| `pnpm build`                            | Builds the protocol and extension                  |
+| `pnpm test`                             | Runs tests with Vitest                             |
+| `pnpm typecheck`                        | Checks TypeScript types                            |
+| `pnpm lint`                             | Checks code with ESLint                            |
+| `pnpm format:check`                     | Checks formatting with Prettier                    |
+| `pnpm format`                           | Formats project files                              |
+| `pnpm dev:chrome`                       | Alias for `pnpm dev` for Chrome                    |
+| `pnpm dev:firefox` / `pnpm dev:zen`     | Firefox/Zen development, MV3                       |
+| `pnpm build:chrome`                     | Chrome build in `.output/chrome-mv3`               |
+| `pnpm build:firefox` / `pnpm build:zen` | Firefox/Zen build in `.output/firefox-mv3`         |
+| `pnpm zip:chrome`                       | Chrome build and ZIP in `.output`                  |
+| `pnpm zip:firefox` / `pnpm zip:zen`     | Unsigned Firefox/Zen build and ZIP                 |
+| `pnpm check`                            | Runs all checks and both builds                    |
+| `pnpm store:package`                    | Generates the Chrome Web Store ZIP and its SHA-256 |
+| `pnpm version:extension X.Y.Z`          | Synchronizes the extension version                 |
 
-### Validação em navegador
+### Browser validation
 
-Testes automatizados e builds não comprovam sozinhos compatibilidade com a versão atual do WhatsApp. Em Chrome e Firefox/Zen, valide com sua conta e uma chave Groq:
+Automated tests and builds alone do not prove compatibility with the current WhatsApp version. In Chrome and Firefox/Zen, validate with your account and a Groq key:
 
-Em 4 de outubro de 2026, o build 0.2.3 foi instalado temporariamente no Zen 1.23b (Firefox 157, macOS). Um áudio enviado de 5 segundos na conversa de teste foi capturado, transcrito pela Groq e exibido; o controle de reprodução permaneceu em 0:00. A transcrição foi recuperada do cache após recarregar o WhatsApp, e as preferências do popup persistiram. Esse teste não comprova qualidade da transcrição nem compatibilidade completa. Continuam pendentes os cenários abaixo, exceto essas verificações pontuais, e o fluxo real no Chrome e no Firefox separado.
+On October 4, 2026, build 0.2.3 was temporarily installed in Zen 1.23b (Firefox 157, macOS). A sent 5-second audio message in the test conversation was captured, transcribed by Groq, and displayed; the playback control stayed at 0:00. The transcript was retrieved from the cache after refreshing WhatsApp, and popup preferences persisted. This test does not establish transcription quality or full compatibility. The scenarios below remain pending except for these specific checks, as does the actual workflow in Chrome and standalone Firefox.
 
-- abrir popup, salvar/testar chave e verificar persistência das preferências ao fechar e abrir o popup;
-- transcrever áudio recebido e enviado, já baixado e ainda não baixado, **sem som**; confirmar texto bruto/formatado, cache e chamadas Groq;
-- ouvir normalmente uma mensagem depois da captura; cancelar a captura e um trabalho da fila, repetir após erro e após reconectar o background;
-- recarregar a página, mudar de conversa, reutilizar o cache e conferir preservação dos dados após atualização;
-- negar acesso aos sites e verificar recuperação ao conceder novamente as permissões.
+- Open the popup, save/test the key, and check that preferences persist after closing and reopening it;
+- Transcribe received and sent audio, already downloaded and not yet downloaded, **without sound**; confirm raw/formatted text, cache, and Groq calls;
+- Play a message normally after capture; cancel capture and a queued job, retry after an error and after reconnecting the background;
+- Refresh the page, switch conversations, reuse the cache, and check data preservation after an update;
+- Deny site access and check recovery after granting permissions again.
 
-### Estrutura
+### Structure
 
 ```text
-apps/extension/       extensão WXT + React
-packages/protocol/    contratos Zod compartilhados
-docs/                 arquitetura e pesquisa técnica
-release/              pacotes e instruções de distribuição manual
+apps/extension/       WXT + React extension
+packages/protocol/    Shared Zod contracts
+docs/                 Architecture and technical research
+release/              Packages and manual distribution instructions
 ```
 
-## Contribuindo
+## Contributing
 
-Contribuições são bem-vindas. Antes de enviar um pull request, leia o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Para vulnerabilidades, siga a [política de segurança](SECURITY.md) em vez de abrir uma issue pública.
+Contributions are welcome. Before submitting a pull request, read the [contribution guide](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md). For vulnerabilities, follow the [security policy](SECURITY.md) instead of opening a public issue.
 
-## Licença
+## License
 
-Distribuído sob a licença [MIT](LICENSE). Copyright © 2026 Gabriel Alonso.
+Distributed under the [MIT License](LICENSE). Copyright © 2026 Gabriel Alonso.

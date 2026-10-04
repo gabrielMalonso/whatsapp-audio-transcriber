@@ -1,15 +1,15 @@
-## O que mudou
+## What changed
 
-Descreva de forma objetiva o problema e a solução.
+Clearly describe the problem and the solution.
 
-## Como foi validado
+## How it was validated
 
-Liste os testes automatizados e as verificações manuais executadas.
+List the automated tests and manual checks performed.
 
 ## Checklist
 
-- [ ] Minha mudança tem escopo focado e não inclui dados pessoais ou credenciais.
-- [ ] Adicionei ou atualizei testes quando alterei comportamento.
-- [ ] Atualizei a documentação relevante.
-- [ ] Executei `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test` e `pnpm build`.
-- [ ] Justifiquei qualquer nova permissão ou novo tratamento de dados.
+- [ ] My change has a focused scope and includes no personal data or credentials.
+- [ ] I added or updated tests when changing behavior.
+- [ ] I updated the relevant documentation.
+- [ ] I ran `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`.
+- [ ] I justified any new permission or data processing.
