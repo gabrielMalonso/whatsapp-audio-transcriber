@@ -50,9 +50,9 @@ describe('MAIN audio capture', () => {
     const play = vi
       .spyOn(HTMLMediaElement.prototype, 'play')
       .mockResolvedValue();
-    const audio = new Blob([new Uint8Array([0x4f, 0x67, 0x67, 0x53])]);
-    const bytes = await audio.arrayBuffer();
-    const fetcher = vi.fn().mockResolvedValue(new Response(audio));
+    const bytes = new Uint8Array([0x4f, 0x67, 0x67, 0x53]).buffer;
+    // Node 22's Response cannot consume a JSDOM Blob without stream().
+    const fetcher = vi.fn().mockResolvedValue(new Response(bytes));
     vi.stubGlobal('fetch', fetcher);
     const post = vi.spyOn(window, 'postMessage').mockImplementation(() => {});
     definition.main();
