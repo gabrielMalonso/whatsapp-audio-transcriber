@@ -1,64 +1,64 @@
-# Arquitetura
+# Architecture
 
-## Componentes
+## Components
 
-| Componente                 | Responsabilidade                                                                                            |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `whatsapp-main.content.ts` | Intercepta `HTMLMediaElement.play` no contexto MAIN e aceita somente fontes `blob:` do próprio WhatsApp.    |
-| `whatsapp.content`         | Exige ações reais do usuário e monta a UI React em Shadow DOM fechado.                                      |
-| `pageBridge.ts`            | Arma a captura, permite cancelamento e valida tamanho, contêiner e assinatura do áudio recebido.            |
-| `transcriptionClient.ts`   | Divide o áudio em blocos com backpressure, cancelamento imediato e um `runtime.Port` com o service worker.  |
-| `background.ts`            | Remonta o áudio, valida ownership, expira montagens incompletas, mantém a fila serial e executa o provider. |
-| `GroqProvider`             | Faz a transcrição com Whisper e passa o texto bruto para formatação estruturada pelo GPT-OSS.               |
-| `packages/protocol`        | Define contratos Zod, modelos, estados, limites e erros compartilhados.                                     |
+| Component                  | Responsibility                                                                                                            |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `whatsapp-main.content.ts` | Intercepts `HTMLMediaElement.play` in the MAIN context and accepts only WhatsApp's own `blob:` sources.                   |
+| `whatsapp.content`         | Requires genuine user actions and mounts the React UI in a closed Shadow DOM.                                             |
+| `pageBridge.ts`            | Arms capture, supports cancellation, and validates the received audio's size, container, and signature.                   |
+| `transcriptionClient.ts`   | Splits audio into chunks with backpressure, immediate cancellation, and a `runtime.Port` to the service worker.           |
+| `background.ts`            | Reassembles audio, validates ownership, expires incomplete assemblies, maintains the serial queue, and runs the provider. |
+| `GroqProvider`             | Transcribes with Whisper and sends raw text to GPT-OSS for structured formatting.                                         |
+| `packages/protocol`        | Defines shared Zod contracts, models, states, limits, and errors.                                                         |
 
-## Fluxo
+## Flow
 
 ```mermaid
 sequenceDiagram
-    actor U as Usuário
+    actor U as User
     participant UI as Widget
-    participant P as Contexto MAIN
+    participant P as MAIN context
     participant B as Service worker
-    participant W as Whisper na Groq
-    participant G as GPT-OSS na Groq
+    participant W as Whisper on Groq
+    participant G as GPT-OSS on Groq
 
-    U->>UI: Transcrever
+    U->>UI: Transcribe
     UI->>P: arm(requestId)
-    UI->>U: aciona o botão do áudio
-    P->>P: intercepta play e bloqueia som
-    P-->>UI: Blob OGG/Opus
+    UI->>U: Trigger the audio button
+    P->>P: Intercept play and block sound
+    P-->>UI: OGG/Opus Blob
     UI->>B: audio.begin + chunks + audio.end
     B-->>UI: queued / transcribing
-    B->>W: arquivo OGG
-    W-->>B: texto bruto + idioma + duração
+    B->>W: OGG file
+    W-->>B: Raw text + language + duration
     B-->>UI: formatting
-    B->>G: texto bruto + regras editoriais
-    G-->>B: texto formatado
+    B->>G: Raw text + editorial rules
+    G-->>B: Formatted text
     B-->>UI: job.complete
-    UI->>UI: salva e exibe o texto
+    UI->>UI: Save and display the text
 ```
 
-## Formatação configurável
+## Configurable formatting
 
-O `openai/gpt-oss-20b` é chamado a partir de 40 caracteres, com `reasoning_effort: low` e temperatura `0.3`. O prompt é montado dinamicamente a partir das preferências salvas no popup.
+`openai/gpt-oss-20b` is called for transcripts of at least 40 characters, with `reasoning_effort: low` and a temperature of `0.3`. The prompt is built dynamically from the preferences saved in the popup.
 
-O usuário pode escolher:
+Users can choose:
 
-- tom coloquial, natural ou formal;
-- divisão em parágrafos;
-- remoção determinística do último ponto de cada linha;
-- formatação pt-BR de datas e horários;
-- conversão de enumerações em listas.
+- A colloquial, natural, or formal tone;
+- Paragraph breaks;
+- Deterministic removal of the final period on each line;
+- Brazilian Portuguese date and time formatting;
+- Conversion of enumerations into lists.
 
-As regras críticas proíbem resumo, tradução, resposta ao conteúdo e informações novas. A transcrição é delimitada por tags e tratada como dado, reduzindo risco de prompt injection.
+The critical rules prohibit summarizing, translating, answering the content, and adding new information. The transcript is delimited by tags and treated as data, reducing the risk of prompt injection.
 
-## Estado e persistência
+## State and persistence
 
-O widget trabalha com `idle`, `notice`, `capturing`, `queued`, `working`, `success` e `error`. O cache usa SHA-256 do `data-id` como chave e guarda tanto `text` quanto `rawText`.
+The widget uses `idle`, `notice`, `capturing`, `queued`, `working`, `success`, and `error`. The cache uses the SHA-256 hash of `data-id` as its key and stores both `text` and `rawText`.
 
-A API key e as preferências de formatação permanecem no armazenamento local da extensão. O cache registra a versão das preferências para não reutilizar um texto formatado com ajustes diferentes.
+The API key and formatting preferences remain in the extension's local storage. The cache records the preferences version to avoid reusing text formatted with different settings.
 
-## Multiplataforma
+## Cross-platform support
 
-Não há executável auxiliar, Python ou Native Messaging. Captura, fila, rede e cache usam APIs do Chrome, portanto o mesmo pacote MV3 funciona em macOS, Windows e Linux.
+There is no helper executable, Python, or Native Messaging. Capture, queuing, networking, and caching use Chrome APIs, so the same MV3 package works on macOS, Windows, and Linux.

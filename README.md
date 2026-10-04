@@ -1,122 +1,122 @@
 <div align="center">
-  <img src="apps/extension/assets/icon.png" alt="Ícone do WhatsApp Audio Transcriber" width="112" />
+  <img src="apps/extension/assets/icon.png" alt="WhatsApp Audio Transcriber icon" width="112" />
   <h1>WhatsApp Audio Transcriber</h1>
-  <p>Transcreva mensagens de voz do WhatsApp Web sem sair da conversa.</p>
+  <p>Transcribe WhatsApp Web voice messages without leaving the conversation.</p>
 
   <p>
-    <a href="https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp"><img src="https://img.shields.io/badge/Chrome%20Web%20Store-instalar-4285f4.svg" alt="Instalar pela Chrome Web Store" /></a>
+    <a href="https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp"><img src="https://img.shields.io/badge/Chrome%20Web%20Store-install-4285f4.svg" alt="Install from the Chrome Web Store" /></a>
     <a href="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/actions/workflows/ci.yml"><img src="https://github.com/gabrielMalonso/whatsapp-audio-transcriber/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-2f6f65.svg" alt="Licença MIT" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2f6f65.svg" alt="MIT License" /></a>
     <a href="https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3"><img src="https://img.shields.io/badge/Chrome-Manifest%20V3-caa66b.svg" alt="Chrome Manifest V3" /></a>
     <a href="https://groq.com/"><img src="https://img.shields.io/badge/Groq-Whisper%20%2B%20GPT--OSS-f2ede3.svg" alt="Groq" /></a>
   </p>
 
   <p>
-    <a href="#instalação">Instalação</a> ·
-    <a href="#como-funciona">Como funciona</a> ·
-    <a href="PRIVACY.md">Privacidade</a> ·
-    <a href="#desenvolvimento">Desenvolvimento</a> ·
-    <a href="CONTRIBUTING.md">Contribuição</a>
+    <a href="#installation">Installation</a> ·
+    <a href="#how-it-works">How it works</a> ·
+    <a href="PRIVACY.md">Privacy</a> ·
+    <a href="#development">Development</a> ·
+    <a href="CONTRIBUTING.md">Contributing</a>
   </p>
 </div>
 
-## Sobre
+## About
 
-O WhatsApp Audio Transcriber é uma extensão open source para Google Chrome que adiciona transcrições diretamente às mensagens de voz do WhatsApp Web. O áudio é processado pela API da Groq com `whisper-large-v3-turbo`; depois, `openai/gpt-oss-20b` aplica as preferências de formatação escolhidas no popup.
+WhatsApp Audio Transcriber is an open-source Google Chrome extension that adds transcripts directly to WhatsApp Web voice messages. Audio is processed through the Groq API with `whisper-large-v3-turbo`; then `openai/gpt-oss-20b` applies the formatting preferences selected in the popup.
 
-Tudo acontece entre o navegador e a Groq: o projeto não opera servidor intermediário, não armazena os áudios e mantém a API key e as transcrições apenas no armazenamento local da extensão.
+Everything happens between the browser and Groq: the project runs no intermediary server, does not store audio, and keeps the API key and transcripts only in the extension's local storage.
 
 > [!IMPORTANT]
-> Este é um projeto independente, sem vínculo com WhatsApp, Meta ou Groq. Mudanças no WhatsApp Web podem afetar temporariamente o funcionamento da extensão.
+> This is an independent project, not affiliated with WhatsApp, Meta, or Groq. Changes to WhatsApp Web may temporarily affect the extension.
 
-## Recursos
+## Features
 
-- transcrição integrada à interface do WhatsApp Web;
-- detecção automática do idioma do áudio;
-- tom coloquial, natural ou formal;
-- ajustes opcionais de parágrafos, datas, horas e listas;
-- formatação sem responder, resumir ou traduzir o conteúdo;
-- captura sem reprodução audível da mensagem de voz;
-- fila local com cancelamento e indicação de progresso;
-- cache local para evitar o reprocessamento de mensagens;
-- onboarding guiado para criar e configurar a API key da Groq;
-- mesma extensão para Chrome no macOS, Windows e Linux;
-- nenhum Python, FFmpeg, Whisper local ou host nativo.
+- Transcription integrated into the WhatsApp Web interface;
+- Automatic detection of the audio's language;
+- Colloquial, natural, or formal tone;
+- Optional formatting for paragraphs, dates, times, and lists;
+- Formatting without answering, summarizing, or translating the content;
+- Audio capture without audible playback of the voice message;
+- Local queue with cancellation and progress indicators;
+- Local cache to avoid reprocessing messages;
+- Guided onboarding to create and configure a Groq API key;
+- The same extension for Chrome on macOS, Windows, and Linux;
+- No Python, FFmpeg, local Whisper, or native host required.
 
-## Como funciona
+## How it works
 
 ```mermaid
 flowchart LR
-    A[Mensagem de voz] --> B[Extensão no WhatsApp Web]
-    B -->|áudio OGG/Opus| C[Service worker]
-    C -->|HTTPS| D[Whisper na Groq]
-    D --> E[GPT-OSS na Groq]
-    E --> F[Transcrição formatada]
-    F --> G[(Cache local)]
+    A[Voice message] --> B[Extension in WhatsApp Web]
+    B -->|OGG/Opus audio| C[Service worker]
+    C -->|HTTPS| D[Whisper on Groq]
+    D --> E[GPT-OSS on Groq]
+    E --> F[Formatted transcript]
+    F --> G[(Local cache)]
     F --> B
 ```
 
-1. A extensão identifica mensagens de voz por atributos estruturais do WhatsApp Web.
-2. Ao solicitar a transcrição, um script isolado captura o `Blob` de áudio e bloqueia sua reprodução.
-3. O service worker envia o áudio diretamente à Groq e processa uma transcrição por vez.
-4. A transcrição bruta é formatada com regras estritas e exibida em um componente isolado por Shadow DOM.
-5. O resultado fica em cache local para as próximas visitas à conversa.
+1. The extension identifies voice messages using structural attributes in WhatsApp Web.
+2. When you request a transcript, an isolated script captures the audio `Blob` and blocks playback.
+3. The service worker sends the audio directly to Groq and processes one transcription at a time.
+4. The raw transcript is formatted with strict rules and displayed in a component isolated by Shadow DOM.
+5. The result is cached locally for subsequent visits to the conversation.
 
-Os detalhes estão em [Arquitetura](docs/architecture.md) e [Pesquisa do DOM do WhatsApp](docs/whatsapp-dom.md).
+See [Architecture](docs/architecture.md) and [WhatsApp DOM research](docs/whatsapp-dom.md) for details.
 
-## Instalação
+## Installation
 
-### Usando um pacote pronto
+### Using a ready-made package
 
-Instale pela [Chrome Web Store](https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp), abra o popup da extensão, informe uma [API key da Groq](https://console.groq.com/keys) e clique em **Salvar e testar**.
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/transcri%C3%A7%C3%A3o-de-%C3%A1udios-do/dnfdcckllipjhijlddogocihdabnbblp), open the extension popup, enter a [Groq API key](https://console.groq.com/keys), and click **Save and test** (shown as **Salvar e testar** in the current Portuguese interface).
 
-Para instalar manualmente uma versão específica:
+To install a specific version manually:
 
-1. Baixe e descompacte o pacote na página de [Releases](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/releases).
-2. Abra `chrome://extensions` no Google Chrome.
-3. Ative o **Modo do desenvolvedor**.
-4. Clique em **Carregar sem compactação** e selecione a pasta que contém `manifest.json`.
+1. Download and extract the package from the [Releases](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/releases) page.
+2. Open `chrome://extensions` in Google Chrome.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the folder containing `manifest.json`.
 
-Se ainda não houver um pacote publicado, gere o build local seguindo a seção de desenvolvimento.
+If no package has been published yet, create a local build by following the development section.
 
-### Atualizando
+### Updating
 
-Descompacte a nova versão sobre a mesma pasta, clique em **Recarregar** em `chrome://extensions` e atualize o WhatsApp Web. Não remova a extensão antes da atualização se quiser preservar a configuração e o cache locais.
+Extract the new version into the same folder, click **Reload** in `chrome://extensions`, and refresh WhatsApp Web. Do not remove the extension before updating if you want to preserve your local settings and cache.
 
-## Privacidade
+## Privacy
 
-| Dado                          | Destino                              | Persistência                      |
-| ----------------------------- | ------------------------------------ | --------------------------------- |
-| API key                       | Groq, para autenticar as requisições | `chrome.storage.local`            |
-| Áudio selecionado             | Groq, para transcrição               | não é salvo pelo projeto          |
-| Transcrição bruta e formatada | somente a extensão                   | cache local, removível pelo popup |
+| Data                         | Destination                    | Persistence                         |
+| ---------------------------- | ------------------------------ | ----------------------------------- |
+| API key                      | Groq, to authenticate requests | `chrome.storage.local`              |
+| Selected audio               | Groq, for transcription        | Not saved by the project            |
+| Raw and formatted transcript | Only the extension             | Local cache, cleared from the popup |
 
-A extensão solicita acesso apenas ao armazenamento local, ao WhatsApp Web e à API da Groq. A utilização da API está sujeita aos termos, limites e eventual cobrança da própria Groq.
+The extension requests access only to local storage, WhatsApp Web, and the Groq API. API usage is subject to Groq's own terms, limits, and any applicable charges.
 
-Consulte a [Política de Privacidade](PRIVACY.md) para conhecer todos os dados tratados, destinatários, prazos e controles disponíveis.
+See the [Privacy Policy](PRIVACY.md) for all data processed, recipients, retention periods, and available controls.
 
-Limites atuais:
+Current limits:
 
-- até 25 MB por áudio;
-- até 10 trabalhos na fila e uma transcrição ativa por vez;
-- até 500 transcrições ou aproximadamente 8 MB no cache local.
+- Up to 25 MB per audio file;
+- Up to 10 queued jobs and one active transcription at a time;
+- Up to 500 transcripts or approximately 8 MB in the local cache.
 
-## Limitações conhecidas
+## Known limitations
 
-- a extensão depende de uma conta e de uma API key da Groq;
-- transcrições automáticas podem conter erros, especialmente em nomes e números importantes;
-- somente mensagens de voz do WhatsApp Web são suportadas;
-- alterações na interface do WhatsApp podem exigir uma atualização da extensão;
-- instalações manuais não são atualizadas automaticamente pelo Chrome.
+- The extension requires a Groq account and API key;
+- Automatic transcripts may contain errors, especially in important names and numbers;
+- Only WhatsApp Web voice messages are supported;
+- Changes to the WhatsApp interface may require an extension update;
+- Manual installations are not automatically updated by Chrome.
 
-## Desenvolvimento
+## Development
 
-### Requisitos
+### Requirements
 
-- Node.js 22 ou superior;
+- Node.js 22 or later;
 - pnpm 11;
 - Google Chrome;
-- API key da Groq para testar o fluxo real.
+- A Groq API key to test the actual workflow.
 
 ```bash
 git clone https://github.com/gabrielMalonso/whatsapp-audio-transcriber.git
@@ -126,46 +126,46 @@ pnpm install
 pnpm dev
 ```
 
-O ambiente de desenvolvimento é gerado por WXT. Para uma compilação de produção:
+The development environment is generated by WXT. For a production build:
 
 ```bash
 pnpm build
 ```
 
-Carregue no Chrome a pasta:
+Load this folder in Chrome:
 
 ```text
 apps/extension/.output/chrome-mv3
 ```
 
-### Comandos
+### Commands
 
-| Comando                        | Ação                                             |
-| ------------------------------ | ------------------------------------------------ |
-| `pnpm dev`                     | inicia o ambiente de desenvolvimento da extensão |
-| `pnpm build`                   | compila o protocolo e a extensão                 |
-| `pnpm test`                    | executa os testes com Vitest                     |
-| `pnpm typecheck`               | verifica os tipos TypeScript                     |
-| `pnpm lint`                    | verifica o código com ESLint                     |
-| `pnpm format:check`            | verifica a formatação com Prettier               |
-| `pnpm format`                  | formata os arquivos do projeto                   |
-| `pnpm check`                   | executa todas as verificações e o build          |
-| `pnpm store:package`           | gera o ZIP da Chrome Web Store e seu SHA-256     |
-| `pnpm version:extension X.Y.Z` | sincroniza a versão da extensão                  |
+| Command                        | Action                                             |
+| ------------------------------ | -------------------------------------------------- |
+| `pnpm dev`                     | Starts the extension development environment       |
+| `pnpm build`                   | Builds the protocol and extension                  |
+| `pnpm test`                    | Runs tests with Vitest                             |
+| `pnpm typecheck`               | Checks TypeScript types                            |
+| `pnpm lint`                    | Checks code with ESLint                            |
+| `pnpm format:check`            | Checks formatting with Prettier                    |
+| `pnpm format`                  | Formats project files                              |
+| `pnpm check`                   | Runs all checks and the build                      |
+| `pnpm store:package`           | Generates the Chrome Web Store ZIP and its SHA-256 |
+| `pnpm version:extension X.Y.Z` | Synchronizes the extension version                 |
 
-### Estrutura
+### Structure
 
 ```text
-apps/extension/       extensão WXT + React
-packages/protocol/    contratos Zod compartilhados
-docs/                 arquitetura e pesquisa técnica
-release/              pacotes e instruções de distribuição manual
+apps/extension/       WXT + React extension
+packages/protocol/    Shared Zod contracts
+docs/                 Architecture and technical research
+release/              Packages and manual distribution instructions
 ```
 
-## Contribuindo
+## Contributing
 
-Contribuições são bem-vindas. Antes de enviar um pull request, leia o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Para vulnerabilidades, siga a [política de segurança](SECURITY.md) em vez de abrir uma issue pública.
+Contributions are welcome. Before submitting a pull request, read the [contribution guide](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md). For vulnerabilities, follow the [security policy](SECURITY.md) instead of opening a public issue.
 
-## Licença
+## License
 
-Distribuído sob a licença [MIT](LICENSE). Copyright © 2026 Gabriel Alonso.
+Distributed under the [MIT License](LICENSE). Copyright © 2026 Gabriel Alonso.

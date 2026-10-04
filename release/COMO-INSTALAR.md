@@ -1,27 +1,27 @@
-# WhatsApp Transcritor v0.2.1
+# WhatsApp Audio Transcriber v0.2.1
 
-O mesmo pacote funciona no Google Chrome para macOS e Windows.
+The same package works in Google Chrome on macOS and Windows.
 
-## Instalação
+## Installation
 
-1. Copie `WhatsApp-Transcritor-v0.2.1.zip` para o computador.
-2. Descompacte o arquivo em uma pasta permanente, como `Documentos/WhatsApp-Transcritor`.
-3. Abra `chrome://extensions` no Google Chrome.
-4. Ative o **Modo do desenvolvedor**.
-5. Clique em **Carregar sem compactação**.
-6. Selecione a pasta descompactada que contém `manifest.json`.
-7. Abra a extensão, informe sua API key da Groq e clique em **Salvar e testar**.
-8. Atualize a aba do WhatsApp Web.
+1. Copy `WhatsApp-Transcritor-v0.2.1.zip` to your computer.
+2. Extract the file into a permanent folder, such as `Documents/WhatsApp-Transcritor`.
+3. Open `chrome://extensions` in Google Chrome.
+4. Enable **Developer mode**.
+5. Click **Load unpacked**.
+6. Select the extracted folder containing `manifest.json`.
+7. Open the extension, enter your Groq API key, and click **Save and test** (shown as **Salvar e testar** in the current Portuguese interface).
+8. Refresh the WhatsApp Web tab.
 
-## Atualização futura
+## Future updates
 
-1. Descompacte a nova versão sobre a mesma pasta usada na instalação.
-2. Em `chrome://extensions`, clique em **Recarregar** na extensão.
-3. Atualize a aba do WhatsApp Web.
+1. Extract the new version into the same folder used for installation.
+2. In `chrome://extensions`, click **Reload** on the extension.
+3. Refresh the WhatsApp Web tab.
 
-Não remova a extensão antes de atualizar. A API key e as transcrições ficam armazenadas localmente em cada instalação e não estão incluídas no ZIP.
+Do not remove the extension before updating. The API key and transcripts are stored locally in each installation and are not included in the ZIP.
 
-## Verificação do arquivo
+## File verification
 
 SHA-256:
 

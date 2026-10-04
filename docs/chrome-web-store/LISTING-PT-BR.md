@@ -1,62 +1,64 @@
-# Texto da Chrome Web Store — pt-BR
+# Chrome Web Store copy — English translation of the pt-BR listing
 
-## Nome
+This is an English translation of the Brazilian Portuguese listing. The original filename is retained for existing references. Use `LISTING-EN.md` for the English store locale; this file no longer contains ready-to-publish Portuguese copy.
 
-Transcritor para WhatsApp — Áudio em Texto
+## Name
 
-## Resumo
+Transcriber for WhatsApp — Audio to Text
 
-Transcreva áudios do WhatsApp Web em texto com Whisper e formatação inteligente. Open source, sem anúncios e sem servidor próprio.
+## Summary
 
-## Descrição detalhada
+Turn WhatsApp Web audio into text with Whisper and smart formatting. Open source, ad-free, with no project-operated server.
 
-Transcreva áudios e mensagens de voz do WhatsApp Web sem sair da conversa.
+## Detailed description
 
-O Transcritor para WhatsApp adiciona um botão às mensagens de voz. Com um clique, o áudio escolhido é enviado diretamente à Groq, convertido em texto pelo Whisper Large v3 Turbo e, quando necessário, organizado pelo GPT-OSS 20B. A transcrição aparece junto da mensagem e pode ser copiada imediatamente.
+Transcribe WhatsApp Web audio and voice messages without leaving the conversation.
 
-POR QUE USAR
+Transcriber for WhatsApp adds a button to voice messages. With one click, the selected audio is sent directly to Groq, converted to text by Whisper Large v3 Turbo, and, when needed, organized by GPT-OSS 20B. The transcript appears beside the message and can be copied immediately.
 
-• Leia áudios quando não puder ouvi-los
-• Transcrição integrada ao WhatsApp Web
-• Detecção automática do idioma falado
-• Escolha entre tom coloquial, natural ou formal
-• Formatação opcional de parágrafos, datas, horas e listas
-• Cache local que evita transcrever a mesma mensagem novamente
-• Passo a passo para criar e configurar a API key da Groq
-• Cancelamento e indicação de progresso
-• Sem anúncios, analytics ou servidor intermediário
+WHY USE IT
 
-PRIVACIDADE
+• Read voice messages when you cannot listen to them
+• Transcription integrated into WhatsApp Web
+• Automatic spoken-language detection
+• Choose a colloquial, natural, or formal tone
+• Optional formatting for paragraphs, dates, times, and lists
+• Local cache that avoids transcribing the same message again
+• Step-by-step instructions to create and configure a Groq API key
+• Cancellation and progress indicators
+• No ads, analytics, or intermediary server
 
-Nada é transcrito automaticamente. O áudio só é enviado à Groq depois que você clica para transcrever e confirma o aviso inicial. Sua API key e as transcrições ficam no armazenamento local da extensão; você pode apagar o cache e remover a chave quando quiser.
+PRIVACY
 
-REQUISITO
+Nothing is transcribed automatically. Audio is sent to Groq only after you click to transcribe and confirm the initial notice. Your API key and transcripts remain in the extension's local storage; you can clear the cache and remove the key at any time.
 
-Você precisa usar sua própria API key da Groq. O uso da API está sujeito aos limites e termos da Groq.
+REQUIREMENT
 
-CÓDIGO ABERTO
+You need to use your own Groq API key. API usage is subject to Groq's limits and terms.
 
-Projeto open source sob licença MIT. Consulte o código, reporte problemas ou contribua:
+OPEN SOURCE
+
+Open source under the MIT License. Browse the code, report issues, or contribute:
 https://github.com/gabrielMalonso/whatsapp-audio-transcriber
 
-Projeto independente, sem vínculo com WhatsApp, Meta ou Groq. Transcrições automáticas podem conter erros, principalmente em nomes e números.
+Independent project, not affiliated with WhatsApp, Meta, or Groq. Automatic transcripts can contain errors, especially in names and numbers.
 
-## Campos recomendados
+## Recommended fields for the original pt-BR listing
 
-| Campo                   | Valor                                                                             |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| Idioma principal        | Português (Brasil)                                                                |
-| Categoria               | Produtividade                                                                     |
-| Visibilidade            | Pública                                                                           |
-| Preço                   | Gratuita                                                                          |
-| Site                    | https://github.com/gabrielMalonso/whatsapp-audio-transcriber                      |
-| Suporte                 | https://github.com/gabrielMalonso/whatsapp-audio-transcriber/issues               |
-| Política de privacidade | https://github.com/gabrielMalonso/whatsapp-audio-transcriber/blob/main/PRIVACY.md |
+| Field          | Value                                                                             |
+| -------------- | --------------------------------------------------------------------------------- |
+| Primary locale | Portuguese (Brazil)                                                               |
+| Category       | Productivity                                                                      |
+| Visibility     | Public                                                                            |
+| Price          | Free                                                                              |
+| Homepage       | https://github.com/gabrielMalonso/whatsapp-audio-transcriber                      |
+| Support        | https://github.com/gabrielMalonso/whatsapp-audio-transcriber/issues               |
+| Privacy policy | https://github.com/gabrielMalonso/whatsapp-audio-transcriber/blob/main/PRIVACY.md |
 
-## Materiais
+## Assets
 
-- Ícone: `assets/icon-128.png`
-- Captura principal: `assets/screenshot-1280x800.png`
-- Captura de configurações: `assets/screenshot-settings-1280x800.png`
-- Bloco promocional pequeno: `assets/promo-small-440x280.png`
-- Marquee opcional: `assets/marquee-1400x560.png`
+- Icon: `assets/icon-128.png`
+- Main screenshot: `assets/screenshot-1280x800.png`
+- Settings screenshot: `assets/screenshot-settings-1280x800.png`
+- Small promotional tile: `assets/promo-small-440x280.png`
+- Optional marquee: `assets/marquee-1400x560.png`
