@@ -1,6 +1,6 @@
 # Privacy Policy — WhatsApp Audio Transcriber
 
-Last updated: August 5, 2026.
+Last updated: October 4, 2026.
 
 This policy describes how the **WhatsApp Audio Transcriber** extension handles data. The extension is an independent project, not affiliated with WhatsApp, Meta, or Groq.
 
@@ -35,7 +35,7 @@ This processing is also subject to [Groq's Privacy Policy](https://groq.com/priv
 
 ## Local storage and retention
 
-Local data is stored through `chrome.storage.local`:
+Local data is stored through `browser.storage.local` via WXT (Chrome, Firefox, and Zen):
 
 - The API key remains saved until it is removed in the extension popup or the extension is uninstalled;
 - Preferences remain saved until they are changed or the extension is uninstalled;

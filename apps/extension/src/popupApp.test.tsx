@@ -37,14 +37,12 @@ describe('popup', () => {
     unmount();
   });
 
-  it('shows a recoverable status when the service worker is unavailable', async () => {
+  it('shows a recoverable status when the background is unavailable', async () => {
     render(<App />);
 
     expect(await screen.findByText('Indisponível')).toBeTruthy();
     expect(
-      screen.getByText(
-        'Não foi possível consultar o service worker da extensão.',
-      ),
+      screen.getByText('Não foi possível consultar o background da extensão.'),
     ).toBeTruthy();
   });
 });

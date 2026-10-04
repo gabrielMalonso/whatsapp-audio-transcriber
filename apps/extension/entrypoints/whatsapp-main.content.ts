@@ -43,12 +43,14 @@ export default defineContentScript({
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           return response.blob();
         })
-        .then((blob) => {
+        .then(async (blob) => {
           if (!blob.size) throw new Error('O áudio recebido está vazio.');
           if (blob.size > MAX_CAPTURE_BYTES) {
             throw new Error('O áudio excede o limite de 25 MB.');
           }
-          post('capture', capture.requestId, { blob });
+          // Transfer bytes instead of exposing a page-owned Blob across Firefox's Xray boundary.
+          const audio = await blob.arrayBuffer();
+          post('capture', capture.requestId, { audio }, [audio]);
         })
         .catch((error: unknown) => {
           post('error', capture.requestId, {
@@ -65,7 +67,8 @@ export default defineContentScript({
     window.addEventListener('message', (event: MessageEvent<unknown>) => {
       const data = event.data;
       if (
-        event.source !== window ||
+        (event.source !== null && event.source !== window) ||
+        event.origin !== window.location.origin ||
         !data ||
         typeof data !== 'object' ||
         !('channel' in data) ||
@@ -107,6 +110,7 @@ export default defineContentScript({
       kind: 'response' | 'capture' | 'error',
       requestId: string,
       payload: Record<string, unknown> = {},
+      transfer: Transferable[] = [],
     ) {
       window.postMessage(
         {
@@ -116,6 +120,7 @@ export default defineContentScript({
           ...payload,
         },
         window.location.origin,
+        transfer,
       );
     }
 

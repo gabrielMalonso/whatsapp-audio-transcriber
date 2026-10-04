@@ -19,7 +19,7 @@ Requirements:
 
 - Node.js 22 or later;
 - pnpm 11;
-- Google Chrome.
+- Chrome or Firefox 140+ / Zen based on Firefox 140+.
 
 ```bash
 git clone https://github.com/gabrielMalonso/whatsapp-audio-transcriber.git
@@ -28,6 +28,8 @@ corepack enable
 pnpm install
 pnpm dev
 ```
+
+For Firefox/Zen, use `pnpm dev:firefox` / `pnpm dev:zen` and load the manifest temporarily in `about:debugging`. See the [README](README.md) for installation, signing, and manual validation.
 
 Load `apps/extension/.output/chrome-mv3` in `chrome://extensions` with Developer mode enabled.
 
@@ -52,7 +54,8 @@ pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm test
-pnpm build
+pnpm build:chrome
+pnpm build:firefox
 ```
 
 5. Open a pull request explaining the problem, the solution, and how the change was validated.

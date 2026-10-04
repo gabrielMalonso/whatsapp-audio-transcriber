@@ -91,7 +91,7 @@ export function App() {
     } else {
       setLoaded(true);
       setHealth('unavailable');
-      setDetail('Não foi possível consultar o service worker da extensão.');
+      setDetail('Não foi possível consultar o background da extensão.');
     }
   }, []);
 

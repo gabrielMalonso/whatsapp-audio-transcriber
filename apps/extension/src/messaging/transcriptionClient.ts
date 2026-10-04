@@ -49,21 +49,29 @@ export class TranscriptionClient {
       throw error;
     }
 
-    void this.upload(jobId, audio, port, controller.signal).catch((error) => {
-      if (controller.signal.aborted) return;
-      this.cancelRemote(jobId);
-      this.deliver({
-        v: PROTOCOL_VERSION,
-        type: 'job.error',
-        jobId,
-        code: 'AUDIO_UNSUPPORTED',
-        message:
-          error instanceof Error
-            ? `Não foi possível preparar o áudio: ${error.message}`
+    void this.upload(jobId, audio, port, controller.signal).catch(
+      (error: unknown) => {
+        if (controller.signal.aborted) return;
+        this.cancelRemote(jobId);
+        const detail =
+          typeof error === 'object' &&
+          error !== null &&
+          'message' in error &&
+          typeof error.message === 'string'
+            ? error.message
+            : null;
+        this.deliver({
+          v: PROTOCOL_VERSION,
+          type: 'job.error',
+          jobId,
+          code: 'AUDIO_UNSUPPORTED',
+          message: detail
+            ? `Não foi possível preparar o áudio: ${detail}`
             : 'Não foi possível preparar o áudio.',
-        retryable: true,
-      });
-    });
+          retryable: true,
+        });
+      },
+    );
     return jobId;
   }
 
@@ -90,7 +98,12 @@ export class TranscriptionClient {
     let index = 0;
     for (let offset = 0; offset < bytes.length; offset += AUDIO_CHUNK_BYTES) {
       if (signal.aborted) return;
-      const chunk = bytes.subarray(offset, offset + AUDIO_CHUNK_BYTES);
+      // Explicit views avoid TypedArray species lookups through Firefox Xray wrappers.
+      const chunk = new Uint8Array(
+        bytes.buffer,
+        bytes.byteOffset + offset,
+        Math.min(AUDIO_CHUNK_BYTES, bytes.length - offset),
+      );
       port.postMessage({
         v: PROTOCOL_VERSION,
         type: 'audio.chunk',
@@ -170,7 +183,12 @@ function bytesToBase64(bytes: Uint8Array): string {
   let binary = '';
   const stride = 32_768;
   for (let offset = 0; offset < bytes.length; offset += stride) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + stride));
+    const view = new Uint8Array(
+      bytes.buffer,
+      bytes.byteOffset + offset,
+      Math.min(stride, bytes.length - offset),
+    );
+    binary += String.fromCharCode(...view);
   }
   return btoa(binary);
 }

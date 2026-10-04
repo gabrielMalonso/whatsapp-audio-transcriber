@@ -6,7 +6,7 @@ type BridgeMessage = {
   kind: 'response' | 'capture' | 'error';
   requestId: string;
   action?: 'arm' | 'disarm';
-  blob?: Blob;
+  audio?: ArrayBuffer;
   message?: string;
 };
 
@@ -40,18 +40,22 @@ export async function captureVoiceAudio(
 
     const onMessage = (event: MessageEvent<BridgeMessage>) => {
       if (
-        event.source !== window ||
+        (event.source !== null && event.source !== window) ||
+        event.origin !== window.location.origin ||
         event.data?.channel !== PAGE_BRIDGE_CHANNEL ||
         event.data.requestId !== requestId
       ) {
         return;
       }
 
-      if (event.data.kind === 'capture' && event.data.blob instanceof Blob) {
+      if (event.data.kind === 'capture' && isArrayBuffer(event.data.audio)) {
         if (settled) return;
         settled = true;
         cleanup();
-        void validateCapturedAudio(event.data.blob).then(resolve, reject);
+        void validateCapturedAudio(new Blob([event.data.audio])).then(
+          resolve,
+          reject,
+        );
       }
 
       if (
@@ -100,7 +104,7 @@ function detectedAudioType(header: Uint8Array): string | null {
   if (matches(header, [0x1a, 0x45, 0xdf, 0xa3])) return 'audio/webm';
   if (
     matches(header, [0x52, 0x49, 0x46, 0x46]) &&
-    matches(header.subarray(8), [0x57, 0x41, 0x56, 0x45])
+    matches(header, [0x57, 0x41, 0x56, 0x45], 8)
   ) {
     return 'audio/wav';
   }
@@ -113,8 +117,8 @@ function detectedAudioType(header: Uint8Array): string | null {
   return null;
 }
 
-function matches(value: Uint8Array, expected: number[]): boolean {
-  return expected.every((byte, index) => value[index] === byte);
+function matches(value: Uint8Array, expected: number[], offset = 0): boolean {
+  return expected.every((byte, index) => value[offset + index] === byte);
 }
 
 function abortError(): DOMException {
@@ -136,4 +140,9 @@ function postBridgeCommand(
     },
     window.location.origin,
   );
+}
+
+function isArrayBuffer(value: unknown): value is ArrayBuffer {
+  // Firefox can expose the page buffer with a different global's prototype.
+  return Object.prototype.toString.call(value) === '[object ArrayBuffer]';
 }
