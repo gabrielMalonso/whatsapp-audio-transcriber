@@ -81,9 +81,11 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onMessage.addListener(
-    // The returned promise carries the asynchronous response back to extension UI.
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    (message: unknown, sender) => handleRuntimeMessage(message, sender),
+    (message: unknown, sender, sendResponse) => {
+      void handleRuntimeMessage(message, sender).then(sendResponse);
+      // Chrome only keeps the response channel open when the listener returns true.
+      return true;
+    },
   );
 
   function begin(
