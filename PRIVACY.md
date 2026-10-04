@@ -1,63 +1,63 @@
-# Política de Privacidade — Transcrição de áudios do WhatsApp
+# Privacy Policy — WhatsApp Audio Transcriber
 
-Última atualização: 5 de agosto de 2026.
+Last updated: August 5, 2026.
 
-Esta política descreve como a extensão **Transcrição de áudios do WhatsApp** trata dados. A extensão é um projeto independente, sem vínculo com WhatsApp, Meta ou Groq.
+This policy describes how the **WhatsApp Audio Transcriber** extension handles data. The extension is an independent project, not affiliated with WhatsApp, Meta, or Groq.
 
-## Finalidade
+## Purpose
 
-A única finalidade da extensão é permitir que a pessoa usuária transcreva mensagens de voz escolhidas por ela no WhatsApp Web e formate o texto resultante para leitura na própria conversa.
+The extension's sole purpose is to let users transcribe voice messages they select in WhatsApp Web and format the resulting text for reading within the conversation.
 
-## Dados tratados
+## Data processed
 
-A extensão trata somente os dados necessários para essa finalidade:
+The extension processes only the data necessary for this purpose:
 
-- **API key da Groq:** informada pela pessoa usuária, armazenada no armazenamento local da extensão e enviada à Groq no cabeçalho de autenticação das requisições.
-- **Áudio selecionado:** capturado apenas quando a pessoa usuária solicita uma transcrição e enviado diretamente do navegador à API da Groq.
-- **Transcrição:** o texto bruto retornado pela Groq pode ser enviado novamente à Groq para aplicar as preferências de formatação. O texto bruto e o formatado ficam no cache local da extensão.
-- **Dados técnicos locais:** hash do identificador da mensagem, idioma, duração, modelos utilizados, datas de criação e acesso, preferências de formatação e confirmação de leitura do aviso inicial.
+- **Groq API key:** Provided by the user, stored in the extension's local storage, and sent to Groq in the authentication header of requests.
+- **Selected audio:** Captured only when the user requests a transcription and sent directly from the browser to the Groq API.
+- **Transcript:** The raw text returned by Groq may be sent to Groq again to apply formatting preferences. Both the raw and formatted text are kept in the extension's local cache.
+- **Local technical data:** Hash of the message identifier, language, duration, models used, creation and access dates, formatting preferences, and acknowledgment of the initial notice.
 
-A extensão não solicita nem extrai separadamente nome, e-mail, telefone, localização, informações financeiras, histórico de navegação ou contatos. Uma mensagem escolhida pode conter dados pessoais em seu próprio conteúdo. A extensão não contém publicidade, analytics ou rastreadores.
+The extension does not separately request or extract names, email addresses, phone numbers, location, financial information, browsing history, or contacts. A selected message may contain personal data within its content. The extension contains no advertising, analytics, or trackers.
 
-## Quando ocorre o envio
+## When data is sent
 
-O áudio não é capturado nem enviado automaticamente. Antes da primeira transcrição, a extensão informa que o áudio selecionado será enviado à Groq e solicita uma ação afirmativa para continuar. Cada nova transcrição depende de uma ação da pessoa usuária.
+Audio is not captured or sent automatically. Before the first transcription, the extension informs the user that the selected audio will be sent to Groq and requires an affirmative action to continue. Each new transcription depends on a user action.
 
-## Destinatários e processamento por terceiros
+## Recipients and third-party processing
 
-O projeto não opera servidor intermediário e seus responsáveis não recebem a API key, o áudio ou as transcrições. As requisições são feitas por HTTPS diretamente do navegador para a Groq, que processa:
+The project runs no intermediary server, and its maintainers do not receive the API key, audio, or transcripts. Requests are made over HTTPS directly from the browser to Groq, which processes:
 
-- a API key, para autenticação e consulta dos modelos disponíveis;
-- o áudio selecionado, para produzir a transcrição;
-- o texto bruto, para produzir a versão formatada quando aplicável.
+- The API key, to authenticate requests and query available models;
+- The selected audio, to produce the transcript;
+- The raw text, to produce the formatted version when applicable.
 
-Esse processamento também está sujeito à [Política de Privacidade da Groq](https://groq.com/privacy-policy/) e às [informações da Groq sobre dados no GroqCloud](https://console.groq.com/docs/your-data). Segundo a documentação da Groq, dados de inferência não são retidos por padrão, mas entradas e saídas podem ser registradas temporariamente por até 30 dias para confiabilidade da plataforma ou investigação de abuso. A Groq disponibiliza controles de retenção, inclusive Zero Data Retention, na conta da pessoa usuária.
+This processing is also subject to [Groq's Privacy Policy](https://groq.com/privacy-policy/) and [Groq's information about data in GroqCloud](https://console.groq.com/docs/your-data). According to Groq's documentation, inference data is not retained by default, but inputs and outputs may be temporarily logged for up to 30 days for platform reliability or abuse investigations. Groq provides retention controls, including Zero Data Retention, in the user's account.
 
-## Armazenamento e retenção local
+## Local storage and retention
 
-Os dados locais são armazenados por `chrome.storage.local`:
+Local data is stored through `chrome.storage.local`:
 
-- a API key permanece salva até ser removida no popup da extensão ou até a extensão ser desinstalada;
-- as preferências permanecem salvas até serem alteradas ou até a extensão ser desinstalada;
-- o cache mantém no máximo 500 transcrições ou aproximadamente 8 MB e remove automaticamente os registros menos acessados quando um limite é atingido;
-- o áudio original não é armazenado pela extensão após o processamento.
+- The API key remains saved until it is removed in the extension popup or the extension is uninstalled;
+- Preferences remain saved until they are changed or the extension is uninstalled;
+- The cache keeps at most 500 transcripts or approximately 8 MB and automatically removes the least-accessed records when a limit is reached;
+- The original audio is not stored by the extension after processing.
 
-A pessoa usuária pode apagar todas as transcrições em **Transcrições salvas → Limpar**, remover a API key no popup ou desinstalar a extensão.
+Users can delete all transcripts through **Saved transcripts → Clear** (shown as **Transcrições salvas → Limpar** in the current Portuguese interface), remove the API key in the popup, or uninstall the extension.
 
-## Compartilhamento, venda e publicidade
+## Sharing, sale, and advertising
 
-Os dados não são vendidos, licenciados nem compartilhados para publicidade, análise de crédito ou outras finalidades não relacionadas à transcrição solicitada. Nenhuma pessoa acessa os dados, exceto quando isso for necessário para segurança, prevenção de abuso, cumprimento da lei ou quando houver consentimento explícito da pessoa usuária.
+Data is not sold, licensed, or shared for advertising, credit analysis, or other purposes unrelated to the requested transcription. No person accesses the data except when necessary for security, abuse prevention, legal compliance, or with the user's explicit consent.
 
-## Segurança
+## Security
 
-A extensão usa HTTPS para se comunicar com a Groq, limita permissões aos domínios e recursos necessários, valida as respostas da API e mantém os dados persistentes no armazenamento local isolado da extensão. Nenhum sistema é totalmente imune a riscos; a pessoa usuária deve proteger sua API key e revogá-la no painel da Groq se suspeitar de exposição.
+The extension uses HTTPS to communicate with Groq, limits permissions to the necessary domains and resources, validates API responses, and keeps persistent data in the extension's isolated local storage. No system is entirely immune to risk; users should protect their API key and revoke it in the Groq dashboard if they suspect exposure.
 
 ## Limited Use
 
-O uso das informações recebidas das APIs do Google e do Chrome está em conformidade com a [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/program-policies/user-data), incluindo os requisitos de Limited Use. O tratamento é limitado à funcionalidade apresentada ao usuário e não é usado para publicidade, transferência comercial, avaliação de crédito ou enriquecimento de perfis.
+The use of information received from Google and Chrome APIs complies with the [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/program-policies/user-data), including the Limited Use requirements. Processing is limited to the functionality presented to the user and is not used for advertising, commercial transfer, credit assessment, or profile enrichment.
 
-## Alterações e contato
+## Changes and contact
 
-Esta política pode ser atualizada quando a funcionalidade ou os requisitos legais mudarem. A data no início do documento indicará a revisão mais recente.
+This policy may be updated when functionality or legal requirements change. The date at the beginning of this document indicates the most recent revision.
 
-Dúvidas sobre privacidade podem ser abertas no [repositório público do projeto](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/issues). Vulnerabilidades devem ser comunicadas conforme a [política de segurança](SECURITY.md).
+Privacy questions can be raised in the [project's public repository](https://github.com/gabrielMalonso/whatsapp-audio-transcriber/issues). Vulnerabilities should be reported according to the [security policy](SECURITY.md).

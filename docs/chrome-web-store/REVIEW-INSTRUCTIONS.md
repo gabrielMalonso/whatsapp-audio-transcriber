@@ -1,27 +1,29 @@
-# Instruções para o revisor
+# Reviewer instructions
 
-## Pré-requisitos
+## Prerequisites
 
-- Google Chrome em desktop;
-- sessão ativa no WhatsApp Web;
-- uma API key válida da Groq com acesso a `whisper-large-v3-turbo` e `openai/gpt-oss-20b`.
+- Google Chrome on desktop;
+- An active WhatsApp Web session;
+- A valid Groq API key with access to `whisper-large-v3-turbo` and `openai/gpt-oss-20b`.
 
-Não há conta, login ou servidor do próprio projeto. A extensão usa a sessão já aberta no WhatsApp Web e a API key fornecida pelo revisor.
+The project has no account system, login, or server of its own. The extension uses the existing WhatsApp Web session and the API key provided by the reviewer.
 
-## Roteiro de teste
+The current extension interface is in Portuguese. The steps below include the displayed labels where needed.
 
-1. Instale a extensão sem configurar uma chave.
-2. Abra ou atualize `https://web.whatsapp.com/`, entre em uma conversa com uma mensagem de voz e acione o botão de transcrição. Confirme que o painel oferece links para criar a chave na Groq e abrir a configuração da extensão sem capturar o áudio.
-3. No popup, cole uma API key da Groq e selecione **Salvar e testar**. O status deve mudar para **Pronto**.
-4. Acione novamente o botão de transcrição exibido junto à mensagem.
-5. Na primeira vez, confirme o aviso de que o áudio será enviado diretamente à Groq.
-6. Aguarde as etapas de captura, fila, transcrição e formatação.
-7. Confirme que o texto aparece junto à mensagem e que pode ser copiado.
-8. No popup, teste as opções de tom e formatação, a limpeza das transcrições salvas e a remoção da API key.
+## Test procedure
 
-## Observações
+1. Install the extension without configuring a key.
+2. Open or refresh `https://web.whatsapp.com/`, enter a conversation with a voice message, and click the transcription button. Confirm that the panel offers links to create a key on Groq and open the extension settings without capturing audio.
+3. In the popup, paste a Groq API key and select **Save and test** (**Salvar e testar**). The status should change to **Ready** (**Pronto**).
+4. Click the transcription button next to the message again.
+5. On the first use, confirm the notice that audio will be sent directly to Groq.
+6. Wait for capture, queuing, transcription, and formatting.
+7. Confirm that the text appears beside the message and can be copied.
+8. In the popup, test the tone and formatting options, clearing saved transcripts, and removing the API key.
 
-- Nenhum áudio é enviado antes de uma ação explícita e da confirmação do aviso inicial.
-- A mensagem pode ser marcada como reproduzida pelo WhatsApp durante a captura, mas o som é bloqueado pela extensão.
-- O projeto não recebe a API key, o áudio ou a transcrição; o navegador se comunica diretamente com `api.groq.com`.
-- Se a equipe de revisão exigir uma credencial temporária, informe-a somente no campo privado **Test instructions** do painel. Nunca inclua uma chave no ZIP, no repositório ou na descrição pública.
+## Notes
+
+- No audio is sent before an explicit action and acknowledgment of the initial notice.
+- WhatsApp may mark the message as played during capture, but the extension blocks sound.
+- The project does not receive the API key, audio, or transcript; the browser communicates directly with `api.groq.com`.
+- If the review team requires a temporary credential, provide it only in the dashboard's private **Test instructions** field. Never include a key in the ZIP, repository, or public description.

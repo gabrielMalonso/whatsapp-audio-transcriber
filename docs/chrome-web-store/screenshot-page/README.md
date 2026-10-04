@@ -1,17 +1,17 @@
-# Página local para screenshots
+# Local screenshot page
 
-Fixture estática baseada nas proporções medidas no WhatsApp Web. Todo o conteúdo é fictício e a página não carrega scripts, fontes, imagens ou dados externos.
+Static fixture based on proportions measured in WhatsApp Web. All content is fictional, and the page loads no external scripts, fonts, images, or data.
 
-Abra `index.html` diretamente no navegador ou execute, na raiz do projeto:
+Open `index.html` directly in the browser or run this from the project root:
 
 ```bash
 python3 -m http.server 4173 --directory docs/chrome-web-store/screenshot-page
 ```
 
-Depois acesse `http://127.0.0.1:4173/` com uma viewport de `1280 × 800`.
+Then visit `http://127.0.0.1:4173/` with a `1280 × 800` viewport.
 
-## Captura com os componentes reais
+## Capturing real components
 
-`sanitize-whatsapp.js` é uma função para execução supervisionada no WhatsApp Web já aberto. Ela oculta o conteúdo real, clona componentes renderizados pelo próprio WhatsApp e substitui nomes, mensagens e avatares por dados fictícios.
+`sanitize-whatsapp.js` is a function for supervised execution in an already-open WhatsApp Web tab. It hides real content, clones components rendered by WhatsApp itself, and replaces names, messages, and avatars with fictional data.
 
-A alteração existe apenas no DOM da aba atual. Execute `window.__watScreenshotRestore()` ou atualize a página para restaurar o WhatsApp.
+The change exists only in the current tab's DOM. Run `window.__watScreenshotRestore()` or refresh the page to restore WhatsApp.
