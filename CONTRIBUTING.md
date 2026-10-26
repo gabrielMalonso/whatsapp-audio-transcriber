@@ -29,7 +29,7 @@ pnpm install
 pnpm dev
 ```
 
-For Firefox/Zen, use `pnpm dev:firefox` / `pnpm dev:zen` and load the manifest temporarily in `about:debugging`. See the [README](README.md) for installation, signing, and manual validation.
+For Firefox/Zen, use `pnpm dev:firefox` / `pnpm dev:zen` and load the manifest temporarily in `about:debugging`. See the [README](README.md#installation) for installation instructions.
 
 Load `apps/extension/.output/chrome-mv3` in `chrome://extensions` with Developer mode enabled.
 
