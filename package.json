@@ -1,7 +1,7 @@
 {
   "name": "whatsapp-audio-transcriber",
   "private": true,
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Open-source extension for Chrome, Firefox, and Zen that transcribes WhatsApp Web voice messages with Groq.",
   "license": "MIT",
   "author": "Gabriel Alonso",
