@@ -7,7 +7,7 @@ Observations made in the current WhatsApp Web interface with sent and received v
 - Virtualized container `div[role="row"]`;
 - Message identifier in `[data-id]`;
 - Message bubble in `[data-testid="msg-container"]`;
-- Voice marker `[data-icon="ptt-status"]`;
+- Voice marker `svg title` with text `ic-keyboard-voice-filled`, or the legacy `[data-icon="ptt-status"]`, inside the message bubble;
 - Progress in `[role="slider"]`;
 - Playback button located structurally before the slider.
 
@@ -15,6 +15,8 @@ Generated CSS classes and localized `aria-label` text are not used as primary se
 
 ## Findings
 
+- On October 26, 2026, a received five-second voice message used the SVG title `ic-keyboard-voice-filled` and no longer exposed `data-icon="ptt-status"`. The row, message ID, bubble, slider, and playback button were still present. Requiring only the legacy marker caused the scanner to skip the message.
+- The updated production build was loaded in Chrome on Linux and validated against that message: one widget appeared, Groq returned a transcript, playback stayed at `0:00`, and the transcript was restored from the local cache after reloading WhatsApp. Sent messages and the legacy markup are covered by unit tests; this browser check did not validate Firefox or Zen.
 - Sent and received messages share the same essential structure.
 - `tail-in` and `tail-out` appear only in some grouped messages and are unreliable.
 - There is no persistent `<audio>` element in the DOM while idle.
