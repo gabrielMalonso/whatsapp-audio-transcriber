@@ -3,7 +3,7 @@
   --wat-green-strong: #008f72;
   display: block;
   color: var(--message-primary, #111b21);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 13px;
   line-height: 1.45;
 }

@@ -1,6 +1,6 @@
 :root {
   color: #0a0a0a;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-synthesis: none;
   --panel: #ffffff;
   --panel-soft: #f7f8fa;
@@ -279,7 +279,7 @@ svg {
   left: 88px;
   height: 1px;
   background: var(--border);
-  content: '';
+  content: "";
 }
 
 .conversation.selected {
@@ -577,7 +577,7 @@ svg {
   transform: translateY(-50%);
   border-radius: 2px;
   background: currentColor;
-  content: '';
+  content: "";
 }
 
 .waveform i::before {

@@ -1,16 +1,16 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { findVoiceMessages } from './voiceMessages';
+import { beforeEach, describe, expect, it } from "vitest";
+import { findVoiceMessages } from "./voiceMessages";
 
-describe('WhatsApp voice message adapter', () => {
+describe("WhatsApp voice message adapter", () => {
   beforeEach(() => {
-    document.body.innerHTML = '';
-    Object.defineProperty(window, 'innerWidth', {
+    document.body.innerHTML = "";
+    Object.defineProperty(window, "innerWidth", {
       value: 1_000,
       configurable: true,
     });
   });
 
-  it('finds a voice message without depending on generated classes', () => {
+  it("finds a voice message without depending on generated classes", () => {
     document.body.innerHTML = `
       <div role="row" style="width: 800px">
         <div data-id="message-123">
@@ -52,17 +52,17 @@ describe('WhatsApp voice message adapter', () => {
 
     expect(messages).toHaveLength(1);
     expect(messages[0]).toMatchObject({
-      id: 'message-123',
+      id: "message-123",
       outgoing: true,
     });
     expect(messages[0]?.bubble).toBe(bubble);
-    expect(messages[0]?.durationElement?.dataset.duration).toBe('');
-    expect(messages[0]?.transportButton.getAttribute('aria-label')).toContain(
-      'Reproduzir',
+    expect(messages[0]?.durationElement?.dataset.duration).toBe("");
+    expect(messages[0]?.transportButton.getAttribute("aria-label")).toContain(
+      "Reproduzir",
     );
   });
 
-  it('detects incoming messages from row-relative position', () => {
+  it("detects incoming messages from row-relative position", () => {
     document.body.innerHTML = `
       <div role="row">
         <div data-id="message-in">
@@ -101,10 +101,10 @@ describe('WhatsApp voice message adapter', () => {
     const message = findVoiceMessages()[0];
 
     expect(message?.outgoing).toBe(false);
-    expect(message?.durationElement?.dataset.duration).toBe('');
+    expect(message?.durationElement?.dataset.duration).toBe("");
   });
 
-  it('ignores ordinary messages', () => {
+  it("ignores ordinary messages", () => {
     document.body.innerHTML = `
       <div role="row">
         <div data-id="text-123">
@@ -115,8 +115,8 @@ describe('WhatsApp voice message adapter', () => {
     expect(findVoiceMessages()).toEqual([]);
   });
 
-  it.each(['incoming', 'outgoing'])(
-    'finds a current %s voice message without the legacy ptt-status marker',
+  it.each(["incoming", "outgoing"])(
+    "finds a current %s voice message without the legacy ptt-status marker",
     (direction) => {
       document.body.innerHTML = `
         <div role="row">
@@ -141,22 +141,22 @@ describe('WhatsApp voice message adapter', () => {
       )!;
       row.getBoundingClientRect = () => ({ left: 0, width: 800 }) as DOMRect;
       bubble.getBoundingClientRect = () =>
-        ({ left: direction === 'outgoing' ? 450 : 40, width: 300 }) as DOMRect;
+        ({ left: direction === "outgoing" ? 450 : 40, width: 300 }) as DOMRect;
 
       const messages = findVoiceMessages();
 
       expect(messages).toHaveLength(1);
       expect(messages[0]).toMatchObject({
         id: `current-${direction}`,
-        outgoing: direction === 'outgoing',
+        outgoing: direction === "outgoing",
         bubble,
       });
-      expect(messages[0]?.durationElement?.textContent).toBe('0:05');
-      expect(messages[0]?.transportButton).toBe(bubble.querySelector('button'));
+      expect(messages[0]?.durationElement?.textContent).toBe("0:05");
+      expect(messages[0]?.transportButton).toBe(bubble.querySelector("button"));
     },
   );
 
-  it('ignores other media with playback controls and a slider', () => {
+  it("ignores other media with playback controls and a slider", () => {
     document.body.innerHTML = `
       <div role="row">
         <div data-id="music-123">
@@ -172,7 +172,7 @@ describe('WhatsApp voice message adapter', () => {
     expect(findVoiceMessages()).toEqual([]);
   });
 
-  it('ignores voice markers outside the message bubble', () => {
+  it("ignores voice markers outside the message bubble", () => {
     document.body.innerHTML = `
       <div role="row">
         <span data-icon="ptt-status"></span>

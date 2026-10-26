@@ -1,11 +1,11 @@
-import type { Root } from 'react-dom/client';
-import { createRoot } from 'react-dom/client';
-import { TranscriptWidget } from '../../components/TranscriptWidget';
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
+import { TranscriptWidget } from "../../components/TranscriptWidget";
 import {
   findVoiceMessages,
   type VoiceMessageDescriptor,
-} from './voiceMessages';
-import styles from '../../../entrypoints/whatsapp.content/style.css?inline';
+} from "./voiceMessages";
+import styles from "../../../entrypoints/whatsapp.content/style.css?inline";
 
 const TRIGGER_SIZE = 18;
 const PANEL_MAX_WIDTH = 920;
@@ -52,32 +52,32 @@ export function startVoiceMessageScanner(): () => void {
 
       const restoreBubblePosition = ensureRelativePosition(message.bubble);
 
-      const bubbleHost = document.createElement('div');
+      const bubbleHost = document.createElement("div");
       bubbleHost.dataset.watRoot = message.id;
-      bubbleHost.dataset.watBubble = '1';
-      if (message.outgoing) bubbleHost.dataset.watOutgoing = '1';
+      bubbleHost.dataset.watBubble = "1";
+      if (message.outgoing) bubbleHost.dataset.watOutgoing = "1";
       Object.assign(bubbleHost.style, {
-        position: 'absolute',
+        position: "absolute",
         width: `${TRIGGER_SIZE}px`,
         height: `${TRIGGER_SIZE}px`,
-        pointerEvents: 'none',
+        pointerEvents: "none",
         zIndex: String(TRIGGER_Z_INDEX),
-        boxSizing: 'border-box',
+        boxSizing: "border-box",
       });
       message.bubble.appendChild(bubbleHost);
       const bubbleApp = attachShadowApp(bubbleHost);
 
-      const panelHost = document.createElement('div');
+      const panelHost = document.createElement("div");
       panelHost.dataset.watPanel = message.id;
-      if (message.outgoing) panelHost.dataset.watOutgoing = '1';
+      if (message.outgoing) panelHost.dataset.watOutgoing = "1";
       panelHost.hidden = true;
       Object.assign(panelHost.style, {
-        boxSizing: 'border-box',
-        pointerEvents: 'none',
-        marginLeft: message.outgoing ? 'auto' : '0',
-        marginRight: message.outgoing ? '0' : 'auto',
+        boxSizing: "border-box",
+        pointerEvents: "none",
+        marginLeft: message.outgoing ? "auto" : "0",
+        marginRight: message.outgoing ? "0" : "auto",
       });
-      message.bubble.insertAdjacentElement('afterend', panelHost);
+      message.bubble.insertAdjacentElement("afterend", panelHost);
       const panelApp = attachShadowApp(panelHost);
 
       const disposeHover = bindRowHover(message.row, bubbleHost);
@@ -143,18 +143,18 @@ function teardown(widget: MountedWidget | undefined) {
 }
 
 function attachShadowApp(host: HTMLElement): HTMLElement {
-  const shadow = host.attachShadow({ mode: 'closed' });
-  const stylesheet = document.createElement('style');
+  const shadow = host.attachShadow({ mode: "closed" });
+  const stylesheet = document.createElement("style");
   stylesheet.textContent = styles;
-  const app = document.createElement('div');
+  const app = document.createElement("div");
   shadow.append(stylesheet, app);
   return app;
 }
 
 function ensureRelativePosition(bubble: HTMLElement): (() => void) | null {
-  if (getComputedStyle(bubble).position !== 'static') return null;
+  if (getComputedStyle(bubble).position !== "static") return null;
   const previous = bubble.style.position;
-  bubble.style.position = 'relative';
+  bubble.style.position = "relative";
   return () => {
     bubble.style.position = previous;
   };
@@ -164,27 +164,27 @@ function bindRowHover(row: HTMLElement, bubbleHost: HTMLElement): () => void {
   let frame = 0;
   const show = () => {
     if (frame) cancelAnimationFrame(frame);
-    bubbleHost.dataset.watHover = '1';
+    bubbleHost.dataset.watHover = "1";
   };
   const hide = () => {
     frame = requestAnimationFrame(() => {
       frame = 0;
-      if (row.matches(':hover') || bubbleHost.matches(':hover')) return;
+      if (row.matches(":hover") || bubbleHost.matches(":hover")) return;
       delete bubbleHost.dataset.watHover;
     });
   };
 
-  row.addEventListener('mouseenter', show);
-  row.addEventListener('mouseleave', hide);
-  bubbleHost.addEventListener('mouseenter', show);
-  bubbleHost.addEventListener('mouseleave', hide);
+  row.addEventListener("mouseenter", show);
+  row.addEventListener("mouseleave", hide);
+  bubbleHost.addEventListener("mouseenter", show);
+  bubbleHost.addEventListener("mouseleave", hide);
 
   return () => {
     if (frame) cancelAnimationFrame(frame);
-    row.removeEventListener('mouseenter', show);
-    row.removeEventListener('mouseleave', hide);
-    bubbleHost.removeEventListener('mouseenter', show);
-    bubbleHost.removeEventListener('mouseleave', hide);
+    row.removeEventListener("mouseenter", show);
+    row.removeEventListener("mouseleave", hide);
+    bubbleHost.removeEventListener("mouseenter", show);
+    bubbleHost.removeEventListener("mouseleave", hide);
     delete bubbleHost.dataset.watHover;
   };
 }
@@ -217,7 +217,7 @@ function bindWidgetGeometry(
     bubbleHost.style.top = `${geometry.triggerTop}px`;
     panelHost.style.width = `${geometry.panelWidth}px`;
     panelHost.style.setProperty(
-      '--wat-bubble-width',
+      "--wat-bubble-width",
       `${geometry.bubbleWidth}px`,
     );
   };
@@ -227,23 +227,23 @@ function bindWidgetGeometry(
   observer.observe(message.bubble);
   observer.observe(message.slider);
   if (message.durationElement) observer.observe(message.durationElement);
-  window.addEventListener('resize', sync);
+  window.addEventListener("resize", sync);
   sync();
 
   return {
     sync,
     dispose: () => {
       observer.disconnect();
-      window.removeEventListener('resize', sync);
+      window.removeEventListener("resize", sync);
     },
   };
 }
 
 export function calculateWidgetGeometry(
-  bubble: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>,
+  bubble: Pick<DOMRect, "left" | "top" | "width" | "height">,
   panelContentWidth: number,
-  anchor: Pick<DOMRect, 'right' | 'top'>,
-  meta?: Pick<DOMRect, 'left'>,
+  anchor: Pick<DOMRect, "right" | "top">,
+  meta?: Pick<DOMRect, "left">,
 ) {
   const edge = 4;
   const gap = 5;

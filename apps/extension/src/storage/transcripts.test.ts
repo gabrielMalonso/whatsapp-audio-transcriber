@@ -1,5 +1,5 @@
-import type { TranscriptionResult } from '@wat/protocol';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { TranscriptionResult } from "@wat/protocol";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const storageHarness = vi.hoisted(() => {
   const values: Record<string, unknown> = {};
@@ -7,7 +7,7 @@ const storageHarness = vi.hoisted(() => {
   return { calls, values };
 });
 
-vi.mock('wxt/browser', () => ({
+vi.mock("wxt/browser", () => ({
   browser: {
     storage: {
       local: {
@@ -21,19 +21,19 @@ vi.mock('wxt/browser', () => ({
           );
         }),
         set: vi.fn((items: Record<string, unknown>) => {
-          storageHarness.calls.push('set');
+          storageHarness.calls.push("set");
           const next = { ...storageHarness.values, ...items };
           const bytes = new TextEncoder().encode(
             JSON.stringify(next),
           ).byteLength;
           if (bytes > 10 * 1024 * 1024) {
-            return Promise.reject(new Error('QUOTA_BYTES exceeded'));
+            return Promise.reject(new Error("QUOTA_BYTES exceeded"));
           }
           Object.assign(storageHarness.values, items);
           return Promise.resolve();
         }),
         remove: vi.fn((keys: string | string[]) => {
-          storageHarness.calls.push('remove');
+          storageHarness.calls.push("remove");
           for (const key of Array.isArray(keys) ? keys : [keys]) {
             delete storageHarness.values[key];
           }
@@ -48,9 +48,9 @@ import {
   cacheStats,
   putTranscript,
   type TranscriptRecord,
-} from './transcripts';
+} from "./transcripts";
 
-describe('transcript cache', () => {
+describe("transcript cache", () => {
   beforeEach(() => {
     storageHarness.calls.length = 0;
     for (const key of Object.keys(storageHarness.values)) {
@@ -58,27 +58,27 @@ describe('transcript cache', () => {
     }
   });
 
-  it('prunes old records before writing a result that would exceed quota', async () => {
-    const oldText = 'á'.repeat(495_000);
+  it("prunes old records before writing a result that would exceed quota", async () => {
+    const oldText = "á".repeat(495_000);
     for (let index = 0; index < 5; index += 1) {
-      const hash = String(index).padStart(64, '0');
+      const hash = String(index).padStart(64, "0");
       storageHarness.values[`wat.transcript.${hash}`] = record(
         hash,
         oldText,
         index,
       );
     }
-    const newText = 'á'.repeat(250_000);
+    const newText = "á".repeat(250_000);
     const result = transcriptionResult(newText);
 
-    const saved = await putTranscript('f'.repeat(64), result);
+    const saved = await putTranscript("f".repeat(64), result);
     const stats = await cacheStats();
 
-    expect(storageHarness.calls[0]).toBe('remove');
+    expect(storageHarness.calls[0]).toBe("remove");
     expect(saved.text).toBe(newText);
     expect(stats.bytes).toBeLessThanOrEqual(8 * 1024 * 1024);
     expect(
-      storageHarness.values[`wat.transcript.${'f'.repeat(64)}`],
+      storageHarness.values[`wat.transcript.${"f".repeat(64)}`],
     ).toBeDefined();
   });
 });
@@ -87,14 +87,14 @@ function transcriptionResult(text: string): TranscriptionResult {
   return {
     text,
     rawText: text,
-    language: 'pt',
+    language: "pt",
     durationMs: 1_000,
-    audioSha256: 'a'.repeat(64),
-    transcriptionProvider: 'groq',
-    transcriptionModel: 'whisper-large-v3-turbo',
-    formattingProvider: 'groq',
-    formattingModel: 'openai/gpt-oss-20b',
-    formattingSettingsKey: 'v3:natural:1111',
+    audioSha256: "a".repeat(64),
+    transcriptionProvider: "groq",
+    transcriptionModel: "whisper-large-v3-turbo",
+    formattingProvider: "groq",
+    formattingModel: "openai/gpt-oss-20b",
+    formattingSettingsKey: "v3:natural:1111",
   };
 }
 

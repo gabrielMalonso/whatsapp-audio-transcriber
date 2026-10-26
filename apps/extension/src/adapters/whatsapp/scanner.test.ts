@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { calculateWidgetGeometry } from './scanner';
+import { describe, expect, it } from "vitest";
+import { calculateWidgetGeometry } from "./scanner";
 
-describe('WhatsApp transcript widget geometry', () => {
-  it('places the trigger after the duration and before message metadata', () => {
+describe("WhatsApp transcript widget geometry", () => {
+  it("places the trigger after the duration and before message metadata", () => {
     expect(
       calculateWidgetGeometry(
         { left: 876, top: 534, width: 336, height: 67 },
@@ -18,7 +18,7 @@ describe('WhatsApp transcript widget geometry', () => {
     });
   });
 
-  it('keeps the trigger inside compact bubbles', () => {
+  it("keeps the trigger inside compact bubbles", () => {
     const geometry = calculateWidgetGeometry(
       { left: 20, top: 50, width: 90, height: 40 },
       288,
@@ -31,7 +31,7 @@ describe('WhatsApp transcript widget geometry', () => {
     expect(geometry.panelWidth).toBe(288);
   });
 
-  it('fills the WhatsApp message lane for outgoing transcripts', () => {
+  it("fills the WhatsApp message lane for outgoing transcripts", () => {
     const geometry = calculateWidgetGeometry(
       { left: 960, top: 50, width: 320, height: 64 },
       574,
@@ -42,7 +42,7 @@ describe('WhatsApp transcript widget geometry', () => {
     expect(geometry.bubbleWidth).toBe(320);
   });
 
-  it('caps transcript width on large screens', () => {
+  it("caps transcript width on large screens", () => {
     const geometry = calculateWidgetGeometry(
       { left: 40, top: 50, width: 320, height: 64 },
       1600,

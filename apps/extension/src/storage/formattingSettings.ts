@@ -1,14 +1,14 @@
-import { browser } from 'wxt/browser';
-import { z } from 'zod';
+import { browser } from "wxt/browser";
+import { z } from "zod";
 import {
   DEFAULT_FORMATTING_SETTINGS,
   type FormattingSettings,
-} from '../formatting/settings';
+} from "../formatting/settings";
 
-export const FORMATTING_SETTINGS_STORAGE_KEY = 'wat.formatting-settings.v1';
+export const FORMATTING_SETTINGS_STORAGE_KEY = "wat.formatting-settings.v1";
 
 const FormattingSettingsSchema = z.object({
-  tone: z.enum(['colloquial', 'natural', 'formal']),
+  tone: z.enum(["colloquial", "natural", "formal"]),
   addParagraphs: z.boolean(),
   formatDates: z.boolean(),
   formatTimes: z.boolean(),

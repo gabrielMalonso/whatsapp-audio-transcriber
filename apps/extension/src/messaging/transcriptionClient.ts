@@ -4,9 +4,9 @@ import {
   PROTOCOL_VERSION,
   TranscriptionEventSchema,
   type TranscriptionEvent,
-} from '@wat/protocol';
-import { browser } from 'wxt/browser';
-import { AUDIO_CHUNK_BYTES, TRANSCRIPTION_PORT_NAME } from './constants';
+} from "@wat/protocol";
+import { browser } from "wxt/browser";
+import { AUDIO_CHUNK_BYTES, TRANSCRIPTION_PORT_NAME } from "./constants";
 
 export type TranscriptionCallbacks = {
   onMessage: (message: TranscriptionEvent) => void;
@@ -21,13 +21,13 @@ export class TranscriptionClient {
     if (!audio.size || audio.size > MAX_AUDIO_BYTES) {
       throw new Error(
         audio.size > MAX_AUDIO_BYTES
-          ? 'O áudio excede o limite de 25 MB.'
-          : 'O áudio capturado está vazio.',
+          ? "O áudio excede o limite de 25 MB."
+          : "O áudio capturado está vazio.",
       );
     }
-    const mimeType = AudioMimeTypeSchema.safeParse(audio.type || 'audio/ogg');
+    const mimeType = AudioMimeTypeSchema.safeParse(audio.type || "audio/ogg");
     if (!mimeType.success) {
-      throw new Error('O formato do áudio capturado não é compatível.');
+      throw new Error("O formato do áudio capturado não é compatível.");
     }
 
     const jobId = crypto.randomUUID();
@@ -38,7 +38,7 @@ export class TranscriptionClient {
     try {
       port.postMessage({
         v: PROTOCOL_VERSION,
-        type: 'audio.begin',
+        type: "audio.begin",
         jobId,
         mimeType: mimeType.data,
         totalBytes: audio.size,
@@ -54,20 +54,20 @@ export class TranscriptionClient {
         if (controller.signal.aborted) return;
         this.cancelRemote(jobId);
         const detail =
-          typeof error === 'object' &&
+          typeof error === "object" &&
           error !== null &&
-          'message' in error &&
-          typeof error.message === 'string'
+          "message" in error &&
+          typeof error.message === "string"
             ? error.message
             : null;
         this.deliver({
           v: PROTOCOL_VERSION,
-          type: 'job.error',
+          type: "job.error",
           jobId,
-          code: 'AUDIO_UNSUPPORTED',
+          code: "AUDIO_UNSUPPORTED",
           message: detail
             ? `Não foi possível preparar o áudio: ${detail}`
-            : 'Não foi possível preparar o áudio.',
+            : "Não foi possível preparar o áudio.",
           retryable: true,
         });
       },
@@ -106,7 +106,7 @@ export class TranscriptionClient {
       );
       port.postMessage({
         v: PROTOCOL_VERSION,
-        type: 'audio.chunk',
+        type: "audio.chunk",
         jobId,
         index,
         data: bytesToBase64(chunk),
@@ -118,7 +118,7 @@ export class TranscriptionClient {
     if (signal.aborted) return;
     port.postMessage({
       v: PROTOCOL_VERSION,
-      type: 'audio.end',
+      type: "audio.end",
       jobId,
     });
   }
@@ -127,7 +127,7 @@ export class TranscriptionClient {
     try {
       this.port?.postMessage({
         v: PROTOCOL_VERSION,
-        type: 'transcription.cancel',
+        type: "transcription.cancel",
         jobId,
       });
     } catch {
@@ -138,9 +138,9 @@ export class TranscriptionClient {
   private deliver(message: TranscriptionEvent) {
     this.callbacks.get(message.jobId)?.onMessage(message);
     if (
-      message.type === 'job.complete' ||
-      message.type === 'job.error' ||
-      message.type === 'job.cancelled'
+      message.type === "job.complete" ||
+      message.type === "job.error" ||
+      message.type === "job.cancelled"
     ) {
       this.release(message.jobId);
     }
@@ -161,10 +161,10 @@ export class TranscriptionClient {
       for (const [jobId, callback] of this.callbacks) {
         callback.onMessage({
           v: PROTOCOL_VERSION,
-          type: 'job.error',
+          type: "job.error",
           jobId,
-          code: 'WORKER_DISCONNECTED',
-          message: 'A conexão interna da extensão foi encerrada.',
+          code: "WORKER_DISCONNECTED",
+          message: "A conexão interna da extensão foi encerrada.",
           retryable: true,
         });
       }
@@ -180,7 +180,7 @@ function yieldToBrowser(): Promise<void> {
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
-  let binary = '';
+  let binary = "";
   const stride = 32_768;
   for (let offset = 0; offset < bytes.length; offset += stride) {
     const view = new Uint8Array(

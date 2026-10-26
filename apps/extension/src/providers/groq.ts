@@ -4,8 +4,8 @@ import {
   MAX_TRANSCRIPT_CHARS,
   type ErrorCode,
   type TranscriptionResult,
-} from '@wat/protocol';
-import { z } from 'zod';
+} from "@wat/protocol";
+import { z } from "zod";
 import {
   buildSystemPrompt,
   DEFAULT_FORMATTING_SETTINGS,
@@ -14,14 +14,14 @@ import {
   postProcessFormattedText,
   type FormattingSettings,
   wrapTranscription,
-} from '../formatting/settings';
+} from "../formatting/settings";
 import type {
   GroqStatus,
   ProgressCallback,
   TranscriptionProvider,
-} from './types';
+} from "./types";
 
-const API_ROOT = 'https://api.groq.com/openai/v1';
+const API_ROOT = "https://api.groq.com/openai/v1";
 
 const ModelsResponseSchema = z.object({
   data: z.array(z.object({ id: z.string() })),
@@ -68,13 +68,13 @@ export class GroqProvider implements TranscriptionProvider {
     const response = await this.request(
       `${API_ROOT}/models`,
       { signal },
-      'status',
+      "status",
     );
     const parsed = ModelsResponseSchema.safeParse(await response.json());
     if (!parsed.success) {
       throw new GroqProviderError(
-        'NETWORK_ERROR',
-        'A Groq respondeu em um formato inesperado.',
+        "NETWORK_ERROR",
+        "A Groq respondeu em um formato inesperado.",
         true,
       );
     }
@@ -86,8 +86,8 @@ export class GroqProvider implements TranscriptionProvider {
       configured: true,
       healthy: modelsAvailable,
       message: modelsAvailable
-        ? 'Chave válida e modelos disponíveis.'
-        : 'A chave é válida, mas um dos modelos não está disponível neste projeto.',
+        ? "Chave válida e modelos disponíveis."
+        : "A chave é válida, mas um dos modelos não está disponível neste projeto.",
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
       formattingModel: GROQ_FORMATTING_MODEL,
     };
@@ -99,27 +99,27 @@ export class GroqProvider implements TranscriptionProvider {
     signal: AbortSignal,
     onProgress: ProgressCallback,
   ): Promise<TranscriptionResult> {
-    onProgress('transcribing');
+    onProgress("transcribing");
     const raw = await this.createTranscription(audio, language, signal);
     const rawText = raw.text.trim();
     if (!rawText) {
       throw new GroqProviderError(
-        'EMPTY_TRANSCRIPT',
-        'A Groq retornou uma transcrição vazia.',
+        "EMPTY_TRANSCRIPT",
+        "A Groq retornou uma transcrição vazia.",
         false,
       );
     }
     if (rawText.length > MAX_TRANSCRIPT_CHARS) {
       throw new GroqProviderError(
-        'TRANSCRIPT_TOO_LARGE',
-        'A transcrição excedeu o limite permitido.',
+        "TRANSCRIPT_TOO_LARGE",
+        "A transcrição excedeu o limite permitido.",
         false,
       );
     }
 
     let text = rawText;
     if (rawText.length >= MIN_FORMATTING_CHARS) {
-      onProgress('formatting');
+      onProgress("formatting");
       text = await this.formatTranscription(rawText, signal);
     }
     const audioSha256 = await hashBlob(audio);
@@ -129,9 +129,9 @@ export class GroqProvider implements TranscriptionProvider {
       language: raw.language ?? language,
       durationMs: raw.duration == null ? null : raw.duration * 1_000,
       audioSha256,
-      transcriptionProvider: 'groq',
+      transcriptionProvider: "groq",
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
-      formattingProvider: 'groq',
+      formattingProvider: "groq",
       formattingModel: GROQ_FORMATTING_MODEL,
       formattingSettingsKey: formattingSettingsKey(this.formattingSettings),
     };
@@ -143,22 +143,22 @@ export class GroqProvider implements TranscriptionProvider {
     signal: AbortSignal,
   ) {
     const form = new FormData();
-    form.append('file', audio, filenameFor(audio.type));
-    form.append('model', GROQ_TRANSCRIPTION_MODEL);
-    form.append('response_format', 'verbose_json');
-    form.append('temperature', '0');
-    if (language) form.append('language', language);
+    form.append("file", audio, filenameFor(audio.type));
+    form.append("model", GROQ_TRANSCRIPTION_MODEL);
+    form.append("response_format", "verbose_json");
+    form.append("temperature", "0");
+    if (language) form.append("language", language);
 
     const response = await this.request(
       `${API_ROOT}/audio/transcriptions`,
-      { method: 'POST', body: form, signal },
-      'transcription',
+      { method: "POST", body: form, signal },
+      "transcription",
     );
     const parsed = TranscriptionResponseSchema.safeParse(await response.json());
     if (!parsed.success) {
       throw new GroqProviderError(
-        'GROQ_TRANSCRIPTION_FAILED',
-        'A resposta da transcrição veio em um formato inesperado.',
+        "GROQ_TRANSCRIPTION_FAILED",
+        "A resposta da transcrição veio em um formato inesperado.",
         true,
       );
     }
@@ -169,12 +169,12 @@ export class GroqProvider implements TranscriptionProvider {
     const response = await this.request(
       `${API_ROOT}/chat/completions`,
       {
-        method: 'POST',
+        method: "POST",
         signal,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: GROQ_FORMATTING_MODEL,
-          reasoning_effort: 'low',
+          reasoning_effort: "low",
           include_reasoning: false,
           temperature: 0.3,
           max_completion_tokens: Math.min(
@@ -183,23 +183,23 @@ export class GroqProvider implements TranscriptionProvider {
           ),
           messages: [
             {
-              role: 'system',
+              role: "system",
               content: buildSystemPrompt(this.formattingSettings),
             },
             {
-              role: 'user',
+              role: "user",
               content: wrapTranscription(rawText),
             },
           ],
         }),
       },
-      'formatting',
+      "formatting",
     );
     const chat = ChatResponseSchema.safeParse(await response.json());
     if (!chat.success) {
       throw new GroqProviderError(
-        'GROQ_FORMATTING_FAILED',
-        'A resposta da formatação veio em um formato inesperado.',
+        "GROQ_FORMATTING_FAILED",
+        "A resposta da formatação veio em um formato inesperado.",
         true,
       );
     }
@@ -208,15 +208,15 @@ export class GroqProvider implements TranscriptionProvider {
     );
     if (!text) {
       throw new GroqProviderError(
-        'GROQ_FORMATTING_FAILED',
-        'O GPT-OSS não devolveu o texto formatado.',
+        "GROQ_FORMATTING_FAILED",
+        "O GPT-OSS não devolveu o texto formatado.",
         true,
       );
     }
     if (text.length > MAX_TRANSCRIPT_CHARS) {
       throw new GroqProviderError(
-        'TRANSCRIPT_TOO_LARGE',
-        'O texto formatado excedeu o limite permitido.',
+        "TRANSCRIPT_TOO_LARGE",
+        "O texto formatado excedeu o limite permitido.",
         false,
       );
     }
@@ -226,26 +226,26 @@ export class GroqProvider implements TranscriptionProvider {
   private async request(
     url: string,
     init: RequestInit,
-    operation: 'status' | 'transcription' | 'formatting',
+    operation: "status" | "transcription" | "formatting",
   ): Promise<Response> {
     const headers = new Headers(init.headers);
-    headers.set('Authorization', `Bearer ${this.apiKey}`);
+    headers.set("Authorization", `Bearer ${this.apiKey}`);
     let response: Response;
     try {
       response = await this.fetcher(url, { ...init, headers });
     } catch (error) {
       if (init.signal?.aborted) {
         throw new GroqProviderError(
-          'CANCELLED',
-          'A transcrição foi cancelada.',
+          "CANCELLED",
+          "A transcrição foi cancelada.",
           false,
         );
       }
       throw new GroqProviderError(
-        'NETWORK_ERROR',
+        "NETWORK_ERROR",
         error instanceof Error
           ? `Não foi possível acessar a Groq: ${error.message}`
-          : 'Não foi possível acessar a Groq.',
+          : "Não foi possível acessar a Groq.",
         true,
       );
     }
@@ -256,41 +256,41 @@ export class GroqProvider implements TranscriptionProvider {
 
 async function apiError(
   response: Response,
-  operation: 'status' | 'transcription' | 'formatting',
+  operation: "status" | "transcription" | "formatting",
 ) {
   const detail = await readApiError(response);
   if (response.status === 401 || response.status === 403) {
     return new GroqProviderError(
-      'GROQ_AUTH_FAILED',
-      'A API key da Groq é inválida ou não tem acesso aos modelos.',
+      "GROQ_AUTH_FAILED",
+      "A API key da Groq é inválida ou não tem acesso aos modelos.",
       false,
     );
   }
   if (response.status === 429) {
     return new GroqProviderError(
-      'GROQ_RATE_LIMITED',
-      'O limite da Groq foi atingido. Aguarde um pouco e tente novamente.',
+      "GROQ_RATE_LIMITED",
+      "O limite da Groq foi atingido. Aguarde um pouco e tente novamente.",
       true,
     );
   }
   if (response.status === 413) {
     return new GroqProviderError(
-      'AUDIO_TOO_LARGE',
-      'O áudio excede o limite aceito pela Groq.',
+      "AUDIO_TOO_LARGE",
+      "O áudio excede o limite aceito pela Groq.",
       false,
     );
   }
   const code =
-    operation === 'formatting'
-      ? 'GROQ_FORMATTING_FAILED'
-      : operation === 'transcription'
-        ? 'GROQ_TRANSCRIPTION_FAILED'
-        : 'NETWORK_ERROR';
+    operation === "formatting"
+      ? "GROQ_FORMATTING_FAILED"
+      : operation === "transcription"
+        ? "GROQ_TRANSCRIPTION_FAILED"
+        : "NETWORK_ERROR";
   return new GroqProviderError(
     code,
     detail
       ? `A Groq recusou a solicitação: ${detail}`
-      : 'A Groq recusou a solicitação.',
+      : "A Groq recusou a solicitação.",
     response.status >= 500,
   );
 }
@@ -300,27 +300,27 @@ async function readApiError(response: Response): Promise<string> {
     const value = (await response.json()) as {
       error?: { message?: unknown };
     };
-    return typeof value.error?.message === 'string'
+    return typeof value.error?.message === "string"
       ? value.error.message.slice(0, 500)
-      : '';
+      : "";
   } catch {
-    return '';
+    return "";
   }
 }
 
 function filenameFor(mimeType: string) {
-  if (mimeType.includes('webm')) return 'whatsapp-voice.webm';
-  if (mimeType.includes('wav')) return 'whatsapp-voice.wav';
-  if (mimeType.includes('mpeg')) return 'whatsapp-voice.mp3';
-  return 'whatsapp-voice.ogg';
+  if (mimeType.includes("webm")) return "whatsapp-voice.webm";
+  if (mimeType.includes("wav")) return "whatsapp-voice.wav";
+  if (mimeType.includes("mpeg")) return "whatsapp-voice.mp3";
+  return "whatsapp-voice.ogg";
 }
 
 async function hashBlob(blob: Blob): Promise<string> {
   const digest = await crypto.subtle.digest(
-    'SHA-256',
+    "SHA-256",
     await blob.arrayBuffer(),
   );
   return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('');
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }

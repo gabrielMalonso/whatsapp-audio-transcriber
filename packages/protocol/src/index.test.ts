@@ -1,57 +1,57 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
 import {
   GROQ_FORMATTING_MODEL,
   GROQ_TRANSCRIPTION_MODEL,
   PROTOCOL_VERSION,
   TranscriptionCommandSchema,
   TranscriptionEventSchema,
-} from './index.js';
+} from "./index.js";
 
-describe('transcription protocol', () => {
-  it('accepts an audio chunk', () => {
+describe("transcription protocol", () => {
+  it("accepts an audio chunk", () => {
     expect(
       TranscriptionCommandSchema.parse({
         v: PROTOCOL_VERSION,
-        type: 'audio.chunk',
-        jobId: 'job-1',
+        type: "audio.chunk",
+        jobId: "job-1",
         index: 0,
-        data: 'T2dnUw==',
+        data: "T2dnUw==",
       }),
-    ).toMatchObject({ type: 'audio.chunk', index: 0 });
+    ).toMatchObject({ type: "audio.chunk", index: 0 });
   });
 
-  it('rejects unsupported audio MIME types', () => {
+  it("rejects unsupported audio MIME types", () => {
     expect(() =>
       TranscriptionCommandSchema.parse({
         v: PROTOCOL_VERSION,
-        type: 'audio.begin',
-        jobId: 'job-1',
-        mimeType: 'text/html',
+        type: "audio.begin",
+        jobId: "job-1",
+        mimeType: "text/html",
         totalBytes: 4,
         language: null,
       }),
     ).toThrow();
   });
 
-  it('accepts the Groq pipeline result', () => {
+  it("accepts the Groq pipeline result", () => {
     expect(
       TranscriptionEventSchema.parse({
         v: PROTOCOL_VERSION,
-        type: 'job.complete',
-        jobId: 'job-1',
+        type: "job.complete",
+        jobId: "job-1",
         result: {
-          text: 'Texto formatado.',
-          rawText: 'texto formatado',
-          language: 'pt',
+          text: "Texto formatado.",
+          rawText: "texto formatado",
+          language: "pt",
           durationMs: 1_200,
-          audioSha256: 'a'.repeat(64),
-          transcriptionProvider: 'groq',
+          audioSha256: "a".repeat(64),
+          transcriptionProvider: "groq",
           transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
-          formattingProvider: 'groq',
+          formattingProvider: "groq",
           formattingModel: GROQ_FORMATTING_MODEL,
-          formattingSettingsKey: 'v3:natural:1111',
+          formattingSettingsKey: "v3:natural:1111",
         },
       }),
-    ).toMatchObject({ type: 'job.complete' });
+    ).toMatchObject({ type: "job.complete" });
   });
 });

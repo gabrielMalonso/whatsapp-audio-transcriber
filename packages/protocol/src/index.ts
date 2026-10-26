@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const PROTOCOL_VERSION = 1 as const;
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 export const MAX_TRANSCRIPT_CHARS = 800_000;
-export const GROQ_TRANSCRIPTION_MODEL = 'whisper-large-v3-turbo' as const;
-export const GROQ_FORMATTING_MODEL = 'openai/gpt-oss-20b' as const;
+export const GROQ_TRANSCRIPTION_MODEL = "whisper-large-v3-turbo" as const;
+export const GROQ_FORMATTING_MODEL = "openai/gpt-oss-20b" as const;
 
 const BaseSchema = z.strictObject({
   v: z.literal(PROTOCOL_VERSION),
@@ -15,29 +15,29 @@ const JobSchema = BaseSchema.extend({
 });
 
 export const ErrorCodeSchema = z.enum([
-  'INVALID_MESSAGE',
-  'AUDIO_CAPTURE_TIMEOUT',
-  'AUDIO_TOO_LARGE',
-  'AUDIO_UNSUPPORTED',
-  'API_KEY_MISSING',
-  'GROQ_AUTH_FAILED',
-  'GROQ_RATE_LIMITED',
-  'GROQ_TRANSCRIPTION_FAILED',
-  'GROQ_FORMATTING_FAILED',
-  'NETWORK_ERROR',
-  'EMPTY_TRANSCRIPT',
-  'TRANSCRIPT_TOO_LARGE',
-  'CACHE_QUOTA',
-  'WORKER_DISCONNECTED',
-  'CANCELLED',
+  "INVALID_MESSAGE",
+  "AUDIO_CAPTURE_TIMEOUT",
+  "AUDIO_TOO_LARGE",
+  "AUDIO_UNSUPPORTED",
+  "API_KEY_MISSING",
+  "GROQ_AUTH_FAILED",
+  "GROQ_RATE_LIMITED",
+  "GROQ_TRANSCRIPTION_FAILED",
+  "GROQ_FORMATTING_FAILED",
+  "NETWORK_ERROR",
+  "EMPTY_TRANSCRIPT",
+  "TRANSCRIPT_TOO_LARGE",
+  "CACHE_QUOTA",
+  "WORKER_DISCONNECTED",
+  "CANCELLED",
 ]);
 
-export const ProgressStageSchema = z.enum(['transcribing', 'formatting']);
+export const ProgressStageSchema = z.enum(["transcribing", "formatting"]);
 export const AudioMimeTypeSchema = z.enum([
-  'audio/ogg',
-  'audio/webm',
-  'audio/wav',
-  'audio/mpeg',
+  "audio/ogg",
+  "audio/webm",
+  "audio/wav",
+  "audio/mpeg",
 ]);
 
 export const TranscriptionResultSchema = z.strictObject({
@@ -46,42 +46,42 @@ export const TranscriptionResultSchema = z.strictObject({
   language: z.string().min(2).max(32).nullable(),
   durationMs: z.number().nonnegative().nullable(),
   audioSha256: z.string().regex(/^[a-f0-9]{64}$/),
-  transcriptionProvider: z.literal('groq'),
+  transcriptionProvider: z.literal("groq"),
   transcriptionModel: z.literal(GROQ_TRANSCRIPTION_MODEL),
-  formattingProvider: z.literal('groq'),
+  formattingProvider: z.literal("groq"),
   formattingModel: z.literal(GROQ_FORMATTING_MODEL),
   formattingSettingsKey: z.string().min(1).max(128),
 });
 
-export const TranscriptionCommandSchema = z.discriminatedUnion('type', [
+export const TranscriptionCommandSchema = z.discriminatedUnion("type", [
   JobSchema.extend({
-    type: z.literal('audio.begin'),
+    type: z.literal("audio.begin"),
     mimeType: AudioMimeTypeSchema,
     totalBytes: z.number().int().positive().max(MAX_AUDIO_BYTES),
     language: z.string().min(2).max(32).nullable(),
   }),
   JobSchema.extend({
-    type: z.literal('audio.chunk'),
+    type: z.literal("audio.chunk"),
     index: z.number().int().nonnegative(),
     data: z.string().min(1),
   }),
-  JobSchema.extend({ type: z.literal('audio.end') }),
-  JobSchema.extend({ type: z.literal('transcription.cancel') }),
+  JobSchema.extend({ type: z.literal("audio.end") }),
+  JobSchema.extend({ type: z.literal("transcription.cancel") }),
 ]);
 
-export const TranscriptionEventSchema = z.discriminatedUnion('type', [
-  JobSchema.extend({ type: z.literal('job.queued') }),
+export const TranscriptionEventSchema = z.discriminatedUnion("type", [
+  JobSchema.extend({ type: z.literal("job.queued") }),
   JobSchema.extend({
-    type: z.literal('job.progress'),
+    type: z.literal("job.progress"),
     stage: ProgressStageSchema,
   }),
   JobSchema.extend({
-    type: z.literal('job.complete'),
+    type: z.literal("job.complete"),
     result: TranscriptionResultSchema,
   }),
-  JobSchema.extend({ type: z.literal('job.cancelled') }),
+  JobSchema.extend({ type: z.literal("job.cancelled") }),
   JobSchema.extend({
-    type: z.literal('job.error'),
+    type: z.literal("job.error"),
     code: ErrorCodeSchema,
     message: z.string().min(1).max(2_000),
     retryable: z.boolean(),

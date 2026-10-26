@@ -6,23 +6,23 @@ import {
   TranscriptionCommandSchema,
   type ErrorCode,
   type TranscriptionEvent,
-} from '@wat/protocol';
-import { browser, type Browser } from 'wxt/browser';
-import { TRANSCRIPTION_PORT_NAME } from '../src/messaging/constants';
-import { GroqProvider, GroqProviderError } from '../src/providers/groq';
+} from "@wat/protocol";
+import { browser, type Browser } from "wxt/browser";
+import { TRANSCRIPTION_PORT_NAME } from "../src/messaging/constants";
+import { GroqProvider, GroqProviderError } from "../src/providers/groq";
 import type {
   GroqConfigurationResponse,
   GroqStatus,
-} from '../src/providers/types';
-import { getFormattingSettings } from '../src/storage/formattingSettings';
+} from "../src/providers/types";
+import { getFormattingSettings } from "../src/storage/formattingSettings";
 import {
   getGroqSettings,
   removeGroqApiKey,
   saveGroqApiKey,
-} from '../src/storage/groqSettings';
+} from "../src/storage/groqSettings";
 
 type ContentPort = ReturnType<typeof browser.runtime.connect>;
-type JobStatus = 'assembling' | 'queued' | 'running';
+type JobStatus = "assembling" | "queued" | "running";
 const ASSEMBLY_TIMEOUT_MS = 30_000;
 
 type Job = {
@@ -54,18 +54,18 @@ export default defineBackground(() => {
         postError(
           contentPort,
           jobId,
-          'INVALID_MESSAGE',
-          'A extensão gerou uma mensagem inválida.',
+          "INVALID_MESSAGE",
+          "A extensão gerou uma mensagem inválida.",
           false,
         );
         return;
       }
 
       const command = parsed.data;
-      if (command.type === 'audio.begin') begin(command, contentPort);
-      if (command.type === 'audio.chunk') append(command, contentPort);
-      if (command.type === 'audio.end') enqueue(command.jobId, contentPort);
-      if (command.type === 'transcription.cancel') {
+      if (command.type === "audio.begin") begin(command, contentPort);
+      if (command.type === "audio.chunk") append(command, contentPort);
+      if (command.type === "audio.end") enqueue(command.jobId, contentPort);
+      if (command.type === "transcription.cancel") {
         cancel(command.jobId, contentPort);
       }
     });
@@ -89,7 +89,7 @@ export default defineBackground(() => {
   function begin(
     command: Extract<
       ReturnType<typeof TranscriptionCommandSchema.parse>,
-      { type: 'audio.begin' }
+      { type: "audio.begin" }
     >,
     owner: ContentPort,
   ) {
@@ -97,8 +97,8 @@ export default defineBackground(() => {
       postError(
         owner,
         command.jobId,
-        'INVALID_MESSAGE',
-        'Este trabalho já existe.',
+        "INVALID_MESSAGE",
+        "Este trabalho já existe.",
         false,
       );
       return;
@@ -107,8 +107,8 @@ export default defineBackground(() => {
       postError(
         owner,
         command.jobId,
-        'GROQ_RATE_LIMITED',
-        'A fila da extensão está cheia. Aguarde e tente novamente.',
+        "GROQ_RATE_LIMITED",
+        "A fila da extensão está cheia. Aguarde e tente novamente.",
         true,
       );
       return;
@@ -122,14 +122,14 @@ export default defineBackground(() => {
       chunks: [],
       receivedBytes: 0,
       nextIndex: 0,
-      status: 'assembling',
+      status: "assembling",
       controller: new AbortController(),
       assemblyTimeout: null,
     };
     jobs.set(command.jobId, job);
     job.assemblyTimeout = globalThis.setTimeout(() => {
-      if (jobs.get(job.id) === job && job.status === 'assembling') {
-        failAssembly(job, 'O envio do áudio demorou além do limite permitido.');
+      if (jobs.get(job.id) === job && job.status === "assembling") {
+        failAssembly(job, "O envio do áudio demorou além do limite permitido.");
       }
     }, ASSEMBLY_TIMEOUT_MS);
   }
@@ -137,7 +137,7 @@ export default defineBackground(() => {
   function append(
     command: Extract<
       ReturnType<typeof TranscriptionCommandSchema.parse>,
-      { type: 'audio.chunk' }
+      { type: "audio.chunk" }
     >,
     owner: ContentPort,
   ) {
@@ -146,32 +146,32 @@ export default defineBackground(() => {
       postError(
         owner,
         command.jobId,
-        'INVALID_MESSAGE',
-        'Este trabalho pertence a outra conexão.',
+        "INVALID_MESSAGE",
+        "Este trabalho pertence a outra conexão.",
         false,
       );
       return;
     }
     if (
       !job ||
-      job.status !== 'assembling' ||
+      job.status !== "assembling" ||
       command.index !== job.nextIndex
     ) {
-      if (job) failAssembly(job, 'Os blocos do áudio chegaram fora de ordem.');
+      if (job) failAssembly(job, "Os blocos do áudio chegaram fora de ordem.");
       return;
     }
     let chunk: ArrayBuffer;
     try {
       chunk = base64ToBuffer(command.data);
     } catch {
-      failAssembly(job, 'Um bloco do áudio está corrompido.');
+      failAssembly(job, "Um bloco do áudio está corrompido.");
       return;
     }
     if (
       !chunk.byteLength ||
       job.receivedBytes + chunk.byteLength > job.totalBytes
     ) {
-      failAssembly(job, 'O tamanho recebido não confere com o áudio.');
+      failAssembly(job, "O tamanho recebido não confere com o áudio.");
       return;
     }
     job.chunks.push(chunk);
@@ -185,26 +185,26 @@ export default defineBackground(() => {
       postError(
         owner,
         jobId,
-        'INVALID_MESSAGE',
-        'Este trabalho pertence a outra conexão.',
+        "INVALID_MESSAGE",
+        "Este trabalho pertence a outra conexão.",
         false,
       );
       return;
     }
     if (
       !job ||
-      job.status !== 'assembling' ||
+      job.status !== "assembling" ||
       job.receivedBytes !== job.totalBytes
     ) {
-      if (job) failAssembly(job, 'O áudio chegou incompleto.');
+      if (job) failAssembly(job, "O áudio chegou incompleto.");
       return;
     }
     clearAssemblyTimeout(job);
-    job.status = 'queued';
+    job.status = "queued";
     waiting.push(job.id);
     safePost(job.owner, {
       v: PROTOCOL_VERSION,
-      type: 'job.queued',
+      type: "job.queued",
       jobId: job.id,
     });
     drain();
@@ -215,11 +215,11 @@ export default defineBackground(() => {
     if (!job || job.owner !== owner) return;
     job.controller.abort();
     clearAssemblyTimeout(job);
-    if (job.status !== 'running') {
+    if (job.status !== "running") {
       jobs.delete(job.id);
       safePost(job.owner, {
         v: PROTOCOL_VERSION,
-        type: 'job.cancelled',
+        type: "job.cancelled",
         jobId: job.id,
       });
     }
@@ -234,7 +234,7 @@ export default defineBackground(() => {
     }
     if (!job) return;
     activeJobId = job.id;
-    job.status = 'running';
+    job.status = "running";
     void execute(job).finally(() => {
       clearAssemblyTimeout(job);
       jobs.delete(job.id);
@@ -251,8 +251,8 @@ export default defineBackground(() => {
       ]);
       if (!settings) {
         throw new GroqProviderError(
-          'API_KEY_MISSING',
-          'Configure sua API key da Groq no popup da extensão.',
+          "API_KEY_MISSING",
+          "Configure sua API key da Groq no popup da extensão.",
           false,
         );
       }
@@ -266,23 +266,23 @@ export default defineBackground(() => {
         (stage) =>
           safePost(job.owner, {
             v: PROTOCOL_VERSION,
-            type: 'job.progress',
+            type: "job.progress",
             jobId: job.id,
             stage,
           }),
       );
       safePost(job.owner, {
         v: PROTOCOL_VERSION,
-        type: 'job.complete',
+        type: "job.complete",
         jobId: job.id,
         result,
       });
     } catch (error) {
       if (error instanceof GroqProviderError) {
-        if (error.code === 'CANCELLED') {
+        if (error.code === "CANCELLED") {
           safePost(job.owner, {
             v: PROTOCOL_VERSION,
-            type: 'job.cancelled',
+            type: "job.cancelled",
             jobId: job.id,
           });
           return;
@@ -299,8 +299,8 @@ export default defineBackground(() => {
       postError(
         job.owner,
         job.id,
-        'NETWORK_ERROR',
-        'O pipeline da Groq falhou inesperadamente.',
+        "NETWORK_ERROR",
+        "O pipeline da Groq falhou inesperadamente.",
         true,
       );
     }
@@ -309,7 +309,7 @@ export default defineBackground(() => {
   function failAssembly(job: Job, message: string) {
     clearAssemblyTimeout(job);
     jobs.delete(job.id);
-    postError(job.owner, job.id, 'INVALID_MESSAGE', message, false);
+    postError(job.owner, job.id, "INVALID_MESSAGE", message, false);
   }
 
   function clearAssemblyTimeout(job: Job) {
@@ -324,29 +324,29 @@ async function handleRuntimeMessage(
   sender: Browser.runtime.MessageSender,
 ) {
   if (sender.id !== browser.runtime.id) return undefined;
-  if (!message || typeof message !== 'object' || !('type' in message)) {
+  if (!message || typeof message !== "object" || !("type" in message)) {
     return undefined;
   }
 
   if (
-    message.type === 'wat.open-popup' &&
-    sender.url?.startsWith('https://web.whatsapp.com/')
+    message.type === "wat.open-popup" &&
+    sender.url?.startsWith("https://web.whatsapp.com/")
   ) {
     try {
       await browser.action.openPopup();
     } catch {
-      await browser.tabs.create({ url: browser.runtime.getURL('/popup.html') });
+      await browser.tabs.create({ url: browser.runtime.getURL("/popup.html") });
     }
     return { opened: true };
   }
 
-  if (sender.url !== browser.runtime.getURL('/popup.html')) return undefined;
-  if (message.type === 'wat.groq.status') return groqStatus();
-  if (message.type === 'wat.groq.remove-key') {
+  if (sender.url !== browser.runtime.getURL("/popup.html")) return undefined;
+  if (message.type === "wat.groq.status") return groqStatus();
+  if (message.type === "wat.groq.remove-key") {
     await removeGroqApiKey();
     return unconfiguredStatus();
   }
-  if (message.type === 'wat.groq.save-key' && 'apiKey' in message) {
+  if (message.type === "wat.groq.save-key" && "apiKey" in message) {
     return configureGroq(String(message.apiKey));
   }
   return undefined;
@@ -364,7 +364,7 @@ async function groqStatus(): Promise<GroqStatus> {
       message:
         error instanceof GroqProviderError
           ? error.message
-          : 'Não foi possível verificar a Groq.',
+          : "Não foi possível verificar a Groq.",
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
       formattingModel: GROQ_FORMATTING_MODEL,
     };
@@ -387,7 +387,7 @@ async function configureGroq(
       message:
         error instanceof GroqProviderError
           ? error.message
-          : 'Não foi possível validar essa API key.',
+          : "Não foi possível validar essa API key.",
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
       formattingModel: GROQ_FORMATTING_MODEL,
     };
@@ -398,7 +398,7 @@ function unconfiguredStatus(): GroqStatus {
   return {
     configured: false,
     healthy: false,
-    message: 'Adicione uma API key da Groq para começar.',
+    message: "Adicione uma API key da Groq para começar.",
     transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
     formattingModel: GROQ_FORMATTING_MODEL,
   };
@@ -413,7 +413,7 @@ function postError(
 ) {
   safePost(port, {
     v: PROTOCOL_VERSION,
-    type: 'job.error',
+    type: "job.error",
     jobId,
     code,
     message,
@@ -430,14 +430,14 @@ function safePost(port: ContentPort, event: TranscriptionEvent) {
 }
 
 function readJobId(value: unknown) {
-  return typeof value === 'object' && value && 'jobId' in value
+  return typeof value === "object" && value && "jobId" in value
     ? String(value.jobId)
-    : 'unknown';
+    : "unknown";
 }
 
 function base64ToBuffer(encoded: string): ArrayBuffer {
   const binary = atob(encoded);
-  if (binary.length > MAX_AUDIO_BYTES) throw new Error('Chunk muito grande.');
+  if (binary.length > MAX_AUDIO_BYTES) throw new Error("Chunk muito grande.");
   const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index += 1) {
     bytes[index] = binary.charCodeAt(index);

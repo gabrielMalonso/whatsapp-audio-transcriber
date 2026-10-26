@@ -1,7 +1,7 @@
-import type { TranscriptionResult } from '@wat/protocol';
-import { browser } from 'wxt/browser';
-import { formattingSettingsKey } from '../formatting/settings';
-import { getFormattingSettings } from './formattingSettings';
+import type { TranscriptionResult } from "@wat/protocol";
+import { browser } from "wxt/browser";
+import { formattingSettingsKey } from "../formatting/settings";
+import { getFormattingSettings } from "./formattingSettings";
 
 export type TranscriptRecord = TranscriptionResult & {
   schemaVersion: 2;
@@ -11,19 +11,19 @@ export type TranscriptRecord = TranscriptionResult & {
   lastAccessedAt: number;
 };
 
-const PREFIX = 'wat.transcript.';
-const NOTICE_KEY = 'wat.capture-notice-seen';
+const PREFIX = "wat.transcript.";
+const NOTICE_KEY = "wat.capture-notice-seen";
 const MAX_RECORDS = 500;
 const MAX_CACHE_BYTES = 8 * 1024 * 1024;
 
 export async function hashMessageKey(messageId: string): Promise<string> {
   const digest = await crypto.subtle.digest(
-    'SHA-256',
+    "SHA-256",
     new TextEncoder().encode(messageId),
   );
   return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('');
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export async function getTranscript(
@@ -64,7 +64,7 @@ export async function putTranscript(
   };
   const recordBytes = encodedSize(record);
   if (recordBytes > MAX_CACHE_BYTES) {
-    throw new Error('A transcrição excede o espaço reservado para o cache.');
+    throw new Error("A transcrição excede o espaço reservado para o cache.");
   }
   await pruneCache({ messageKeyHash, bytes: recordBytes });
   await browser.storage.local.set({ [key]: record });
