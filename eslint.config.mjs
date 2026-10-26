@@ -1,32 +1,32 @@
-import js from '@eslint/js';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import reactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import js from "@eslint/js";
+import { defineConfig, globalIgnores } from "eslint/config";
+import reactHooks from "eslint-plugin-react-hooks";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default defineConfig(
   globalIgnores([
-    '**/.output/**',
-    '**/.wxt/**',
-    '**/coverage/**',
-    '**/dist/**',
-    'release/**',
+    "**/.output/**",
+    "**/.wxt/**",
+    "**/coverage/**",
+    "**/dist/**",
+    "release/**",
   ]),
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ["**/*.{js,mjs,cjs}"],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: globals.node,
     },
   },
   {
-    files: ['docs/chrome-web-store/screenshot-page/**/*.js'],
+    files: ["docs/chrome-web-store/screenshot-page/**/*.js"],
     languageOptions: {
       globals: globals.browser,
     },
   },
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {
@@ -35,20 +35,20 @@ export default defineConfig(
       },
     },
     linterOptions: {
-      reportUnusedDisableDirectives: 'error',
+      reportUnusedDisableDirectives: "error",
     },
   },
   {
-    files: ['apps/extension/**/*.{ts,tsx}'],
+    files: ["apps/extension/**/*.{ts,tsx}"],
     extends: [reactHooks.configs.flat.recommended],
     rules: {
-      'react-hooks/immutability': 'off',
-      'react-hooks/refs': 'off',
-      'react-hooks/set-state-in-effect': 'off',
+      "react-hooks/immutability": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   {
-    files: ['**/*.config.ts'],
+    files: ["**/*.config.ts"],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {
       parserOptions: {

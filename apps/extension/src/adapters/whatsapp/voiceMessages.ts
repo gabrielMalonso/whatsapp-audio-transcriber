@@ -14,7 +14,7 @@ export function findVoiceMessages(
   const messages: VoiceMessageDescriptor[] = [];
 
   for (const row of root.querySelectorAll<HTMLElement>('[role="row"]')) {
-    const messageRoot = row.querySelector<HTMLElement>('[data-id]');
+    const messageRoot = row.querySelector<HTMLElement>("[data-id]");
     const bubble = row.querySelector<HTMLElement>(
       '[data-testid="msg-container"]',
     );
@@ -42,22 +42,22 @@ export function findVoiceMessages(
 function isVoiceMessage(bubble: HTMLElement): boolean {
   if (bubble.querySelector('[data-icon="ptt-status"]')) return true;
 
-  return [...bubble.querySelectorAll('svg title')].some(
-    (title) => title.textContent?.trim() === 'ic-keyboard-voice-filled',
+  return [...bubble.querySelectorAll("svg title")].some(
+    (title) => title.textContent?.trim() === "ic-keyboard-voice-filled",
   );
 }
 
 function findDurationElement(bubble: HTMLElement): HTMLElement | null {
   const durationPattern = /^\d{1,2}:\d{2}$/u;
-  const candidates = [...bubble.querySelectorAll<HTMLElement>('span, div')];
+  const candidates = [...bubble.querySelectorAll<HTMLElement>("span, div")];
 
   return (
     candidates.findLast((element) => {
       if (element.closest('[data-testid="msg-meta"]')) return false;
-      if (!durationPattern.test((element.textContent ?? '').trim()))
+      if (!durationPattern.test((element.textContent ?? "").trim()))
         return false;
       return ![...element.children].some((child) =>
-        durationPattern.test((child.textContent ?? '').trim()),
+        durationPattern.test((child.textContent ?? "").trim()),
       );
     }) ?? null
   );
@@ -76,9 +76,9 @@ function findTransportButton(
   container: HTMLElement,
   slider: HTMLElement,
 ): HTMLButtonElement | null {
-  const buttons = [...container.querySelectorAll<HTMLButtonElement>('button')];
+  const buttons = [...container.querySelectorAll<HTMLButtonElement>("button")];
   const candidates = buttons.filter((button) => {
-    const label = (button.getAttribute('aria-label') ?? '').toLocaleLowerCase();
+    const label = (button.getAttribute("aria-label") ?? "").toLocaleLowerCase();
     if (
       /velocidade|speed|reproducción|velocidad|\d+[,.]?\d*\s*[×x]/u.test(label)
     ) {

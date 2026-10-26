@@ -1,4 +1,4 @@
-import { PAGE_BRIDGE_CHANNEL } from '../src/messaging/constants';
+import { PAGE_BRIDGE_CHANNEL } from "../src/messaging/constants";
 
 type ActiveCapture = {
   requestId: string;
@@ -8,11 +8,11 @@ type ActiveCapture = {
 const MAX_CAPTURE_BYTES = 25 * 1024 * 1024;
 
 export default defineContentScript({
-  matches: ['https://web.whatsapp.com/*'],
-  runAt: 'document_start',
-  world: 'MAIN',
+  matches: ["https://web.whatsapp.com/*"],
+  runAt: "document_start",
+  world: "MAIN",
   main() {
-    const stateKey = '__watPageBridgeInstalled';
+    const stateKey = "__watPageBridgeInstalled";
     const pageWindow = window as typeof window & Record<string, unknown>;
     if (pageWindow[stateKey]) return;
     pageWindow[stateKey] = true;
@@ -32,8 +32,8 @@ export default defineContentScript({
       activeCapture = null;
       const source = this.currentSrc || this.src;
       if (!isWhatsAppBlobSource(source)) {
-        post('error', capture.requestId, {
-          message: 'A mensagem não disponibilizou um áudio local válido.',
+        post("error", capture.requestId, {
+          message: "A mensagem não disponibilizou um áudio local válido.",
         });
         return Promise.resolve();
       }
@@ -44,47 +44,47 @@ export default defineContentScript({
           return response.blob();
         })
         .then(async (blob) => {
-          if (!blob.size) throw new Error('O áudio recebido está vazio.');
+          if (!blob.size) throw new Error("O áudio recebido está vazio.");
           if (blob.size > MAX_CAPTURE_BYTES) {
-            throw new Error('O áudio excede o limite de 25 MB.');
+            throw new Error("O áudio excede o limite de 25 MB.");
           }
           // Transfer bytes instead of exposing a page-owned Blob across Firefox's Xray boundary.
           const audio = await blob.arrayBuffer();
-          post('capture', capture.requestId, { audio }, [audio]);
+          post("capture", capture.requestId, { audio }, [audio]);
         })
         .catch((error: unknown) => {
-          post('error', capture.requestId, {
+          post("error", capture.requestId, {
             message:
               error instanceof Error
                 ? error.message
-                : 'Falha ao ler o áudio do WhatsApp.',
+                : "Falha ao ler o áudio do WhatsApp.",
           });
         });
 
       return Promise.resolve();
     };
 
-    window.addEventListener('message', (event: MessageEvent<unknown>) => {
+    window.addEventListener("message", (event: MessageEvent<unknown>) => {
       const data = event.data;
       if (
         (event.source !== null && event.source !== window) ||
         event.origin !== window.location.origin ||
         !data ||
-        typeof data !== 'object' ||
-        !('channel' in data) ||
+        typeof data !== "object" ||
+        !("channel" in data) ||
         data.channel !== PAGE_BRIDGE_CHANNEL ||
-        !('kind' in data) ||
-        data.kind !== 'command' ||
-        !('requestId' in data) ||
-        typeof data.requestId !== 'string'
+        !("kind" in data) ||
+        data.kind !== "command" ||
+        !("requestId" in data) ||
+        typeof data.requestId !== "string"
       ) {
         return;
       }
 
-      if ('action' in data && data.action === 'arm') {
+      if ("action" in data && data.action === "arm") {
         const timeoutMs = Math.min(
           Math.max(
-            Number('timeoutMs' in data ? data.timeoutMs : undefined) || 10_000,
+            Number("timeoutMs" in data ? data.timeoutMs : undefined) || 10_000,
             500,
           ),
           15_000,
@@ -93,21 +93,21 @@ export default defineContentScript({
           requestId: data.requestId,
           expiresAt: Date.now() + timeoutMs,
         };
-        post('response', data.requestId, { action: 'arm' });
+        post("response", data.requestId, { action: "arm" });
       }
 
       if (
-        'action' in data &&
-        data.action === 'disarm' &&
+        "action" in data &&
+        data.action === "disarm" &&
         activeCapture?.requestId === data.requestId
       ) {
         activeCapture = null;
-        post('response', data.requestId, { action: 'disarm' });
+        post("response", data.requestId, { action: "disarm" });
       }
     });
 
     function post(
-      kind: 'response' | 'capture' | 'error',
+      kind: "response" | "capture" | "error",
       requestId: string,
       payload: Record<string, unknown> = {},
       transfer: Transferable[] = [],
@@ -128,7 +128,7 @@ export default defineContentScript({
       try {
         const url = new URL(source);
         return (
-          url.protocol === 'blob:' && url.origin === window.location.origin
+          url.protocol === "blob:" && url.origin === window.location.origin
         );
       } catch {
         return false;

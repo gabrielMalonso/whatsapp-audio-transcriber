@@ -1,8 +1,8 @@
-import { GROQ_FORMATTING_MODEL, GROQ_TRANSCRIPTION_MODEL } from '@wat/protocol';
-import { browser } from 'wxt/browser';
-import { z } from 'zod';
+import { GROQ_FORMATTING_MODEL, GROQ_TRANSCRIPTION_MODEL } from "@wat/protocol";
+import { browser } from "wxt/browser";
+import { z } from "zod";
 
-export const GROQ_SETTINGS_STORAGE_KEY = 'wat.groq-settings.v1';
+export const GROQ_SETTINGS_STORAGE_KEY = "wat.groq-settings.v1";
 const ApiKeySchema = z.string().trim().min(20).max(512);
 
 export type GroqSettings = {
@@ -14,7 +14,7 @@ export type GroqSettings = {
 export async function getGroqSettings(): Promise<GroqSettings | null> {
   const stored = await browser.storage.local.get(GROQ_SETTINGS_STORAGE_KEY);
   const value = stored[GROQ_SETTINGS_STORAGE_KEY];
-  if (!value || typeof value !== 'object' || !('apiKey' in value)) return null;
+  if (!value || typeof value !== "object" || !("apiKey" in value)) return null;
   const parsed = ApiKeySchema.safeParse(value.apiKey);
   if (!parsed.success) return null;
   return {

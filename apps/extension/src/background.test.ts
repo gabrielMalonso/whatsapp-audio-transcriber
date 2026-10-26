@@ -1,9 +1,9 @@
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { GROQ_FORMATTING_MODEL, GROQ_TRANSCRIPTION_MODEL } from '@wat/protocol';
-import { GroqProvider } from './providers/groq';
-import * as groqSettings from './storage/groqSettings';
-import * as formattingSettings from './storage/formattingSettings';
-import { DEFAULT_FORMATTING_SETTINGS } from './formatting/settings';
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { GROQ_FORMATTING_MODEL, GROQ_TRANSCRIPTION_MODEL } from "@wat/protocol";
+import { GroqProvider } from "./providers/groq";
+import * as groqSettings from "./storage/groqSettings";
+import * as formattingSettings from "./storage/formattingSettings";
+import { DEFAULT_FORMATTING_SETTINGS } from "./formatting/settings";
 
 type Listener = (value: unknown, sender?: unknown) => unknown;
 
@@ -17,17 +17,17 @@ const runtimeHarness = vi.hoisted(() => {
     messageListeners,
     openPopup,
     createTab,
-    origin: 'chrome-extension://test-extension',
+    origin: "chrome-extension://test-extension",
   };
 });
 
-vi.mock('wxt/browser', () => ({
+vi.mock("wxt/browser", () => ({
   browser: {
     action: {
       openPopup: runtimeHarness.openPopup,
     },
     runtime: {
-      id: 'test-extension',
+      id: "test-extension",
       getURL: (path: string) => `${runtimeHarness.origin}${path}`,
       onConnect: {
         addListener: (listener: (port: unknown) => void) =>
@@ -44,89 +44,89 @@ vi.mock('wxt/browser', () => ({
   },
 }));
 
-describe('background job assembly', () => {
+describe("background job assembly", () => {
   beforeAll(async () => {
-    vi.stubGlobal('defineBackground', (setup: () => void) => setup());
-    await import('../entrypoints/background');
+    vi.stubGlobal("defineBackground", (setup: () => void) => setup());
+    await import("../entrypoints/background");
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.clearAllMocks();
-    runtimeHarness.origin = 'chrome-extension://test-extension';
+    runtimeHarness.origin = "chrome-extension://test-extension";
   });
 
-  it('reassembles Base64 chunks into the exact audio sent to Groq', async () => {
-    vi.spyOn(groqSettings, 'getGroqSettings').mockResolvedValue({
-      apiKey: 'test-api-key-with-no-real-credentials',
+  it("reassembles Base64 chunks into the exact audio sent to Groq", async () => {
+    vi.spyOn(groqSettings, "getGroqSettings").mockResolvedValue({
+      apiKey: "test-api-key-with-no-real-credentials",
       transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
       formattingModel: GROQ_FORMATTING_MODEL,
     });
-    vi.spyOn(formattingSettings, 'getFormattingSettings').mockResolvedValue(
+    vi.spyOn(formattingSettings, "getFormattingSettings").mockResolvedValue(
       DEFAULT_FORMATTING_SETTINGS,
     );
     const transcribe = vi
-      .spyOn(GroqProvider.prototype, 'transcribe')
+      .spyOn(GroqProvider.prototype, "transcribe")
       .mockResolvedValue({
-        text: 'Teste',
-        rawText: 'Teste',
-        language: 'pt',
+        text: "Teste",
+        rawText: "Teste",
+        language: "pt",
         durationMs: 1000,
-        audioSha256: '0'.repeat(64),
-        transcriptionProvider: 'groq',
+        audioSha256: "0".repeat(64),
+        transcriptionProvider: "groq",
         transcriptionModel: GROQ_TRANSCRIPTION_MODEL,
-        formattingProvider: 'groq',
+        formattingProvider: "groq",
         formattingModel: GROQ_FORMATTING_MODEL,
-        formattingSettingsKey: 'test',
+        formattingSettingsKey: "test",
       });
     const port = createPort();
     runtimeHarness.connectListeners[0]?.(port);
     port.emit({
       v: 1,
-      type: 'audio.begin',
-      jobId: 'complete-job',
-      mimeType: 'audio/ogg',
+      type: "audio.begin",
+      jobId: "complete-job",
+      mimeType: "audio/ogg",
       totalBytes: 8,
       language: null,
     });
     port.emit({
       v: 1,
-      type: 'audio.chunk',
-      jobId: 'complete-job',
+      type: "audio.chunk",
+      jobId: "complete-job",
       index: 0,
-      data: 'T2dnUw==',
+      data: "T2dnUw==",
     });
     port.emit({
       v: 1,
-      type: 'audio.chunk',
-      jobId: 'complete-job',
+      type: "audio.chunk",
+      jobId: "complete-job",
       index: 1,
-      data: 'AAECAw==',
+      data: "AAECAw==",
     });
-    port.emit({ v: 1, type: 'audio.end', jobId: 'complete-job' });
+    port.emit({ v: 1, type: "audio.end", jobId: "complete-job" });
     await vi.waitFor(() =>
       expect(port.postMessage).toHaveBeenCalledWith(
-        expect.objectContaining({ type: 'job.complete' }),
+        expect.objectContaining({ type: "job.complete" }),
       ),
     );
     const audio = transcribe.mock.calls[0]?.[0];
-    if (!audio) throw new Error('Missing captured audio');
-    expect(audio.type).toBe('audio/ogg');
+    if (!audio) throw new Error("Missing captured audio");
+    expect(audio.type).toBe("audio/ogg");
     expect(new Uint8Array(await audio.arrayBuffer())).toEqual(
       new Uint8Array([0x4f, 0x67, 0x67, 0x53, 0, 1, 2, 3]),
     );
   });
 
   it.each([
-    'chrome-extension://test-extension',
-    'moz-extension://test-extension',
-  ])('responds asynchronously to the popup at %s', async (origin) => {
+    "chrome-extension://test-extension",
+    "moz-extension://test-extension",
+  ])("responds asynchronously to the popup at %s", async (origin) => {
     runtimeHarness.origin = origin;
-    vi.spyOn(groqSettings, 'getGroqSettings').mockResolvedValue(null);
+    vi.spyOn(groqSettings, "getGroqSettings").mockResolvedValue(null);
     const response = runtimeHarness.messageListeners[0]?.(
-      { type: 'wat.groq.status' },
-      { id: 'test-extension', url: `${origin}/popup.html` },
+      { type: "wat.groq.status" },
+      { id: "test-extension", url: `${origin}/popup.html` },
     );
     await expect(response).resolves.toMatchObject({
       configured: false,
@@ -134,16 +134,16 @@ describe('background job assembly', () => {
     });
   });
 
-  it('expires an audio upload that never finishes', async () => {
+  it("expires an audio upload that never finishes", async () => {
     vi.useFakeTimers();
     const port = createPort();
     runtimeHarness.connectListeners[0]?.(port);
 
     port.emit({
       v: 1,
-      type: 'audio.begin',
-      jobId: 'stalled-job',
-      mimeType: 'audio/ogg',
+      type: "audio.begin",
+      jobId: "stalled-job",
+      mimeType: "audio/ogg",
       totalBytes: 4,
       language: null,
     });
@@ -151,14 +151,14 @@ describe('background job assembly', () => {
 
     expect(port.postMessage).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'job.error',
-        jobId: 'stalled-job',
-        code: 'INVALID_MESSAGE',
+        type: "job.error",
+        jobId: "stalled-job",
+        code: "INVALID_MESSAGE",
       }),
     );
   });
 
-  it('does not let another port mutate an existing job', () => {
+  it("does not let another port mutate an existing job", () => {
     const owner = createPort();
     const intruder = createPort();
     runtimeHarness.connectListeners[0]?.(owner);
@@ -166,55 +166,55 @@ describe('background job assembly', () => {
 
     owner.emit({
       v: 1,
-      type: 'audio.begin',
-      jobId: 'owned-job',
-      mimeType: 'audio/ogg',
+      type: "audio.begin",
+      jobId: "owned-job",
+      mimeType: "audio/ogg",
       totalBytes: 4,
       language: null,
     });
     intruder.emit({
       v: 1,
-      type: 'audio.chunk',
-      jobId: 'owned-job',
+      type: "audio.chunk",
+      jobId: "owned-job",
       index: 0,
-      data: 'T2dnUw==',
+      data: "T2dnUw==",
     });
     owner.emit({
       v: 1,
-      type: 'transcription.cancel',
-      jobId: 'owned-job',
+      type: "transcription.cancel",
+      jobId: "owned-job",
     });
 
     expect(intruder.postMessage).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'job.error',
-        jobId: 'owned-job',
-        code: 'INVALID_MESSAGE',
+        type: "job.error",
+        jobId: "owned-job",
+        code: "INVALID_MESSAGE",
       }),
     );
     expect(owner.postMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'job.cancelled', jobId: 'owned-job' }),
+      expect.objectContaining({ type: "job.cancelled", jobId: "owned-job" }),
     );
   });
 
-  it('ignores popup commands sent from a content-script context', async () => {
+  it("ignores popup commands sent from a content-script context", async () => {
     const response = runtimeHarness.messageListeners[0]?.(
-      { type: 'wat.groq.remove-key' },
+      { type: "wat.groq.remove-key" },
       {
-        id: 'test-extension',
-        url: 'https://web.whatsapp.com/',
+        id: "test-extension",
+        url: "https://web.whatsapp.com/",
       },
     );
 
     await expect(response).resolves.toBeUndefined();
   });
 
-  it('opens the configuration popup only for the WhatsApp content script', async () => {
+  it("opens the configuration popup only for the WhatsApp content script", async () => {
     const response = runtimeHarness.messageListeners[0]?.(
-      { type: 'wat.open-popup' },
+      { type: "wat.open-popup" },
       {
-        id: 'test-extension',
-        url: 'https://web.whatsapp.com/',
+        id: "test-extension",
+        url: "https://web.whatsapp.com/",
       },
     );
 
@@ -222,29 +222,29 @@ describe('background job assembly', () => {
     expect(runtimeHarness.openPopup).toHaveBeenCalledOnce();
 
     const rejected = runtimeHarness.messageListeners[0]?.(
-      { type: 'wat.open-popup' },
+      { type: "wat.open-popup" },
       {
-        id: 'test-extension',
-        url: 'https://example.com/',
+        id: "test-extension",
+        url: "https://example.com/",
       },
     );
     await expect(rejected).resolves.toBeUndefined();
   });
 
-  it('falls back to a tab when Chrome cannot open the action popup', async () => {
-    runtimeHarness.openPopup.mockRejectedValueOnce(new Error('unavailable'));
+  it("falls back to a tab when Chrome cannot open the action popup", async () => {
+    runtimeHarness.openPopup.mockRejectedValueOnce(new Error("unavailable"));
 
     const response = runtimeHarness.messageListeners[0]?.(
-      { type: 'wat.open-popup' },
+      { type: "wat.open-popup" },
       {
-        id: 'test-extension',
-        url: 'https://web.whatsapp.com/',
+        id: "test-extension",
+        url: "https://web.whatsapp.com/",
       },
     );
 
     await expect(response).resolves.toEqual({ opened: true });
     expect(runtimeHarness.createTab).toHaveBeenCalledWith({
-      url: 'chrome-extension://test-extension/popup.html',
+      url: "chrome-extension://test-extension/popup.html",
     });
   });
 });
@@ -253,7 +253,7 @@ function createPort() {
   const messageListeners: Listener[] = [];
   const disconnectListeners: Array<() => void> = [];
   return {
-    name: 'wat.transcription.v1',
+    name: "wat.transcription.v1",
     postMessage: vi.fn(),
     onMessage: {
       addListener: (listener: Listener) => messageListeners.push(listener),

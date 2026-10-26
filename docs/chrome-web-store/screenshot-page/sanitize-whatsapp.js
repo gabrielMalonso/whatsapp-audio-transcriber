@@ -23,25 +23,25 @@
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   };
   const clearPrivateAttributes = (root) => {
-    for (const element of [root, ...root.querySelectorAll('*')]) {
-      element.removeAttribute('title');
-      element.removeAttribute('data-id');
-      element.removeAttribute('data-pre-plain-text');
-      if (element.hasAttribute('alt')) element.setAttribute('alt', '');
-      if (element.matches('a')) {
-        element.removeAttribute('href');
-        element.removeAttribute('target');
+    for (const element of [root, ...root.querySelectorAll("*")]) {
+      element.removeAttribute("title");
+      element.removeAttribute("data-id");
+      element.removeAttribute("data-pre-plain-text");
+      if (element.hasAttribute("alt")) element.setAttribute("alt", "");
+      if (element.matches("a")) {
+        element.removeAttribute("href");
+        element.removeAttribute("target");
       }
     }
   };
   const setImage = (image, source) => {
     if (!image) return;
-    image.removeAttribute('srcset');
-    image.setAttribute('src', source);
-    image.setAttribute('alt', '');
+    image.removeAttribute("srcset");
+    image.setAttribute("src", source);
+    image.setAttribute("alt", "");
   };
   const setFirstLargeImage = (root, source) => {
-    const image = [...root.querySelectorAll('img')].find((candidate) => {
+    const image = [...root.querySelectorAll("img")].find((candidate) => {
       const bounds = rect(candidate);
       return bounds.width >= 36 && bounds.height >= 36;
     });
@@ -51,29 +51,29 @@
     const nodes = textNodes(header).filter((node) =>
       isVisible(node.parentElement),
     );
-    if (nodes[0]) nodes[0].nodeValue = 'Equipe Produto';
-    if (nodes[1]) nodes[1].nodeValue = '5 participantes';
-    for (const node of nodes.slice(2)) node.nodeValue = '';
-    setFirstLargeImage(header, safeAvatar('EP', '#058f77', '#35c89b'));
+    if (nodes[0]) nodes[0].nodeValue = "Equipe Produto";
+    if (nodes[1]) nodes[1].nodeValue = "5 participantes";
+    for (const node of nodes.slice(2)) node.nodeValue = "";
+    setFirstLargeImage(header, safeAvatar("EP", "#058f77", "#35c89b"));
     clearPrivateAttributes(header);
-    const profileButtons = [...header.querySelectorAll('button')].filter(
+    const profileButtons = [...header.querySelectorAll("button")].filter(
       (button) => rect(button).width >= 40,
     );
     if (profileButtons[0])
-      profileButtons[0].setAttribute('aria-label', 'Dados do perfil fictício');
+      profileButtons[0].setAttribute("aria-label", "Dados do perfil fictício");
     if (profileButtons[1])
-      profileButtons[1].setAttribute('aria-label', 'Equipe Produto');
+      profileButtons[1].setAttribute("aria-label", "Equipe Produto");
   };
   const replaceListRow = (row, item, index) => {
     clearPrivateAttributes(row);
-    row.setAttribute('aria-label', `${item.name} ${item.time} ${item.preview}`);
-    row.style.position = 'absolute';
+    row.setAttribute("aria-label", `${item.name} ${item.time} ${item.preview}`);
+    row.style.position = "absolute";
     row.style.inset = `${index * 76}px 0 auto 0`;
-    row.style.width = '100%';
-    row.style.height = '76px';
-    row.style.transform = 'none';
-    row.style.visibility = 'visible';
-    row.style.background = index === 0 ? '#f0f2f5' : '#fff';
+    row.style.width = "100%";
+    row.style.height = "76px";
+    row.style.transform = "none";
+    row.style.visibility = "visible";
+    row.style.background = index === 0 ? "#f0f2f5" : "#fff";
 
     const nodes = textNodes(row);
     let nameSet = false;
@@ -82,7 +82,7 @@
     for (const node of nodes) {
       const value = node.nodeValue.trim();
       if (/mensagens? não lidas?/iu.test(value)) {
-        node.nodeValue = '';
+        node.nodeValue = "";
       } else if (
         /^(?:\d{1,2}:\d{2}|ontem|segunda-feira|terça-feira|quarta-feira|quinta-feira|sexta-feira|sábado|domingo)$/iu.test(
           value,
@@ -92,7 +92,7 @@
           node.nodeValue = item.time;
           timeSet = true;
         } else {
-          node.nodeValue = '';
+          node.nodeValue = "";
         }
       } else if (!nameSet) {
         node.nodeValue = item.name;
@@ -101,27 +101,27 @@
         node.nodeValue = item.preview;
         previewSet = true;
       } else {
-        node.nodeValue = '';
+        node.nodeValue = "";
       }
     }
 
     setFirstLargeImage(row, safeAvatar(item.initials, item.start, item.end));
   };
   const sanitizeMessage = (row, message, time, voice) => {
-    row.removeAttribute('role');
+    row.removeAttribute("role");
     for (const nested of row.querySelectorAll('[role="row"]'))
-      nested.removeAttribute('role');
+      nested.removeAttribute("role");
     for (const host of row.querySelectorAll(
-      '[data-wat-panel],[data-wat-bubble]',
+      "[data-wat-panel],[data-wat-bubble]",
     ))
       host.remove();
     clearPrivateAttributes(row);
-    row.style.position = 'relative';
-    row.style.inset = 'auto';
-    row.style.width = '100%';
-    row.style.transform = 'none';
-    row.style.visibility = 'visible';
-    row.style.marginBottom = '8px';
+    row.style.position = "relative";
+    row.style.inset = "auto";
+    row.style.width = "100%";
+    row.style.transform = "none";
+    row.style.visibility = "visible";
+    row.style.marginBottom = "8px";
 
     const bubble = row.querySelector('[data-testid="msg-container"]');
     if (!bubble) return;
@@ -137,18 +137,18 @@
     if (voice) {
       for (const node of bodyNodes) {
         node.nodeValue = /^\d{1,2}:\d{2}$/u.test(node.nodeValue.trim())
-          ? '0:37'
-          : '';
+          ? "0:37"
+          : "";
       }
-      setFirstLargeImage(bubble, safeAvatar('AD', '#c55d58', '#ef9c83'));
-      const playButton = bubble.querySelector('button');
+      setFirstLargeImage(bubble, safeAvatar("AD", "#c55d58", "#ef9c83"));
+      const playButton = bubble.querySelector("button");
       if (playButton)
-        playButton.setAttribute('aria-label', 'Reproduzir mensagem de voz');
+        playButton.setAttribute("aria-label", "Reproduzir mensagem de voz");
       const slider = bubble.querySelector('[role="slider"]');
       if (slider)
         slider.setAttribute(
-          'aria-label',
-          'Controle de progresso da mensagem de voz',
+          "aria-label",
+          "Controle de progresso da mensagem de voz",
         );
     } else {
       let replaced = false;
@@ -157,7 +157,7 @@
           node.nodeValue = message;
           replaced = true;
         } else {
-          node.nodeValue = '';
+          node.nodeValue = "";
         }
       }
     }
@@ -170,22 +170,22 @@
           node.nodeValue = time;
           timeSet = true;
         } else {
-          node.nodeValue = '';
+          node.nodeValue = "";
         }
       }
     }
 
     row.setAttribute(
-      'aria-label',
+      "aria-label",
       voice ? `Mensagem de voz fictícia, 0:37, ${time}` : `${message}, ${time}`,
     );
   };
 
   const listGrid = document.querySelector('[aria-label="Lista de conversas"]');
-  const footer = [...document.querySelectorAll('footer')].find(
+  const footer = [...document.querySelectorAll("footer")].find(
     (candidate) => rect(candidate).left > innerWidth * 0.4,
   );
-  if (!listGrid || !footer) return { ok: false, reason: 'layout-not-found' };
+  if (!listGrid || !footer) return { ok: false, reason: "layout-not-found" };
 
   const panelCandidates = [];
   let ancestor = footer;
@@ -203,7 +203,7 @@
   const chatPanel = panelCandidates.sort(
     (a, b) => rect(a).width - rect(b).width,
   )[0];
-  if (!chatPanel) return { ok: false, reason: 'chat-panel-not-found' };
+  if (!chatPanel) return { ok: false, reason: "chat-panel-not-found" };
 
   const header = [...chatPanel.querySelectorAll('header,[role="banner"]')]
     .filter((candidate) => {
@@ -220,60 +220,60 @@
 
   const listItems = [
     {
-      name: 'Equipe Produto',
-      time: '10:42',
-      preview: 'Mensagem de voz',
-      initials: 'EP',
-      start: '#058f77',
-      end: '#35c89b',
+      name: "Equipe Produto",
+      time: "10:42",
+      preview: "Mensagem de voz",
+      initials: "EP",
+      start: "#058f77",
+      end: "#35c89b",
     },
     {
-      name: 'Ana Demo',
-      time: '10:18',
-      preview: 'Arquivo revisado, obrigada!',
-      initials: 'AD',
-      start: '#c55d58',
-      end: '#ef9c83',
+      name: "Ana Demo",
+      time: "10:18",
+      preview: "Arquivo revisado, obrigada!",
+      initials: "AD",
+      start: "#c55d58",
+      end: "#ef9c83",
     },
     {
-      name: 'Time de Design',
-      time: '09:54',
-      preview: 'Você: envio a versão final hoje.',
-      initials: 'TD',
-      start: '#477a9b',
-      end: '#83b8d3',
+      name: "Time de Design",
+      time: "09:54",
+      preview: "Você: envio a versão final hoje.",
+      initials: "TD",
+      start: "#477a9b",
+      end: "#83b8d3",
     },
     {
-      name: 'Bruno Exemplo',
-      time: 'Ontem',
-      preview: 'Perfeito, combinado!',
-      initials: 'BE',
-      start: '#a77936',
-      end: '#d7b66f',
+      name: "Bruno Exemplo",
+      time: "Ontem",
+      preview: "Perfeito, combinado!",
+      initials: "BE",
+      start: "#a77936",
+      end: "#d7b66f",
     },
     {
-      name: 'Projeto Demo',
-      time: 'Ontem',
-      preview: 'Foto',
-      initials: 'PD',
-      start: '#705b9f',
-      end: '#a990d6',
+      name: "Projeto Demo",
+      time: "Ontem",
+      preview: "Foto",
+      initials: "PD",
+      start: "#705b9f",
+      end: "#a990d6",
     },
     {
-      name: 'Clara Exemplo',
-      time: 'sexta-feira',
-      preview: 'Até amanhã!',
-      initials: 'CE',
-      start: '#4d8d7d',
-      end: '#8ac7b2',
+      name: "Clara Exemplo",
+      time: "sexta-feira",
+      preview: "Até amanhã!",
+      initials: "CE",
+      start: "#4d8d7d",
+      end: "#8ac7b2",
     },
     {
-      name: 'Grupo Exemplo',
-      time: 'quinta-feira',
-      preview: 'Reunião confirmada.',
-      initials: 'GE',
-      start: '#65727c',
-      end: '#9aa7af',
+      name: "Grupo Exemplo",
+      time: "quinta-feira",
+      preview: "Reunião confirmada.",
+      initials: "GE",
+      start: "#65727c",
+      end: "#9aa7af",
     },
   ];
   const listRows = [...listGrid.querySelectorAll('[role="row"]')].filter(
@@ -282,35 +282,35 @@
   const listTemplate =
     listRows.find(
       (row) =>
-        !/mensagens? não lidas?/iu.test(row.getAttribute('aria-label') ?? ''),
+        !/mensagens? não lidas?/iu.test(row.getAttribute("aria-label") ?? ""),
     ) ?? listRows[0];
-  if (!listTemplate) return { ok: false, reason: 'list-template-not-found' };
+  if (!listTemplate) return { ok: false, reason: "list-template-not-found" };
 
   const listParent = listGrid.parentElement;
   const listParentStyle = getComputedStyle(listParent);
-  if (listParentStyle.position === 'static')
-    listParent.style.position = 'relative';
-  const listOverlay = document.createElement('div');
-  listOverlay.id = 'wat-screenshot-list-overlay';
+  if (listParentStyle.position === "static")
+    listParent.style.position = "relative";
+  const listOverlay = document.createElement("div");
+  listOverlay.id = "wat-screenshot-list-overlay";
   Object.assign(listOverlay.style, {
-    position: 'absolute',
-    inset: '0 auto 0 0',
+    position: "absolute",
+    inset: "0 auto 0 0",
     width: `${rect(listGrid).width}px`,
-    background: '#fff',
-    overflow: 'hidden',
-    zIndex: '20',
+    background: "#fff",
+    overflow: "hidden",
+    zIndex: "20",
   });
   listItems.forEach((item, index) => {
     const clone = listTemplate.cloneNode(true);
     listOverlay.appendChild(clone);
     replaceListRow(clone, item, index);
   });
-  listGrid.setAttribute('aria-hidden', 'true');
-  listGrid.style.display = 'none';
+  listGrid.setAttribute("aria-hidden", "true");
+  listGrid.style.display = "none";
   listParent.appendChild(listOverlay);
 
   const footerBounds = rect(footer);
-  const bodyCandidates = [...chatPanel.querySelectorAll('div')].filter(
+  const bodyCandidates = [...chatPanel.querySelectorAll("div")].filter(
     (candidate) => {
       const bounds = rect(candidate);
       return (
@@ -325,13 +325,13 @@
   const chatBody =
     bodyCandidates.sort((a, b) => rect(b).height - rect(a).height)[0] ??
     footer.previousElementSibling;
-  if (!chatBody) return { ok: false, reason: 'chat-body-not-found' };
-  if (getComputedStyle(chatBody).position === 'static')
-    chatBody.style.position = 'relative';
+  if (!chatBody) return { ok: false, reason: "chat-body-not-found" };
+  if (getComputedStyle(chatBody).position === "static")
+    chatBody.style.position = "relative";
   for (const child of [...chatBody.children]) {
-    child.dataset.watScreenshotOriginal = '1';
-    child.setAttribute('aria-hidden', 'true');
-    child.style.display = 'none';
+    child.dataset.watScreenshotOriginal = "1";
+    child.setAttribute("aria-hidden", "true");
+    child.style.display = "none";
   }
 
   const rows = [...chatPanel.querySelectorAll('[role="row"]')].filter((row) =>
@@ -359,7 +359,7 @@
   );
   const incomingVoice = rowInfo.find((item) => item.voice && !item.outgoing);
   if (!incomingText || !outgoingText || !incomingVoice)
-    return { ok: false, reason: 'message-templates-not-found' };
+    return { ok: false, reason: "message-templates-not-found" };
 
   const leftInset = Math.round(
     incomingVoice.bubbleBounds.left - incomingVoice.rowBounds.left,
@@ -373,8 +373,8 @@
     incomingVoice.rowBounds.width - leftInset - rightInset,
   );
 
-  const style = document.createElement('style');
-  style.id = 'wat-screenshot-mode-styles';
+  const style = document.createElement("style");
+  style.id = "wat-screenshot-mode-styles";
   style.textContent = `
     #wat-screenshot-chat-overlay {
       position: absolute;
@@ -453,8 +453,8 @@
   `;
   document.head.appendChild(style);
 
-  const chatOverlay = document.createElement('div');
-  chatOverlay.id = 'wat-screenshot-chat-overlay';
+  const chatOverlay = document.createElement("div");
+  chatOverlay.id = "wat-screenshot-chat-overlay";
   chatOverlay.innerHTML = '<div class="wat-demo-day">Hoje</div>';
   chatBody.appendChild(chatOverlay);
 
@@ -466,19 +466,19 @@
   };
   appendMessage(
     incomingText,
-    'Pessoal, o material da demonstração já está pronto.',
-    '10:39',
+    "Pessoal, o material da demonstração já está pronto.",
+    "10:39",
   );
   appendMessage(
     outgoingText,
-    'Ótimo! Vou revisar a última versão agora.',
-    '10:40',
+    "Ótimo! Vou revisar a última versão agora.",
+    "10:40",
   );
-  appendMessage(incomingVoice, '', '10:41', true);
+  appendMessage(incomingVoice, "", "10:41", true);
 
-  const transcript = document.createElement('section');
-  transcript.className = 'wat-demo-transcript';
-  transcript.setAttribute('aria-label', 'Transcrição fictícia');
+  const transcript = document.createElement("section");
+  transcript.className = "wat-demo-transcript";
+  transcript.setAttribute("aria-label", "Transcrição fictícia");
   transcript.innerHTML = `
     <div class="wat-demo-transcript-head">
       <div class="wat-demo-transcript-title"><span class="wat-demo-lines"><i></i><i></i><i></i></span><span>Transcrição</span></div>
@@ -488,17 +488,17 @@
     <div class="wat-demo-transcript-foot"><span>▢</span><span>⟳</span></div>
   `;
   chatOverlay.appendChild(transcript);
-  appendMessage(outgoingText, 'Perfeito, obrigado!', '10:42');
+  appendMessage(outgoingText, "Perfeito, obrigado!", "10:42");
 
   clearPrivateAttributes(footer);
   const composer = footer.querySelector('[contenteditable="true"]');
-  if (composer) composer.setAttribute('aria-label', 'Digite uma mensagem');
+  if (composer) composer.setAttribute("aria-label", "Digite uma mensagem");
   const ownPhoto = document.querySelector(
     '[data-testid="navbar-item-me-tab-photo"]',
   );
   setImage(
-    ownPhoto?.matches('img') ? ownPhoto : ownPhoto?.querySelector('img'),
-    safeAvatar('EU', '#596b78', '#8ea3af'),
+    ownPhoto?.matches("img") ? ownPhoto : ownPhoto?.querySelector("img"),
+    safeAvatar("EU", "#596b78", "#8ea3af"),
   );
 
   window.__watScreenshotModeActive = true;

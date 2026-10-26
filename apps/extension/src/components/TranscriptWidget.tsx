@@ -2,7 +2,7 @@ import type {
   ProgressStage,
   TranscriptionEvent,
   TranscriptionResult,
-} from '@wat/protocol';
+} from "@wat/protocol";
 import {
   AlignLeft,
   BotMessageSquare,
@@ -14,7 +14,7 @@ import {
   RefreshCw,
   TriangleAlert,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
@@ -22,17 +22,17 @@ import {
   useState,
   type ReactNode,
   type TransitionEvent,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { browser } from 'wxt/browser';
-import type { VoiceMessageDescriptor } from '../adapters/whatsapp/voiceMessages';
-import { captureVoiceAudio } from '../messaging/pageBridge';
-import { transcriptionClient } from '../messaging/transcriptionClient';
-import { FORMATTING_SETTINGS_STORAGE_KEY } from '../storage/formattingSettings';
+} from "react";
+import { createPortal } from "react-dom";
+import { browser } from "wxt/browser";
+import type { VoiceMessageDescriptor } from "../adapters/whatsapp/voiceMessages";
+import { captureVoiceAudio } from "../messaging/pageBridge";
+import { transcriptionClient } from "../messaging/transcriptionClient";
+import { FORMATTING_SETTINGS_STORAGE_KEY } from "../storage/formattingSettings";
 import {
   getGroqSettings,
   GROQ_SETTINGS_STORAGE_KEY,
-} from '../storage/groqSettings';
+} from "../storage/groqSettings";
 import {
   getTranscript,
   hashMessageKey,
@@ -40,24 +40,24 @@ import {
   markCaptureNoticeSeen,
   putTranscript,
   type TranscriptRecord,
-} from '../storage/transcripts';
+} from "../storage/transcripts";
 
 type Phase =
-  | 'loading'
-  | 'idle'
-  | 'setup'
-  | 'notice'
-  | 'capturing'
-  | 'queued'
-  | 'working'
-  | 'success'
-  | 'error';
+  | "loading"
+  | "idle"
+  | "setup"
+  | "notice"
+  | "capturing"
+  | "queued"
+  | "working"
+  | "success"
+  | "error";
 
-type PanelView = 'setup' | 'notice' | 'status' | 'error' | 'transcript';
+type PanelView = "setup" | "notice" | "status" | "error" | "transcript";
 
 const iconProps = {
   absoluteStrokeWidth: false,
-  'aria-hidden': true,
+  "aria-hidden": true,
   size: 15,
   strokeWidth: 1.75,
 } as const;
@@ -68,7 +68,7 @@ const triggerIconProps = {
 } as const;
 
 function prefersReducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function AnimatedPanelShell({
@@ -99,28 +99,28 @@ function AnimatedPanelShell({
     if (firstLayoutRef.current) {
       firstLayoutRef.current = false;
       if (open) {
-        shell.style.height = '0px';
-        shell.style.opacity = '0';
-        shell.style.transform = 'translateY(-6px)';
+        shell.style.height = "0px";
+        shell.style.opacity = "0";
+        shell.style.transform = "translateY(-6px)";
         if (reduce) {
-          shell.style.height = 'auto';
-          shell.style.opacity = '1';
-          shell.style.transform = 'translateY(0)';
+          shell.style.height = "auto";
+          shell.style.opacity = "1";
+          shell.style.transform = "translateY(0)";
           openRef.current = true;
           return;
         }
         void shell.offsetHeight;
         const id = window.requestAnimationFrame(() => {
           shell.style.height = `${inner.scrollHeight}px`;
-          shell.style.opacity = '1';
-          shell.style.transform = 'translateY(0)';
+          shell.style.opacity = "1";
+          shell.style.transform = "translateY(0)";
         });
         openRef.current = true;
         return () => window.cancelAnimationFrame(id);
       }
-      shell.style.height = '0px';
-      shell.style.opacity = '0';
-      shell.style.transform = 'translateY(-6px)';
+      shell.style.height = "0px";
+      shell.style.opacity = "0";
+      shell.style.transform = "translateY(-6px)";
       openRef.current = false;
       return;
     }
@@ -128,70 +128,70 @@ function AnimatedPanelShell({
     if (open === openRef.current) {
       if (!open) return;
       const current =
-        shell.style.height === 'auto'
+        shell.style.height === "auto"
           ? shell.getBoundingClientRect().height
-          : Number.parseFloat(shell.style.height || '0') ||
+          : Number.parseFloat(shell.style.height || "0") ||
             shell.getBoundingClientRect().height;
       shell.style.height = `${current}px`;
       void shell.offsetHeight;
       if (reduce) {
-        shell.style.height = 'auto';
+        shell.style.height = "auto";
         return;
       }
       shell.style.height = `${inner.scrollHeight}px`;
       const settle = (event: Event) => {
         const transition = event as unknown as TransitionEvent<HTMLDivElement>;
-        if (transition.propertyName !== 'height') return;
-        if (openRef.current) shell.style.height = 'auto';
+        if (transition.propertyName !== "height") return;
+        if (openRef.current) shell.style.height = "auto";
       };
-      shell.addEventListener('transitionend', settle);
-      return () => shell.removeEventListener('transitionend', settle);
+      shell.addEventListener("transitionend", settle);
+      return () => shell.removeEventListener("transitionend", settle);
     }
 
     openRef.current = open;
 
     if (open) {
-      shell.style.height = '0px';
-      shell.style.opacity = '0';
-      shell.style.transform = 'translateY(-6px)';
+      shell.style.height = "0px";
+      shell.style.opacity = "0";
+      shell.style.transform = "translateY(-6px)";
       void shell.offsetHeight;
       if (reduce) {
-        shell.style.height = 'auto';
-        shell.style.opacity = '1';
-        shell.style.transform = 'translateY(0)';
+        shell.style.height = "auto";
+        shell.style.opacity = "1";
+        shell.style.transform = "translateY(0)";
         return;
       }
       shell.style.height = `${inner.scrollHeight}px`;
-      shell.style.opacity = '1';
-      shell.style.transform = 'translateY(0)';
+      shell.style.opacity = "1";
+      shell.style.transform = "translateY(0)";
       return;
     }
 
     const current =
-      shell.style.height === 'auto'
+      shell.style.height === "auto"
         ? inner.scrollHeight
         : shell.getBoundingClientRect().height;
     shell.style.height = `${current}px`;
     void shell.offsetHeight;
     if (reduce) {
-      shell.style.height = '0px';
-      shell.style.opacity = '0';
-      shell.style.transform = 'translateY(-6px)';
+      shell.style.height = "0px";
+      shell.style.opacity = "0";
+      shell.style.transform = "translateY(-6px)";
       onClosedRef.current();
       return;
     }
-    shell.style.height = '0px';
-    shell.style.opacity = '0';
-    shell.style.transform = 'translateY(-6px)';
+    shell.style.height = "0px";
+    shell.style.opacity = "0";
+    shell.style.transform = "translateY(-6px)";
   }, [open, contentKey]);
 
   const handleTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
-    if (event.propertyName !== 'height') return;
+    if (event.propertyName !== "height") return;
     const shell = shellRef.current;
     if (!shell) return;
     if (open) {
-      shell.style.height = 'auto';
+      shell.style.height = "auto";
       return;
     }
     onClosedRef.current();
@@ -201,7 +201,7 @@ function AnimatedPanelShell({
     <div
       ref={shellRef}
       className="panel-shell"
-      data-open={open ? '1' : '0'}
+      data-open={open ? "1" : "0"}
       onTransitionEnd={handleTransitionEnd}
     >
       <div ref={innerRef} className="panel-shell-inner">
@@ -220,20 +220,20 @@ export function TranscriptWidget({
   panelHost: HTMLElement;
   panelTarget: HTMLElement;
 }) {
-  const [phase, setPhase] = useState<Phase>('loading');
-  const [messageHash, setMessageHash] = useState('');
+  const [phase, setPhase] = useState<Phase>("loading");
+  const [messageHash, setMessageHash] = useState("");
   const [record, setRecord] = useState<TranscriptRecord | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const [stage, setStage] = useState<ProgressStage>('transcribing');
-  const [error, setError] = useState('');
+  const [stage, setStage] = useState<ProgressStage>("transcribing");
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const [cacheWarning, setCacheWarning] = useState('');
+  const [cacheWarning, setCacheWarning] = useState("");
   const [shellVisible, setShellVisible] = useState(false);
   const [shellOpen, setShellOpen] = useState(false);
   const jobRef = useRef<string | null>(null);
   const captureRef = useRef<AbortController | null>(null);
   const cancelledRef = useRef(false);
-  const lastViewRef = useRef<PanelView>('status');
+  const lastViewRef = useRef<PanelView>("status");
 
   const panelView = resolvePanelView(phase, expanded, record);
   if (panelView) lastViewRef.current = panelView;
@@ -243,14 +243,14 @@ export function TranscriptWidget({
   useEffect(() => {
     if (wantsOpen) {
       panelHost.hidden = false;
-      panelHost.style.pointerEvents = 'auto';
+      panelHost.style.pointerEvents = "auto";
       setShellVisible(true);
       setShellOpen(true);
       return;
     }
 
     setShellOpen(false);
-    panelHost.style.pointerEvents = 'none';
+    panelHost.style.pointerEvents = "none";
     if (prefersReducedMotion()) {
       setShellVisible(false);
       panelHost.hidden = true;
@@ -264,7 +264,7 @@ export function TranscriptWidget({
       if (!active) return;
       setMessageHash(hash);
       setRecord(cached);
-      setPhase(cached ? 'success' : 'idle');
+      setPhase(cached ? "success" : "idle");
     });
     return () => {
       active = false;
@@ -281,15 +281,15 @@ export function TranscriptWidget({
       changes: Record<string, unknown>,
       areaName: string,
     ) => {
-      if (areaName !== 'local' || jobRef.current) return;
+      if (areaName !== "local" || jobRef.current) return;
       if (GROQ_SETTINGS_STORAGE_KEY in changes) {
-        setPhase((current) => (current === 'setup' ? 'idle' : current));
+        setPhase((current) => (current === "setup" ? "idle" : current));
       }
       if (!(FORMATTING_SETTINGS_STORAGE_KEY in changes)) return;
       setRecord(null);
-      setCacheWarning('');
+      setCacheWarning("");
       setExpanded(false);
-      setPhase('idle');
+      setPhase("idle");
     };
     browser.storage.onChanged.addListener(onStorageChanged);
     return () => browser.storage.onChanged.removeListener(onStorageChanged);
@@ -299,17 +299,17 @@ export function TranscriptWidget({
     if (wantsOpen) return;
     setShellVisible(false);
     panelHost.hidden = true;
-    panelHost.style.pointerEvents = 'none';
+    panelHost.style.pointerEvents = "none";
   };
 
   const requestTranscription = async () => {
     if (!messageHash) return;
     if (!(await getGroqSettings())) {
-      setPhase('setup');
+      setPhase("setup");
       return;
     }
     if (!(await hasSeenCaptureNotice())) {
-      setPhase('notice');
+      setPhase("notice");
       return;
     }
     await beginTranscription();
@@ -320,9 +320,9 @@ export function TranscriptWidget({
     const captureController = new AbortController();
     captureRef.current = captureController;
     cancelledRef.current = false;
-    setError('');
-    setCacheWarning('');
-    setPhase('capturing');
+    setError("");
+    setCacheWarning("");
+    setPhase("capturing");
     try {
       const audio = await captureVoiceAudio(
         message.transportButton,
@@ -333,49 +333,49 @@ export function TranscriptWidget({
         onMessage: handleHostMessage,
       });
       jobRef.current = jobId;
-      setPhase('queued');
+      setPhase("queued");
     } catch (caught) {
       if (captureController.signal.aborted) return;
       setError(
         caught instanceof Error
           ? caught.message
-          : 'Não foi possível iniciar a transcrição.',
+          : "Não foi possível iniciar a transcrição.",
       );
-      setPhase('error');
+      setPhase("error");
     } finally {
       if (captureRef.current === captureController) captureRef.current = null;
     }
   };
 
   const handleHostMessage = (hostMessage: TranscriptionEvent) => {
-    if (hostMessage.type === 'job.queued') setPhase('queued');
-    if (hostMessage.type === 'job.progress') {
+    if (hostMessage.type === "job.queued") setPhase("queued");
+    if (hostMessage.type === "job.progress") {
       setStage(hostMessage.stage);
-      setPhase('working');
+      setPhase("working");
     }
-    if (hostMessage.type === 'job.complete') {
+    if (hostMessage.type === "job.complete") {
       setRecord(transientRecord(messageHash, hostMessage.result));
       setExpanded(true);
-      setPhase('success');
+      setPhase("success");
       void putTranscript(messageHash, hostMessage.result)
         .then((saved) => {
           setRecord(saved);
-          setCacheWarning('');
+          setCacheWarning("");
         })
         .catch(() => {
           setCacheWarning(
-            'A transcrição está disponível, mas não pôde ser salva no cache.',
+            "A transcrição está disponível, mas não pôde ser salva no cache.",
           );
         });
       finishJob(hostMessage.jobId);
     }
-    if (hostMessage.type === 'job.error') {
+    if (hostMessage.type === "job.error") {
       setError(hostMessage.message);
-      setPhase('error');
+      setPhase("error");
       finishJob(hostMessage.jobId);
     }
-    if (hostMessage.type === 'job.cancelled') {
-      setPhase(record ? 'success' : 'idle');
+    if (hostMessage.type === "job.cancelled") {
+      setPhase(record ? "success" : "idle");
       finishJob(hostMessage.jobId);
     }
   };
@@ -394,7 +394,7 @@ export function TranscriptWidget({
       finishJob(jobId);
     }
     setExpanded(false);
-    setPhase(record ? 'success' : 'idle');
+    setPhase(record ? "success" : "idle");
   };
 
   const acceptNotice = async () => {
@@ -404,9 +404,9 @@ export function TranscriptWidget({
 
   const openSettings = async () => {
     try {
-      await browser.runtime.sendMessage({ type: 'wat.open-popup' });
+      await browser.runtime.sendMessage({ type: "wat.open-popup" });
     } catch {
-      window.open(browser.runtime.getURL('/popup.html'), '_blank', 'noopener');
+      window.open(browser.runtime.getURL("/popup.html"), "_blank", "noopener");
     }
   };
 
@@ -417,27 +417,27 @@ export function TranscriptWidget({
     window.setTimeout(() => setCopied(false), 1_400);
   };
 
-  if (phase === 'loading') return null;
+  if (phase === "loading") return null;
 
   const showTrigger =
     !shellVisible &&
-    (phase === 'idle' || (phase === 'success' && Boolean(record) && !expanded));
+    (phase === "idle" || (phase === "success" && Boolean(record) && !expanded));
 
   return (
     <>
       {showTrigger && (
         <button
-          className={`trigger icon-only${phase === 'success' ? ' ready' : ''}`}
+          className={`trigger icon-only${phase === "success" ? " ready" : ""}`}
           type="button"
           onClick={(event) => {
             if (!isTrustedUserAction(event)) return;
-            if (phase === 'idle') void requestTranscription();
+            if (phase === "idle") void requestTranscription();
             else setExpanded(true);
           }}
-          aria-label={phase === 'idle' ? 'Transcrever' : 'Ver transcrição'}
-          title={phase === 'idle' ? 'Transcrever' : 'Ver transcrição'}
+          aria-label={phase === "idle" ? "Transcrever" : "Ver transcrição"}
+          title={phase === "idle" ? "Transcrever" : "Ver transcrição"}
         >
-          {phase === 'idle' ? (
+          {phase === "idle" ? (
             <BotMessageSquare {...triggerIconProps} />
           ) : (
             <AlignLeft {...triggerIconProps} />
@@ -454,11 +454,11 @@ export function TranscriptWidget({
             onClosed={finishClose}
           >
             <section
-              className={`panel${renderedView === 'transcript' ? ' transcript-panel' : ''}`}
+              className={`panel${renderedView === "transcript" ? " transcript-panel" : ""}`}
               aria-live="polite"
             >
               <div className="panel-body" key={renderedView}>
-                {renderedView === 'setup' && (
+                {renderedView === "setup" && (
                   <>
                     <div className="panel-title">
                       <KeyRound {...iconProps} />
@@ -507,7 +507,7 @@ export function TranscriptWidget({
                   </>
                 )}
 
-                {renderedView === 'notice' && (
+                {renderedView === "notice" && (
                   <>
                     <div className="panel-title">
                       <Info {...iconProps} />
@@ -522,7 +522,7 @@ export function TranscriptWidget({
                       <button
                         className="quiet"
                         type="button"
-                        onClick={() => setPhase('idle')}
+                        onClick={() => setPhase("idle")}
                       >
                         Agora não
                       </button>
@@ -539,7 +539,7 @@ export function TranscriptWidget({
                   </>
                 )}
 
-                {renderedView === 'status' && (
+                {renderedView === "status" && (
                   <div className="status-row">
                     <span className="spinner" aria-hidden="true" />
                     <div className="status-copy">
@@ -556,7 +556,7 @@ export function TranscriptWidget({
                   </div>
                 )}
 
-                {renderedView === 'error' && (
+                {renderedView === "error" && (
                   <>
                     <div className="panel-title error-title">
                       <TriangleAlert {...iconProps} />
@@ -567,7 +567,7 @@ export function TranscriptWidget({
                       <button
                         className="quiet"
                         type="button"
-                        onClick={() => setPhase(record ? 'success' : 'idle')}
+                        onClick={() => setPhase(record ? "success" : "idle")}
                       >
                         Fechar
                       </button>
@@ -586,7 +586,7 @@ export function TranscriptWidget({
                   </>
                 )}
 
-                {renderedView === 'transcript' && record && (
+                {renderedView === "transcript" && record && (
                   <>
                     <div className="transcript-head">
                       <div className="panel-title">
@@ -612,8 +612,8 @@ export function TranscriptWidget({
                           className="icon-button"
                           type="button"
                           onClick={() => void copy()}
-                          aria-label={copied ? 'Copiado' : 'Copiar'}
-                          title={copied ? 'Copiado' : 'Copiar'}
+                          aria-label={copied ? "Copiado" : "Copiar"}
+                          title={copied ? "Copiado" : "Copiar"}
                         >
                           {copied ? (
                             <Check {...iconProps} />
@@ -652,23 +652,23 @@ function resolvePanelView(
   expanded: boolean,
   record: TranscriptRecord | null,
 ): PanelView | null {
-  if (phase === 'setup') return 'setup';
-  if (phase === 'notice') return 'notice';
-  if (phase === 'capturing' || phase === 'queued' || phase === 'working') {
-    return 'status';
+  if (phase === "setup") return "setup";
+  if (phase === "notice") return "notice";
+  if (phase === "capturing" || phase === "queued" || phase === "working") {
+    return "status";
   }
-  if (phase === 'error') return 'error';
-  if (phase === 'success' && record && expanded) return 'transcript';
+  if (phase === "error") return "error";
+  if (phase === "success" && record && expanded) return "transcript";
   return null;
 }
 
 function statusLabel(phase: Phase, stage: ProgressStage) {
-  if (stage === 'formatting' && phase === 'working') return 'Formatando…';
-  return 'Transcrevendo…';
+  if (stage === "formatting" && phase === "working") return "Formatando…";
+  return "Transcrevendo…";
 }
 
 export function isTrustedUserAction(event: {
-  nativeEvent: Pick<Event, 'isTrusted'>;
+  nativeEvent: Pick<Event, "isTrusted">;
 }): boolean {
   return event.nativeEvent.isTrusted;
 }

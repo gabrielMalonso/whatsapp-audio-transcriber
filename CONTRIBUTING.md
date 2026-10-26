@@ -42,6 +42,19 @@ Load `apps/extension/.output/chrome-mv3` in `chrome://extensions` with Developer
 
 Read [docs/architecture.md](docs/architecture.md) before changing capture, messaging, or the transcription pipeline.
 
+## Linting and formatting
+
+ESLint uses the recommended JavaScript, TypeScript, and React Hooks presets. Prettier uses its default formatting options.
+
+```bash
+pnpm lint          # Check code quality
+pnpm lint:fix      # Apply available ESLint fixes
+pnpm format        # Format the project
+pnpm format:check  # Check formatting without changing files
+```
+
+Both checks also run in CI and as part of `pnpm check`.
+
 ## Submitting a change
 
 1. Create a short-lived branch from `main`.

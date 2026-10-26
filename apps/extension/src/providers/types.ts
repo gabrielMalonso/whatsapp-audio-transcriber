@@ -1,4 +1,4 @@
-import type { ProgressStage, TranscriptionResult } from '@wat/protocol';
+import type { ProgressStage, TranscriptionResult } from "@wat/protocol";
 
 export type ProgressCallback = (stage: ProgressStage) => void;
 
