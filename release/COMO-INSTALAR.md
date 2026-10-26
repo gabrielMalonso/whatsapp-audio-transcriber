@@ -10,4 +10,4 @@ Open the popup, configure your Groq API key, and refresh WhatsApp Web. In Firefo
 
 To update, reload the extension from the same folder (Chrome or temporary Firefox/Zen), or install the new signed XPI with the same ID and a higher version (permanent). Do not uninstall before updating if you want to preserve your key, preferences, and cache. Temporary installation does not guarantee persistence between browser sessions.
 
-Full instructions for building, AMO/unlisted signing, and updates are in the [README](../README.md#installation).
+For local builds, see [Development](../README.md#development). For signing and distribution, see [Mozilla’s guide](https://extensionworkshop.com/documentation/publish/signing-and-distribution-overview/).
