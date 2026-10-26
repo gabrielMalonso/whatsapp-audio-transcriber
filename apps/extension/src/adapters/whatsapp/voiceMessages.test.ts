@@ -114,4 +114,78 @@ describe('WhatsApp voice message adapter', () => {
     `;
     expect(findVoiceMessages()).toEqual([]);
   });
+
+  it.each(['incoming', 'outgoing'])(
+    'finds a current %s voice message without the legacy ptt-status marker',
+    (direction) => {
+      document.body.innerHTML = `
+        <div role="row">
+          <div data-id="current-${direction}">
+            <div data-testid="msg-container">
+              <button aria-label="Play voice message">
+                <svg><title>ic-play-arrow-filled</title></svg>
+              </button>
+              <span aria-label="Voice message"></span>
+              <div aria-hidden="true">0:05</div>
+              <div role="slider" aria-valuetext="0:00/0:05"><canvas></canvas></div>
+              <button aria-label="Change playback speed, currently 1×"></button>
+              <svg><title>ic-keyboard-voice-filled</title></svg>
+              <div data-testid="msg-meta"><span>13:30</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+      const row = document.querySelector<HTMLElement>('[role="row"]')!;
+      const bubble = document.querySelector<HTMLElement>(
+        '[data-testid="msg-container"]',
+      )!;
+      row.getBoundingClientRect = () => ({ left: 0, width: 800 }) as DOMRect;
+      bubble.getBoundingClientRect = () =>
+        ({ left: direction === 'outgoing' ? 450 : 40, width: 300 }) as DOMRect;
+
+      const messages = findVoiceMessages();
+
+      expect(messages).toHaveLength(1);
+      expect(messages[0]).toMatchObject({
+        id: `current-${direction}`,
+        outgoing: direction === 'outgoing',
+        bubble,
+      });
+      expect(messages[0]?.durationElement?.textContent).toBe('0:05');
+      expect(messages[0]?.transportButton).toBe(bubble.querySelector('button'));
+    },
+  );
+
+  it('ignores other media with playback controls and a slider', () => {
+    document.body.innerHTML = `
+      <div role="row">
+        <div data-id="music-123">
+          <div data-testid="msg-container">
+            <button><svg><title>ic-play-arrow-filled</title></svg></button>
+            <div role="slider"></div>
+            <svg><title>ic-music-note-filled</title></svg>
+          </div>
+        </div>
+      </div>
+    `;
+
+    expect(findVoiceMessages()).toEqual([]);
+  });
+
+  it('ignores voice markers outside the message bubble', () => {
+    document.body.innerHTML = `
+      <div role="row">
+        <span data-icon="ptt-status"></span>
+        <svg><title>ic-keyboard-voice-filled</title></svg>
+        <div data-id="other-media-123">
+          <div data-testid="msg-container">
+            <button></button>
+            <div role="slider"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    expect(findVoiceMessages()).toEqual([]);
+  });
 });

@@ -20,7 +20,7 @@ export function findVoiceMessages(
     );
     const slider = row.querySelector<HTMLElement>('[role="slider"]');
     if (!messageRoot?.dataset.id || !bubble || !slider) continue;
-    if (!row.querySelector('[data-icon="ptt-status"]')) continue;
+    if (!isVoiceMessage(bubble)) continue;
 
     const transportButton = findTransportButton(bubble, slider);
     if (!transportButton) continue;
@@ -37,6 +37,14 @@ export function findVoiceMessages(
   }
 
   return messages;
+}
+
+function isVoiceMessage(bubble: HTMLElement): boolean {
+  if (bubble.querySelector('[data-icon="ptt-status"]')) return true;
+
+  return [...bubble.querySelectorAll('svg title')].some(
+    (title) => title.textContent?.trim() === 'ic-keyboard-voice-filled',
+  );
 }
 
 function findDurationElement(bubble: HTMLElement): HTMLElement | null {
