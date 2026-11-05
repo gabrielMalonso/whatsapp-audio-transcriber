@@ -4,18 +4,10 @@ import { createChatActionRunner } from "./chatActions";
 import { findChatRows, isCurrentChat, type ChatRow } from "./chatRows";
 import styles from "./chatQuickActions.css?inline";
 
-// Reserve room only while controls replace the timestamp. Lower-row unread,
-// pinned and muted badges, and WhatsApp's own dropdown, remain untouched.
+// Let the controls' intrinsic width replace the timestamp in the native flex row.
 const pageStyles = `
-[data-wat-chat-meta] { position: relative; }
 [data-wat-chat-active] [data-wat-chat-meta] {
-  min-inline-size: 112px;
-  flex-shrink: 0;
-  color: transparent !important;
-}
-[data-wat-chat-active] [data-wat-chat-meta] > :not([data-wat-chat-actions]) {
-  opacity: 0 !important;
-  pointer-events: none !important;
+  display: none !important;
 }
 `;
 
@@ -60,7 +52,7 @@ export function startChatQuickActions(): () => void {
       stylesheet.textContent = styles;
       const app = document.createElement("span");
       shadow.append(stylesheet, app);
-      chat.metadata.append(host);
+      chat.metadata.after(host);
       const controller = new AbortController();
       const root = createRoot(app);
       root.render(
@@ -74,7 +66,7 @@ export function startChatQuickActions(): () => void {
         if (controller.signal.aborted) return;
         const focused =
           shadow.activeElement?.matches(":focus-visible") ?? false;
-        host.toggleAttribute("data-wat-chat-hover", hovered);
+        host.toggleAttribute("data-wat-chat-visible", hovered || focused);
         chat.row.toggleAttribute("data-wat-chat-active", hovered || focused);
       };
       const enter = () => {

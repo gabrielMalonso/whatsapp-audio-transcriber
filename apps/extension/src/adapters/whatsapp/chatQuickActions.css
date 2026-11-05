@@ -3,7 +3,10 @@
   position: absolute;
   inset-block-start: 0;
   inset-inline-end: 0;
-  height: 22px;
+  display: flex;
+  align-self: center;
+  flex: 0 0 auto;
+  height: 20px;
   pointer-events: none;
   color: var(--secondary, #667781);
   font-family: inherit;
@@ -11,18 +14,23 @@
   line-height: 20px;
 }
 
+:host([data-wat-chat-visible]) {
+  position: static;
+}
+
 .wat-chat-actions {
   display: flex;
   align-items: stretch;
-  height: 22px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
   opacity: 0;
   pointer-events: none;
 }
 
 /* Card controls in T3 switch immediately; only tooltips animate. */
-:host([data-wat-chat-hover]) .wat-chat-actions,
-.wat-chat-actions:has(:focus-visible),
-.wat-chat-actions[aria-busy="true"] {
+:host([data-wat-chat-visible]) .wat-chat-actions {
   opacity: 1;
   pointer-events: auto;
 }
@@ -58,7 +66,7 @@ button:disabled {
 svg {
   width: 14px;
   height: 14px;
-  stroke-width: 2;
+  stroke-width: 1.75;
   flex-shrink: 0;
 }
 
@@ -68,18 +76,19 @@ svg {
   box-sizing: border-box;
   margin: 0;
   max-width: min(320px, calc(100vw - 10px));
-  border: 1px solid var(--border-default, #e9edef);
+  border: 1px solid #ffffff1a;
   border-radius: 6px;
   padding: 4px 8px;
-  background: var(--dropdown-background, #fff);
-  color: var(--primary, #111b21);
+  /* A self-contained palette keeps contrast in both WhatsApp themes. */
+  background: #292929;
+  color: #f4f4f5;
   font:
     12px/1.375 system-ui,
     sans-serif;
   white-space: normal;
   overflow-wrap: anywhere;
   pointer-events: none;
-  box-shadow: 0 1px 4px #0000000d;
+  box-shadow: 0 2px 6px #00000026;
   transform-origin: bottom center;
   opacity: 0;
   scale: 0.98;

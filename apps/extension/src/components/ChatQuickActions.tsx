@@ -1,4 +1,4 @@
-import { Archive, MailPlus } from "lucide-react";
+import { Archive, Mail } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type {
   ChatAction,
@@ -148,7 +148,7 @@ export function ChatQuickActions({ run, signal }: Props) {
           if (event.nativeEvent.isTrusted) void act("mark-unread");
         }}
       >
-        <MailPlus aria-hidden="true" />
+        <Mail aria-hidden="true" />
       </button>
       <button
         type="button"

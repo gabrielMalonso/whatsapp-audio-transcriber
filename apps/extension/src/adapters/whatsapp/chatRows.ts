@@ -22,11 +22,14 @@ export function findChatRows(): ChatRow[] {
     );
     const heading =
       titleCell?.parentElement ?? name.parentElement?.parentElement;
-    const metadata = heading?.lastElementChild;
+    const cells = Array.from(heading?.children ?? []).filter(
+      (child) => !child.hasAttribute("data-wat-chat-actions"),
+    );
+    const metadata = cells.at(-1);
     if (
       !(metadata instanceof HTMLElement) ||
       metadata.contains(name) ||
-      heading?.children.length !== 2 ||
+      cells.length !== 2 ||
       metadata.querySelector('button, [role="button"], img, [role="row"]')
     ) {
       continue;

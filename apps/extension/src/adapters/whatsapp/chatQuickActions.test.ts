@@ -1,6 +1,7 @@
 import { waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { startChatQuickActions } from "./chatQuickActions";
+import { findChatRows } from "./chatRows";
 
 const { unmount } = vi.hoisted(() => ({ unmount: vi.fn() }));
 vi.mock("react-dom/client", () => ({
@@ -35,11 +36,13 @@ describe("sidebar action lifecycle", () => {
     const row = fixture();
     stop = startChatQuickActions();
     const host = await mountedHost();
+    expect(findChatRows()).toHaveLength(1);
+    expect(host.previousElementSibling).toBe(row.querySelector("[data-meta]"));
     row.dispatchEvent(new MouseEvent("mouseenter"));
-    expect(host.hasAttribute("data-wat-chat-hover")).toBe(true);
+    expect(host.hasAttribute("data-wat-chat-visible")).toBe(true);
     expect(row.hasAttribute("data-wat-chat-active")).toBe(true);
     row.dispatchEvent(new MouseEvent("mouseleave"));
-    expect(host.hasAttribute("data-wat-chat-hover")).toBe(false);
+    expect(host.hasAttribute("data-wat-chat-visible")).toBe(false);
     expect(row.hasAttribute("data-wat-chat-active")).toBe(false);
     expect(row.querySelector("[data-meta]")?.textContent).toBe("12:34");
     expect(row.querySelector("[data-unread]")?.textContent).toBe("2");

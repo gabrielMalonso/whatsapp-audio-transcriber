@@ -25,16 +25,18 @@ hover:    contact name               [mail+] [archive Arquivar]
           message preview             unread / pinned / menu
 ```
 
-- Secondary action: mail-plus icon, **Marcar como não lido**.
+- Secondary action: envelope icon, **Marcar como não lido**.
 - Primary action: archive icon + **Arquivar**.
 - Replace only the upper timestamp slot; keep the preview and lower unread,
   pinned and muted badges and the native dropdown.
-- Inherit WhatsApp typography and theme variables. Tokens with light fallback:
-  `--primary` (#111b21), `--secondary` (#667781), `--focus` (#008069),
-  `--dropdown-background` (#ffffff), `--border-default` (#e9edef).
+- Inherit WhatsApp typography and control colors: `--primary` (#111b21),
+  `--secondary` (#667781), `--focus` (#008069). The tooltip uses a self-contained
+  charcoal surface (#292929) and light text (#f4f4f5) in both themes, avoiding
+  mismatched or missing WhatsApp popup tokens.
 - Use the card reference's immediate reveal, muted-to-foreground colors,
-  12 px labels, 14 px icons, 4 px gap, 6 px padding and corners. The WhatsApp
-  slot is 22 px high with 112 px reserved only while controls replace the time.
+  12 px labels, 14 px icons with a 1.75 stroke, 4 px gap, 6 px padding and corners.
+  The controls are 20 px high and replace the timestamp in the native flex row
+  using their intrinsic width. WhatsApp's timestamp nodes stay untouched.
 - Tooltip opens after 150 ms with 150 ms opacity/0.98-scale transitions, no
   close delay and a shared 400 ms warm window between rows. It sits 4 px above
   the trigger, flips below when needed and clamps to a 5 px viewport inset.
@@ -51,10 +53,10 @@ Un-settle, and automatic navigation are not introduced by these two shortcuts.
 
 `chatRows.ts` discovers rows **only inside `#pane-side`** and requires a separate
 name and timestamp slot. It uses semantic grid cells or the title test ID, with
-an unambiguous two-child heading fallback. Generated class names are not used.
-Unsupported row structures are skipped.
+an unambiguous two-child heading fallback that ignores the injected controls.
+Generated class names are not used. Unsupported row structures are skipped.
 
-`chatQuickActions.tsx` mounts a closed Shadow DOM in the timestamp cell. A
+`chatQuickActions.tsx` mounts a closed Shadow DOM beside the timestamp cell. A
 frame-batched observer reconciles inserted, removed and recycled rows. Unmount
 cancels pending actions and removes listeners and injected attributes. The
 content entrypoint also disposes both scanners when WXT invalidates the script.
@@ -84,10 +86,10 @@ DOM fixtures cover exact native action dispatch, nested dropdowns, supported
 labels, inverse-action protection, unrelated menus, cancellation, timeouts,
 virtualized row replacement, teardown and event propagation.
 
-The Mac executor reported `Browser is not available: chrome`; no live WhatsApp
-DOM or browser rendering was available. **Selectors and visual placement still
-need validation against the current WhatsApp Web UI.** Fixtures represent the
-supported structure, not a captured November 2026 DOM. Check light/dark themes,
-narrow sidebar widths, archived/unread filters and native menu dispatch on
-Chrome and Firefox/Zen before releasing. No personal conversations were altered
-during this work.
+Live visual validation on November 5, 2026 used Computer Use in Central ES's
+Helium (Chromium 156), with the production build loaded unpacked. Captures cover
+rest, hover and readable tooltips in WhatsApp's dark and light themes at 110%
+zoom. The original dark theme was restored. No conversations were archived or
+marked unread during this visual pass. Native menu dispatch, narrower sidebars,
+archived/unread filters and Firefox/Zen still need live validation before release;
+the automated dispatch coverage above uses fixtures.
