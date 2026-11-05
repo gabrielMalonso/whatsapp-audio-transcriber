@@ -76,6 +76,11 @@ stored chat IDs or persisted contact names are required. A title is compared
 transiently in memory alongside the row's `data-id` and `aria-rowindex` (when
 available) to detect virtualized row reuse, including matching display names.
 
+The automated popup is masked before opening and stays transparent through its
+exit. Once identified, only that popup remains masked. Detachment, native hiding,
+the next user interaction or a 1.5-second deadline releases the mask, so manual
+menus remain usable even if WhatsApp fails to close the automated popup.
+
 WhatsApp remains responsible for state changes, native row transitions,
 notifications, errors and any undo UI. “Dispatched” means a native menu item was
 clicked, not that the WhatsApp server confirmed success.
@@ -89,7 +94,9 @@ virtualized row replacement, teardown and event propagation.
 Live visual validation on November 5, 2026 used Computer Use in Central ES's
 Helium (Chromium 156), with the production build loaded unpacked. Captures cover
 rest, hover and readable tooltips in WhatsApp's dark and light themes at 110%
-zoom. The original dark theme was restored. No conversations were archived or
-marked unread during this visual pass. Native menu dispatch, narrower sidebars,
-archived/unread filters and Firefox/Zen still need live validation before release;
-the automated dispatch coverage above uses fixtures.
+zoom. The original dark theme was restored. A self-chat with a test message was
+marked unread and archived using the extension: WhatsApp displayed both native
+confirmation toasts and the automated menu was not observed in the captures.
+Manual context menus remained visible; the self-chat was restored to read and
+left archived. Narrower sidebars, archived/unread filters and Firefox/Zen still
+need live validation before release.

@@ -92,6 +92,62 @@ function findItem(
   });
 }
 
+function concealActionMenu() {
+  const sheet = document.createElement("style");
+  sheet.dataset.watChatMenuMask = "";
+  sheet.textContent = `
+    :root[data-wat-chat-menu-opening] :is(${MENU_SELECTOR}),
+    [data-wat-chat-menu-owned] {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      animation: none !important;
+      transition: none !important;
+    }
+  `;
+  document.documentElement.append(sheet);
+  document.documentElement.dataset.watChatMenuOpening = "";
+  let popup: HTMLElement | null = null;
+  return {
+    claim(menu: HTMLElement) {
+      popup =
+        menu.closest<HTMLElement>('[data-animate-dropdown-popup="true"]') ??
+        menu;
+      popup.dataset.watChatMenuOwned = "";
+      delete document.documentElement.dataset.watChatMenuOpening;
+    },
+    release() {
+      delete document.documentElement.dataset.watChatMenuOpening;
+      if (!popup?.isConnected || !isVisible(popup)) {
+        popup?.removeAttribute("data-wat-chat-menu-owned");
+        sheet.remove();
+        return;
+      }
+      // Keep the mask through WhatsApp's asynchronous exit, but never trap a
+      // later user interaction or leave an unclosable menu invisible.
+      const cleanup = () => {
+        observer.disconnect();
+        clearTimeout(timeout);
+        document.removeEventListener("pointerdown", cleanup, true);
+        document.removeEventListener("keydown", cleanup, true);
+        popup?.removeAttribute("data-wat-chat-menu-owned");
+        sheet.remove();
+      };
+      const observer = new MutationObserver(() => {
+        if (!popup?.isConnected || !isVisible(popup)) cleanup();
+      });
+      const timeout = setTimeout(cleanup, 1_500);
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["style", "hidden", "class"],
+      });
+      document.addEventListener("pointerdown", cleanup, true);
+      document.addEventListener("keydown", cleanup, true);
+    },
+  };
+}
+
 /** Serializes access to WhatsApp's single native context menu. */
 export function createChatActionRunner() {
   let busy = false;
@@ -116,6 +172,7 @@ export function createChatActionRunner() {
     document.addEventListener("keydown", onKey, true);
     document.addEventListener("scroll", abort, true);
     signal.addEventListener("abort", abort, { once: true });
+    const mask = concealActionMenu();
     try {
       const menuPromise = waitForMenu(controller.signal);
       const icon = chat.row.querySelector(
@@ -140,6 +197,7 @@ export function createChatActionRunner() {
         );
       }
       ownedMenu = await menuPromise;
+      mask.claim(ownedMenu);
       if (controller.signal.aborted || !isCurrentChat(chat)) {
         throw new Error("A conversa mudou. Tente novamente.");
       }
@@ -165,6 +223,7 @@ export function createChatActionRunner() {
         );
       }
       controller.abort();
+      mask.release();
       signal.removeEventListener("abort", abort);
       document.removeEventListener("pointerdown", abort, true);
       document.removeEventListener("keydown", onKey, true);

@@ -70,8 +70,11 @@ describe("WhatsApp sidebar adapter", () => {
   it("dispatches the native action, including nested dropdown/menu markup", async () => {
     const { chat, trigger } = fixture();
     let clicked = vi.fn();
+    let openingOpacity = "";
     trigger.addEventListener("click", () => {
-      clicked = menu().click;
+      const opened = menu();
+      clicked = opened.click;
+      openingOpacity = getComputedStyle(opened.popup).opacity;
     });
     const result = await createChatActionRunner()(
       chat,
@@ -79,8 +82,54 @@ describe("WhatsApp sidebar adapter", () => {
       new AbortController().signal,
     );
     expect(result).toBe("dispatched");
+    expect(openingOpacity).toBe("0");
     expect(clicked).toHaveBeenCalledOnce();
     expect(document.querySelector('[role="menu"]')).toBeNull();
+  });
+
+  it("keeps a closing menu invisible without hiding menus opened afterward", async () => {
+    const { chat, trigger } = fixture();
+    let closing: HTMLElement | undefined;
+    trigger.addEventListener("click", () => {
+      closing = menu().popup;
+      closing.addEventListener("keydown", (event) => event.stopPropagation(), {
+        capture: true,
+      });
+    });
+    await createChatActionRunner()(
+      chat,
+      "archive",
+      new AbortController().signal,
+    );
+    expect(closing?.isConnected).toBe(true);
+    expect(getComputedStyle(closing!).opacity).toBe("0");
+    const manual = menu().popup;
+    expect(getComputedStyle(manual).opacity).not.toBe("0");
+    closing?.remove();
+    await vi.waitFor(() =>
+      expect(document.querySelector("[data-wat-chat-menu-mask]")).toBeNull(),
+    );
+  });
+
+  it("restores a menu that refuses to close instead of leaving an invisible popup", async () => {
+    vi.useFakeTimers();
+    const { chat, trigger } = fixture();
+    let stuck: HTMLElement | undefined;
+    trigger.addEventListener("click", () => {
+      stuck = menu().popup;
+      stuck.addEventListener("keydown", (event) => event.stopPropagation(), {
+        capture: true,
+      });
+    });
+    await createChatActionRunner()(
+      chat,
+      "archive",
+      new AbortController().signal,
+    );
+    expect(getComputedStyle(stuck!).opacity).toBe("0");
+    await vi.advanceTimersByTimeAsync(1_500);
+    expect(getComputedStyle(stuck!).opacity).not.toBe("0");
+    expect(document.querySelector("[data-wat-chat-menu-mask]")).toBeNull();
   });
 
   it.each(["Marcar como não lida", "Mark as unread", "Marcar como no leído"])(
@@ -170,6 +219,7 @@ describe("WhatsApp sidebar adapter", () => {
     const { click } = menu();
     await expect(promise).rejects.toThrow("menu");
     expect(click).not.toHaveBeenCalled();
+    expect(document.querySelector("[data-wat-chat-menu-mask]")).toBeNull();
   });
 
   it("serializes commands and releases the lock after cancellation", async () => {
@@ -202,5 +252,6 @@ describe("WhatsApp sidebar adapter", () => {
     );
     await vi.advanceTimersByTimeAsync(1_500);
     await assertion;
+    expect(document.querySelector("[data-wat-chat-menu-mask]")).toBeNull();
   });
 });
