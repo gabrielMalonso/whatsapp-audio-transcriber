@@ -1,21 +1,37 @@
-import { Archive, Mail } from "lucide-react";
+import { Archive, Mail, MailOpen } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type {
   ChatAction,
   ChatActionResult,
 } from "../adapters/whatsapp/chatActions";
+import type { ChatReadState } from "../adapters/whatsapp/chatRows";
 
 type Props = {
+  readState: ChatReadState;
   run: (action: ChatAction) => Promise<ChatActionResult>;
   signal: AbortSignal;
 };
 
-type Hint = { text: string; anchor: HTMLElement; visible: boolean };
+type Hint = {
+  action: "read" | "archive";
+  anchor: HTMLElement;
+  visible: boolean;
+};
+
+const alreadyDone: Record<ChatAction, string> = {
+  archive: "Esta conversa já está arquivada.",
+  "mark-unread": "Esta conversa já está marcada como não lida.",
+  "mark-read": "Esta conversa já está marcada como lida.",
+};
 
 // Shared across rows, matching the sidebar tooltip provider’s warm window.
 let tooltipWarmUntil = 0;
 
-export function ChatQuickActions({ run, signal }: Props) {
+export function ChatQuickActions({ readState, run, signal }: Props) {
+  const readAction = readState === "unread" ? "mark-read" : "mark-unread";
+  const readLabel =
+    readState === "unread" ? "Marcar como lido" : "Marcar como não lido";
+  const ReadIcon = readState === "unread" ? MailOpen : Mail;
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [hint, setHint] = useState<Hint | null>(null);
@@ -23,6 +39,7 @@ export function ChatQuickActions({ run, signal }: Props) {
   const tooltip = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const actions = useRef<HTMLDivElement>(null);
+  const hintText = hint?.action === "read" ? readLabel : "Arquivar conversa";
 
   const clearHint = () => {
     if (timer.current) clearTimeout(timer.current);
@@ -30,10 +47,14 @@ export function ChatQuickActions({ run, signal }: Props) {
     if (hint?.visible) tooltipWarmUntil = Date.now() + 400;
     setHint((current) => (current ? { ...current, visible: false } : null));
   };
-  const showHint = (anchor: HTMLElement, text: string, immediate = false) => {
+  const showHint = (
+    anchor: HTMLElement,
+    action: Hint["action"],
+    immediate = false,
+  ) => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(
-      () => setHint({ anchor, text, visible: true }),
+      () => setHint({ anchor, action, visible: true }),
       immediate || Date.now() < tooltipWarmUntil ? 0 : 150,
     );
   };
@@ -82,7 +103,7 @@ export function ChatQuickActions({ run, signal }: Props) {
       document.removeEventListener("scroll", dismiss, true);
       window.removeEventListener("resize", dismiss);
     };
-  }, [hint, feedback]);
+  }, [hint, hintText, feedback]);
 
   const act = async (action: ChatAction) => {
     if (pending || signal.aborted) return;
@@ -92,11 +113,7 @@ export function ChatQuickActions({ run, signal }: Props) {
     try {
       const result = await run(action);
       if (!signal.aborted && result === "already-done") {
-        setFeedback(
-          action === "archive"
-            ? "Esta conversa já está arquivada."
-            : "Esta conversa já está marcada como não lida.",
-        );
+        setFeedback(alreadyDone[action]);
       }
     } catch (error) {
       if (!signal.aborted)
@@ -128,44 +145,36 @@ export function ChatQuickActions({ run, signal }: Props) {
     >
       <button
         type="button"
-        aria-label="Marcar como não lido"
+        aria-label={readLabel}
         aria-describedby={
-          hint?.visible && hint.text === "Marcar como não lido"
-            ? tooltipId
-            : undefined
+          hint?.visible && hint.action === "read" ? tooltipId : undefined
         }
         disabled={pending}
-        onMouseEnter={(event) =>
-          showHint(event.currentTarget, "Marcar como não lido")
-        }
+        onMouseEnter={(event) => showHint(event.currentTarget, "read")}
         onMouseLeave={clearHint}
         onFocus={(event) => {
           if (event.currentTarget.matches(":focus-visible"))
-            showHint(event.currentTarget, "Marcar como não lido", true);
+            showHint(event.currentTarget, "read", true);
         }}
         onBlur={clearHint}
         onClick={(event) => {
-          if (event.nativeEvent.isTrusted) void act("mark-unread");
+          if (event.nativeEvent.isTrusted) void act(readAction);
         }}
       >
-        <Mail aria-hidden="true" />
+        <ReadIcon aria-hidden="true" />
       </button>
       <button
         type="button"
         aria-label="Arquivar conversa"
         aria-describedby={
-          hint?.visible && hint.text === "Arquivar conversa"
-            ? tooltipId
-            : undefined
+          hint?.visible && hint.action === "archive" ? tooltipId : undefined
         }
         disabled={pending}
-        onMouseEnter={(event) =>
-          showHint(event.currentTarget, "Arquivar conversa")
-        }
+        onMouseEnter={(event) => showHint(event.currentTarget, "archive")}
         onMouseLeave={clearHint}
         onFocus={(event) => {
           if (event.currentTarget.matches(":focus-visible"))
-            showHint(event.currentTarget, "Arquivar conversa", true);
+            showHint(event.currentTarget, "archive", true);
         }}
         onBlur={clearHint}
         onClick={(event) => {
@@ -186,7 +195,7 @@ export function ChatQuickActions({ run, signal }: Props) {
           role="tooltip"
           id={tooltipId}
         >
-          {feedback ?? hint?.text}
+          {feedback ?? hintText}
         </div>
       )}
     </div>

@@ -1,3 +1,5 @@
+export type ChatReadState = "read" | "unread";
+
 export type ChatRow = {
   row: HTMLElement;
   name: HTMLElement;
@@ -5,7 +7,23 @@ export type ChatRow = {
   rowId: string | null;
   rowIndex: string | null;
   metadata: HTMLElement;
+  readState: ChatReadState;
 };
+
+function readState(row: HTMLElement): ChatReadState {
+  const unread = [...row.querySelectorAll("[aria-label]")].some((element) => {
+    const label = (element.getAttribute("aria-label") ?? "")
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLocaleLowerCase();
+    return /^(?:nao lid[ao]s?|unread|no leid[oa]s?|\d+ (?:mensage(?:m|ns) nao lid[ao]s?|unread messages?|mensajes? no leid[oa]s?))$/.test(
+      label,
+    );
+  });
+  return unread ? "unread" : "read";
+}
 
 // Scope to the conversation list: message rows and global search results differ.
 export function findChatRows(): ChatRow[] {
@@ -41,6 +59,7 @@ export function findChatRows(): ChatRow[] {
       rowId: row.getAttribute("data-id"),
       rowIndex: row.getAttribute("aria-rowindex"),
       metadata,
+      readState: readState(row),
     });
   }
   return rows;

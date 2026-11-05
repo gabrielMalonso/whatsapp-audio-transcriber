@@ -1,6 +1,6 @@
 import { isCurrentChat, type ChatRow } from "./chatRows";
 
-export type ChatAction = "archive" | "mark-unread";
+export type ChatAction = "archive" | "mark-unread" | "mark-read";
 export type ChatActionResult = "dispatched" | "already-done";
 
 const MENU_SELECTOR = '[role="menu"], [data-animate-dropdown-popup="true"]';
@@ -21,6 +21,13 @@ const labels: Record<ChatAction, readonly string[]> = {
     "Marcar como no leído",
     "Marcar como no leída",
   ],
+  "mark-read": [
+    "Marcar como lida",
+    "Marcar como lido",
+    "Mark as read",
+    "Marcar como leído",
+    "Marcar como leída",
+  ],
 };
 const inverseLabels: Record<ChatAction, readonly string[]> = {
   archive: [
@@ -31,13 +38,8 @@ const inverseLabels: Record<ChatAction, readonly string[]> = {
     "Desarchivar chat",
     "Desarchivar",
   ],
-  "mark-unread": [
-    "Marcar como lida",
-    "Marcar como lido",
-    "Mark as read",
-    "Marcar como leído",
-    "Marcar como leída",
-  ],
+  "mark-unread": labels["mark-read"],
+  "mark-read": labels["mark-unread"],
 };
 
 function normalize(value: string): string {

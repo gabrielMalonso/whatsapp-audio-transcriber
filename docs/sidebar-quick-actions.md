@@ -21,11 +21,13 @@ Inspected on November 5, 2026, in Gabriel's local `Projetos/t3code` checkout at
 
 ```
 rest:     contact name                         time
-hover:    contact name               [mail+] [archive Arquivar]
+hover:    contact name                [mail] [archive Arquivar]
           message preview             unread / pinned / menu
 ```
 
-- Secondary action: envelope icon, **Marcar como não lido**.
+- Secondary action: **Marcar como não lido** with a closed envelope for read
+  chats; **Marcar como lido** with an open envelope for unread chats. WhatsApp's
+  unread indicator (manual or a message count) drives the icon, label and tooltip.
 - Primary action: archive icon + **Arquivar**.
 - Replace only the upper timestamp slot; keep the preview and lower unread,
   pinned and muted badges and the native dropdown.
@@ -57,15 +59,18 @@ an unambiguous two-child heading fallback that ignores the injected controls.
 Generated class names are not used. Unsupported row structures are skipped.
 
 `chatQuickActions.tsx` mounts a closed Shadow DOM beside the timestamp cell. A
-frame-batched observer reconciles inserted, removed and recycled rows. Unmount
+frame-batched observer reconciles inserted, removed and recycled rows, and updates
+read/unread controls in place when native badge labels change. Unmount
 cancels pending actions and removes listeners and injected attributes. The
 content entrypoint also disposes both scanners when WXT invalidates the script.
 
 `chatActions.ts` opens the row's native dropdown, or dispatches its context-menu
 event when the dropdown is not mounted. It waits up to 1.5 seconds for a native
 menu and selects an **exact** action label (Portuguese, English or Spanish).
-An inverse action such as “Marcar como lida” or “Desarquivar” is never clicked.
-Already-unread/already-archived chats receive informational feedback.
+It dispatches the explicitly requested state: mark read, mark unread or archive.
+If the menu instead exposes the inverse action, the chat is already in the
+requested state and receives informational feedback. A stale read/unread button
+cannot toggle the chat back to an unwanted state.
 
 Only trusted clicks on the extension controls dispatch actions. Commands are
 serialized across rows. Existing menus block dispatch; row recycling,
@@ -95,8 +100,9 @@ Live visual validation on November 5, 2026 used Computer Use in Central ES's
 Helium (Chromium 156), with the production build loaded unpacked. Captures cover
 rest, hover and readable tooltips in WhatsApp's dark and light themes at 110%
 zoom. The original dark theme was restored. A self-chat with a test message was
-marked unread and archived using the extension: WhatsApp displayed both native
-confirmation toasts and the automated menu was not observed in the captures.
+marked unread, marked read again and archived using the extension: WhatsApp
+displayed the native confirmation toasts and the automated menu was not observed
+in the captures. The read/unread icon and tooltip switched in both directions.
 Manual context menus remained visible; the self-chat was restored to read and
 left archived. Narrower sidebars, archived/unread filters and Firefox/Zen still
 need live validation before release.

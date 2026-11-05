@@ -1,11 +1,19 @@
 import { waitFor } from "@testing-library/react";
+import type { ComponentProps, ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { ChatQuickActions } from "../../components/ChatQuickActions";
 import { startChatQuickActions } from "./chatQuickActions";
 import { findChatRows } from "./chatRows";
 
-const { unmount } = vi.hoisted(() => ({ unmount: vi.fn() }));
+const { unmount, renderRoot } = vi.hoisted(() => ({
+  unmount: vi.fn(),
+  renderRoot:
+    vi.fn<
+      (element: ReactElement<ComponentProps<typeof ChatQuickActions>>) => void
+    >(),
+}));
 vi.mock("react-dom/client", () => ({
-  createRoot: vi.fn(() => ({ render: vi.fn(), unmount })),
+  createRoot: vi.fn(() => ({ render: renderRoot, unmount })),
 }));
 
 let stop: (() => void) | undefined;
@@ -58,6 +66,26 @@ describe("sidebar action lifecycle", () => {
     expect(unmount).toHaveBeenCalledOnce();
     expect(await mountedHost()).not.toBe(host);
     expect(row.querySelectorAll("[data-wat-chat-actions]")).toHaveLength(1);
+  });
+
+  it("updates the read action when unread badges change without remounting or cancelling the row", async () => {
+    const row = fixture();
+    stop = startChatQuickActions();
+    const host = await mountedHost();
+    const initial = renderRoot.mock.calls[0]![0].props;
+    expect(initial.readState).toBe("read");
+    const badge = row.querySelector("[data-unread]")!;
+    badge.setAttribute("aria-label", "2 mensagens não lidas");
+    await waitFor(() =>
+      expect(renderRoot.mock.lastCall?.[0].props.readState).toBe("unread"),
+    );
+    badge.remove();
+    await waitFor(() =>
+      expect(renderRoot.mock.lastCall?.[0].props.readState).toBe("read"),
+    );
+    expect(await mountedHost()).toBe(host);
+    expect(initial.signal.aborted).toBe(false);
+    expect(unmount).not.toHaveBeenCalled();
   });
 
   it("removes roots from detached rows and restores all injected attributes on stop", async () => {

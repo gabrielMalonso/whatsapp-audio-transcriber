@@ -6,7 +6,7 @@ This policy describes how the **WhatsApp Audio Transcriber** extension handles d
 
 ## Purpose
 
-The extension lets users transcribe selected WhatsApp Web voice messages, format the resulting text, and access native archive and mark-as-unread actions from the chat sidebar.
+The extension lets users transcribe selected WhatsApp Web voice messages, format the resulting text, and access native archive and mark-as-read/unread actions from the chat sidebar.
 
 ## Data processed
 

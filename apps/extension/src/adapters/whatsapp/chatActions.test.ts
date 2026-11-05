@@ -67,6 +67,22 @@ describe("WhatsApp sidebar adapter", () => {
     expect(isCurrentChat(chat)).toBe(false);
   });
 
+  it.each([
+    ["Não lida", "unread"],
+    ["1 mensagem não lida", "unread"],
+    ["12 mensagens não lidas", "unread"],
+    ["Unread", "unread"],
+    ["2 unread messages", "unread"],
+    ["3 mensajes no leídos", "unread"],
+    ["Marcar como não lida", "read"],
+    ["", "read"],
+  ])("detects read state from the badge %s", (label, expected) => {
+    const { chat } = fixture();
+    const badge = chat.row.querySelector("[data-unread]")!;
+    badge.setAttribute("aria-label", label);
+    expect(findChatRows()[0]?.readState).toBe(expected);
+  });
+
   it("dispatches the native action, including nested dropdown/menu markup", async () => {
     const { chat, trigger } = fixture();
     let clicked = vi.fn();
@@ -132,9 +148,16 @@ describe("WhatsApp sidebar adapter", () => {
     expect(document.querySelector("[data-wat-chat-menu-mask]")).toBeNull();
   });
 
-  it.each(["Marcar como não lida", "Mark as unread", "Marcar como no leído"])(
-    "supports the exact native label %s",
-    async (label) => {
+  it.each([
+    ["mark-unread", "Marcar como não lida"],
+    ["mark-unread", "Mark as unread"],
+    ["mark-unread", "Marcar como no leído"],
+    ["mark-read", "Marcar como lida"],
+    ["mark-read", "Mark as read"],
+    ["mark-read", "Marcar como leído"],
+  ] as const)(
+    "supports %s with the exact native label %s",
+    async (action, label) => {
       const { chat, trigger } = fixture();
       let clicked = vi.fn();
       trigger.addEventListener("click", () => {
@@ -142,7 +165,7 @@ describe("WhatsApp sidebar adapter", () => {
       });
       await createChatActionRunner()(
         chat,
-        "mark-unread",
+        action,
         new AbortController().signal,
       );
       expect(clicked).toHaveBeenCalledOnce();
@@ -152,6 +175,7 @@ describe("WhatsApp sidebar adapter", () => {
   it.each([
     ["archive", "Desarquivar conversa"],
     ["mark-unread", "Marcar como lida"],
+    ["mark-read", "Marcar como não lida"],
   ] as const)("never toggles the inverse of %s", async (action, label) => {
     const { chat, trigger } = fixture();
     let clicked = vi.fn();

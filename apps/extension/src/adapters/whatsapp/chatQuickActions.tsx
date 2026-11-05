@@ -1,7 +1,12 @@
 import { createRoot } from "react-dom/client";
 import { ChatQuickActions } from "../../components/ChatQuickActions";
 import { createChatActionRunner } from "./chatActions";
-import { findChatRows, isCurrentChat, type ChatRow } from "./chatRows";
+import {
+  findChatRows,
+  isCurrentChat,
+  type ChatReadState,
+  type ChatRow,
+} from "./chatRows";
 import styles from "./chatQuickActions.css?inline";
 
 // Let the controls' intrinsic width replace the timestamp in the native flex row.
@@ -11,7 +16,12 @@ const pageStyles = `
 }
 `;
 
-type MountedActions = { chat: ChatRow; host: HTMLElement; dispose: () => void };
+type MountedActions = {
+  chat: ChatRow;
+  host: HTMLElement;
+  update: (readState: ChatReadState) => void;
+  dispose: () => void;
+};
 
 export function startChatQuickActions(): () => void {
   const mounted = new Map<HTMLElement, MountedActions>();
@@ -40,8 +50,13 @@ export function startChatQuickActions(): () => void {
       if (
         current?.chat.name === chat.name &&
         current.chat.metadata === chat.metadata
-      )
+      ) {
+        if (current.chat.readState !== chat.readState) {
+          current.chat = chat;
+          current.update(chat.readState);
+        }
         continue;
+      }
       current?.dispose();
       const host = document.createElement("span");
       host.dataset.watChatActions = "";
@@ -55,12 +70,16 @@ export function startChatQuickActions(): () => void {
       chat.metadata.after(host);
       const controller = new AbortController();
       const root = createRoot(app);
-      root.render(
-        <ChatQuickActions
-          run={(action) => run(chat, action, controller.signal)}
-          signal={controller.signal}
-        />,
-      );
+      const update = (readState: ChatReadState) => {
+        root.render(
+          <ChatQuickActions
+            readState={readState}
+            run={(action) => run(chat, action, controller.signal)}
+            signal={controller.signal}
+          />,
+        );
+      };
+      update(chat.readState);
       let hovered = chat.row.matches(":hover");
       const sync = () => {
         if (controller.signal.aborted) return;
@@ -86,6 +105,7 @@ export function startChatQuickActions(): () => void {
       mounted.set(chat.row, {
         chat,
         host,
+        update,
         dispose: () => {
           controller.abort();
           chat.row.removeEventListener("mouseenter", enter);
@@ -108,7 +128,7 @@ export function startChatQuickActions(): () => void {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["title", "data-id", "aria-rowindex"],
+    attributeFilter: ["title", "data-id", "aria-rowindex", "aria-label"],
   });
   frame = requestAnimationFrame(scan);
   return () => {
