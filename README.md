@@ -27,6 +27,7 @@ The extension adds a **Transcribe** button to voice messages in WhatsApp Web. Se
 - Transcribe without playing the audio aloud.
 - Choose a colloquial, natural, or formal tone and adjust text formatting.
 - Reopen saved transcripts from a local cache.
+- Hover over a chat to archive it or mark it as unread from the sidebar. These shortcuts work without a Groq API key.
 
 Supports Chrome, Firefox, and Zen Browser. Requires your own Groq API key; API usage is subject to Groq's limits and pricing. Changes to WhatsApp Web may require an extension update.
 
@@ -75,7 +76,7 @@ In Chrome, enable **Developer mode** at `chrome://extensions` and **Load unpacke
 
 Development builds are in `apps/extension/.output/chrome-mv3-dev` and `apps/extension/.output/firefox-mv3-dev`. Load them using the same browser steps above.
 
-The extension lives in `apps/extension` (WXT + React); shared contracts live in `packages/protocol`. See the [architecture](docs/architecture.md) for the capture and transcription flow.
+The extension lives in `apps/extension` (WXT + React); shared contracts live in `packages/protocol`. See the [architecture](docs/architecture.md) for the capture and transcription flow, and the [sidebar notes](docs/sidebar-quick-actions.md) for quick-action behavior and validation limits.
 
 ## Contributing
 
