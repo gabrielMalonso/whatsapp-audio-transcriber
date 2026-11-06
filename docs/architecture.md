@@ -12,6 +12,8 @@
 | `GroqProvider`             | Transcribes with Whisper and sends raw text to GPT-OSS for structured formatting.                                         |
 | `packages/protocol`        | Defines shared Zod contracts, models, states, limits, and errors.                                                         |
 
+The sidebar also mounts independent chat quick actions through `chatQuickActions.tsx`. They use WhatsApp’s native menus and do not pass through Groq, the audio bridge or extension storage. See [sidebar quick actions](sidebar-quick-actions.md) for the T3 reference, DOM contracts and validation limits.
+
 ## Flow
 
 ```mermaid

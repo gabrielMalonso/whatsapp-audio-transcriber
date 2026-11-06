@@ -1,12 +1,12 @@
 # Privacy Policy — WhatsApp Audio Transcriber
 
-Last updated: October 4, 2026.
+Last updated: November 5, 2026.
 
 This policy describes how the **WhatsApp Audio Transcriber** extension handles data. The extension is an independent project, not affiliated with WhatsApp, Meta, or Groq.
 
 ## Purpose
 
-The extension's sole purpose is to let users transcribe voice messages they select in WhatsApp Web and format the resulting text for reading within the conversation.
+The extension lets users transcribe selected WhatsApp Web voice messages, format the resulting text, and access native archive and mark-as-read/unread actions from the chat sidebar.
 
 ## Data processed
 
@@ -17,7 +17,7 @@ The extension processes only the data necessary for this purpose:
 - **Transcript:** The raw text returned by Groq may be sent to Groq again to apply formatting preferences. Both the raw and formatted text are kept in the extension's local cache.
 - **Local technical data:** Hash of the message identifier, language, duration, models used, creation and access dates, formatting preferences, and acknowledgment of the initial notice.
 
-The extension does not separately request or extract names, email addresses, phone numbers, location, financial information, browsing history, or contacts. A selected message may contain personal data within its content. The extension contains no advertising, analytics, or trackers.
+Sidebar shortcuts compare a chat title transiently in memory to avoid acting on a recycled conversation row, then invoke WhatsApp’s own menu. Chat titles are not stored or sent to Groq or any other service by the extension. The extension does not separately collect email addresses, phone numbers, location, financial information, browsing history, or contacts. A selected message may contain personal data within its content. The extension contains no advertising, analytics, or trackers.
 
 ## When data is sent
 
