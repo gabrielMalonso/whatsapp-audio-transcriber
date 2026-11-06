@@ -24,7 +24,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-function fixture() {
+function fixture(): HTMLElement {
   document.body.innerHTML = `<div id="pane-side"><div role="row">
     <div><div role="gridcell" aria-colindex="2"><span dir="auto" title="Example">Example</span></div><div data-meta><span>12:34</span></div></div>
     <div data-preview>Message <span data-unread>2</span></div>
@@ -32,11 +32,12 @@ function fixture() {
   return document.querySelector<HTMLElement>('[role="row"]')!;
 }
 
-async function mountedHost() {
-  await waitFor(() =>
-    expect(document.querySelector("[data-wat-chat-actions]")).not.toBeNull(),
-  );
-  return document.querySelector<HTMLElement>("[data-wat-chat-actions]")!;
+function mountedHost(): Promise<HTMLElement> {
+  return waitFor(() => {
+    const host = document.querySelector<HTMLElement>("[data-wat-chat-actions]");
+    if (!host) throw new Error("Chat actions have not mounted yet.");
+    return host;
+  });
 }
 
 describe("sidebar action lifecycle", () => {
@@ -96,13 +97,11 @@ describe("sidebar action lifecycle", () => {
     await waitFor(() =>
       expect(row.querySelector("[data-wat-chat-actions]")).toBeNull(),
     );
-    expect(row.hasAttribute("data-wat-chat-row")).toBe(false);
     document.querySelector("#pane-side")!.append(row);
     await mountedHost();
     stop();
     stop = undefined;
     expect(document.querySelector("[data-wat-chat-actions]")).toBeNull();
     expect(document.querySelector("[data-wat-chat-meta]")).toBeNull();
-    expect(document.querySelector("[data-wat-chat-row]")).toBeNull();
   });
 });

@@ -10,7 +10,13 @@ export type ChatRow = {
   readState: ChatReadState;
 };
 
-function readState(row: HTMLElement): ChatReadState {
+const unreadBadgePatterns = [
+  /^(?:nao lid[ao]s?|\d+ mensage(?:m|ns) nao lid[ao]s?)$/,
+  /^(?:unread|\d+ unread messages?)$/,
+  /^(?:no leid[oa]s?|\d+ mensajes? no leid[oa]s?)$/,
+];
+
+function getChatReadState(row: HTMLElement): ChatReadState {
   const unread = [...row.querySelectorAll("[aria-label]")].some((element) => {
     const label = (element.getAttribute("aria-label") ?? "")
       .normalize("NFD")
@@ -18,9 +24,7 @@ function readState(row: HTMLElement): ChatReadState {
       .replace(/\s+/g, " ")
       .trim()
       .toLocaleLowerCase();
-    return /^(?:nao lid[ao]s?|unread|no leid[oa]s?|\d+ (?:mensage(?:m|ns) nao lid[ao]s?|unread messages?|mensajes? no leid[oa]s?))$/.test(
-      label,
-    );
+    return unreadBadgePatterns.some((pattern) => pattern.test(label));
   });
   return unread ? "unread" : "read";
 }
@@ -59,7 +63,7 @@ export function findChatRows(): ChatRow[] {
       rowId: row.getAttribute("data-id"),
       rowIndex: row.getAttribute("aria-rowindex"),
       metadata,
-      readState: readState(row),
+      readState: getChatReadState(row),
     });
   }
   return rows;

@@ -99,6 +99,30 @@ function findItem(
   });
 }
 
+function openNativeChatMenu(chat: ChatRow): void {
+  const icon = chat.row.querySelector(
+    '[data-icon="down"], [data-icon="chevron-down"]',
+  );
+  const trigger = icon?.closest<HTMLElement>('button, [role="button"]');
+  if (trigger && !trigger.contains(chat.name)) {
+    trigger.click();
+    return;
+  }
+  const target =
+    chat.row.querySelector<HTMLElement>('[tabindex="-1"]') ?? chat.name;
+  const rect = chat.row.getBoundingClientRect();
+  target.dispatchEvent(
+    new MouseEvent("contextmenu", {
+      bubbles: true,
+      cancelable: true,
+      button: 2,
+      buttons: 2,
+      clientX: Math.max(rect.left, rect.right - 24),
+      clientY: rect.top + Math.min(24, rect.height / 2),
+    }),
+  );
+}
+
 function concealActionMenu(): {
   claim: (menu: HTMLElement) => void;
   release: () => void;
@@ -186,27 +210,7 @@ export function createChatActionRunner(): ChatActionRunner {
     const mask = concealActionMenu();
     try {
       const menuPromise = waitForMenu(controller.signal);
-      const icon = chat.row.querySelector(
-        '[data-icon="down"], [data-icon="chevron-down"]',
-      );
-      const trigger = icon?.closest<HTMLElement>('button, [role="button"]');
-      if (trigger && !trigger.contains(chat.name)) {
-        trigger.click();
-      } else {
-        const target =
-          chat.row.querySelector<HTMLElement>('[tabindex="-1"]') ?? chat.name;
-        const rect = chat.row.getBoundingClientRect();
-        target.dispatchEvent(
-          new MouseEvent("contextmenu", {
-            bubbles: true,
-            cancelable: true,
-            button: 2,
-            buttons: 2,
-            clientX: Math.max(rect.left, rect.right - 24),
-            clientY: rect.top + Math.min(24, rect.height / 2),
-          }),
-        );
-      }
+      openNativeChatMenu(chat);
       ownedMenu = await menuPromise;
       mask.claim(ownedMenu);
       if (controller.signal.aborted || !isCurrentChat(chat)) {

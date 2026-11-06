@@ -86,7 +86,6 @@ function mountChatActions(
 ): MountedActions {
   const host = document.createElement("span");
   host.dataset.watChatActions = "";
-  chat.row.dataset.watChatRow = "";
   chat.metadata.dataset.watChatMeta = "";
   const shadow = host.attachShadow({ mode: "closed" });
   const stylesheet = document.createElement("style");
@@ -150,7 +149,6 @@ function mountChatActions(
       shadow.removeEventListener("focusout", focus);
       root.unmount();
       host.remove();
-      delete chat.row.dataset.watChatRow;
       delete chat.row.dataset.watChatActive;
       delete chat.metadata.dataset.watChatMeta;
     },

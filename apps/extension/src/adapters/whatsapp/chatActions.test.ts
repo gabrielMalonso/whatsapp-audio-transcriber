@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createChatActionRunner } from "./chatActions";
-import { findChatRows, isCurrentChat } from "./chatRows";
+import { findChatRows, isCurrentChat, type ChatRow } from "./chatRows";
 
-function fixture() {
+function fixture(): { chat: ChatRow; trigger: HTMLButtonElement } {
   document.body.innerHTML = `
     <div id="pane-side"><div role="row" aria-rowindex="1">
       <div tabindex="-1">
@@ -16,7 +16,17 @@ function fixture() {
   return { chat, trigger };
 }
 
-function menu(label = "Arquivar conversa") {
+type MenuOptions = {
+  label?: string;
+  onClick?: () => void;
+  closeOnEscape?: boolean;
+};
+
+function menu({
+  label = "Arquivar conversa",
+  onClick = vi.fn(),
+  closeOnEscape = true,
+}: MenuOptions = {}): { popup: HTMLDivElement; click: () => void } {
   const popup = document.createElement("div");
   popup.dataset.animateDropdownPopup = "true";
   const list = document.createElement("div");
@@ -25,15 +35,14 @@ function menu(label = "Arquivar conversa") {
   action.setAttribute("role", "button");
   action.setAttribute("aria-label", label);
   action.textContent = label;
-  const click = vi.fn();
-  action.addEventListener("click", click);
+  action.addEventListener("click", onClick);
   list.append(action);
   popup.append(list);
   document.body.append(popup);
   list.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") popup.remove();
+    if (closeOnEscape && event.key === "Escape") popup.remove();
   });
-  return { popup, click };
+  return { popup, click: onClick };
 }
 
 beforeEach(() => {
@@ -85,11 +94,10 @@ describe("WhatsApp sidebar adapter", () => {
 
   it("dispatches the native action, including nested dropdown/menu markup", async () => {
     const { chat, trigger } = fixture();
-    let clicked = vi.fn();
+    const clicked = vi.fn();
     let openingOpacity = "";
     trigger.addEventListener("click", () => {
-      const opened = menu();
-      clicked = opened.click;
+      const opened = menu({ onClick: clicked });
       openingOpacity = getComputedStyle(opened.popup).opacity;
     });
     const result = await createChatActionRunner()(
@@ -107,10 +115,7 @@ describe("WhatsApp sidebar adapter", () => {
     const { chat, trigger } = fixture();
     let closing: HTMLElement | undefined;
     trigger.addEventListener("click", () => {
-      closing = menu().popup;
-      closing.addEventListener("keydown", (event) => event.stopPropagation(), {
-        capture: true,
-      });
+      closing = menu({ closeOnEscape: false }).popup;
     });
     await createChatActionRunner()(
       chat,
@@ -132,10 +137,7 @@ describe("WhatsApp sidebar adapter", () => {
     const { chat, trigger } = fixture();
     let stuck: HTMLElement | undefined;
     trigger.addEventListener("click", () => {
-      stuck = menu().popup;
-      stuck.addEventListener("keydown", (event) => event.stopPropagation(), {
-        capture: true,
-      });
+      stuck = menu({ closeOnEscape: false }).popup;
     });
     await createChatActionRunner()(
       chat,
@@ -159,9 +161,9 @@ describe("WhatsApp sidebar adapter", () => {
     "supports %s with the exact native label %s",
     async (action, label) => {
       const { chat, trigger } = fixture();
-      let clicked = vi.fn();
+      const clicked = vi.fn();
       trigger.addEventListener("click", () => {
-        clicked = menu(label).click;
+        menu({ label, onClick: clicked });
       });
       await createChatActionRunner()(
         chat,
@@ -178,9 +180,9 @@ describe("WhatsApp sidebar adapter", () => {
     ["mark-read", "Marcar como não lida"],
   ] as const)("never toggles the inverse of %s", async (action, label) => {
     const { chat, trigger } = fixture();
-    let clicked = vi.fn();
+    const clicked = vi.fn();
     trigger.addEventListener("click", () => {
-      clicked = menu(label).click;
+      menu({ label, onClick: clicked });
     });
     expect(
       await createChatActionRunner()(
@@ -197,9 +199,9 @@ describe("WhatsApp sidebar adapter", () => {
     trigger.remove();
     const openChat = vi.fn();
     chat.row.addEventListener("click", openChat);
-    let clicked = vi.fn();
+    const clicked = vi.fn();
     chat.row.addEventListener("contextmenu", () => {
-      clicked = menu().click;
+      menu({ onClick: clicked });
     });
     await createChatActionRunner()(
       chat,
@@ -221,10 +223,10 @@ describe("WhatsApp sidebar adapter", () => {
 
   it("rejects a recycled row even if the native menu arrives afterward", async () => {
     const { chat, trigger } = fixture();
-    let clicked = vi.fn();
+    const clicked = vi.fn();
     trigger.addEventListener("click", () => {
       chat.name.title = "Another conversation";
-      clicked = menu().click;
+      menu({ onClick: clicked });
     });
     await expect(
       createChatActionRunner()(chat, "archive", new AbortController().signal),

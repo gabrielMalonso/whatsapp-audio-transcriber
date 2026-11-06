@@ -15,14 +15,16 @@ describe("sidebar action controls", () => {
         />
       </div>,
     );
-    const archive = ui.getByRole("button", { name: "Arquivar conversa" });
+    expect(ui.getByRole("button", { name: "Arquivar conversa" })).toBeTruthy();
     expect(
       ui.getByRole("button", { name: "Marcar como não lido" }),
     ).toBeTruthy();
-    fireEvent.click(archive);
-    fireEvent.doubleClick(archive);
-    fireEvent.keyDown(archive, { key: "Enter" });
-    fireEvent.keyDown(archive, { key: " " });
+    for (const button of ui.getAllByRole("button")) {
+      fireEvent.click(button);
+      fireEvent.doubleClick(button);
+      fireEvent.keyDown(button, { key: "Enter" });
+      fireEvent.keyDown(button, { key: " " });
+    }
     expect(openChat).not.toHaveBeenCalled();
     expect(run).not.toHaveBeenCalled();
     ui.unmount();
@@ -45,10 +47,24 @@ describe("sidebar action controls", () => {
     ui.rerender(
       <ChatQuickActions readState="unread" run={run} signal={signal} />,
     );
-    expect(ui.getByRole("button", { name: "Marcar como lido" })).toBeTruthy();
+    const readButton = ui.getByRole("button", { name: "Marcar como lido" });
     expect(ui.getByRole("tooltip", { hidden: true }).textContent).toBe(
       "Marcar como lido",
     );
+    fireEvent.scroll(document);
+    await waitFor(() =>
+      expect(readButton.hasAttribute("aria-describedby")).toBe(false),
+    );
+    const archive = ui.getByRole("button", { name: "Arquivar conversa" });
+    fireEvent.mouseEnter(archive);
+    await waitFor(() =>
+      expect(ui.getByRole("tooltip", { hidden: true }).textContent).toBe(
+        "Arquivar conversa",
+      ),
+    );
+    expect(archive.hasAttribute("aria-describedby")).toBe(true);
+    fireEvent.keyDown(archive, { key: "Escape" });
+    expect(archive.hasAttribute("aria-describedby")).toBe(false);
     ui.unmount();
   });
 });
