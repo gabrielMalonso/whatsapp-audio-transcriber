@@ -4,10 +4,14 @@ The existing Chrome packages in this folder remain specific to Chrome. Firefox a
 
 - **Chrome:** Extract the ZIP, open `chrome://extensions`, enable Developer mode, and use **Load unpacked** on the folder containing `manifest.json`.
 - **Firefox/Zen temporary:** Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `apps/extension/.output/firefox-mv3/manifest.json`. The extension is removed when the browser closes.
-- **Firefox/Zen permanent:** Obtain the Mozilla-signed XPI, open `about:addons`, and use the gear menu → **Install Add-on From File…**. Renaming a ZIP to XPI does not replace signing.
+- **Firefox/Zen permanent:** Use the [Mozilla Add-ons listing](https://addons.mozilla.org/firefox/addon/e1edf950e86a47f099a7/) once the public release is approved. The first catalog release is being submitted as version 0.3.1. Before approval, the existing signed, self-distributed XPI remains available through the Developer Hub. Renaming an unsigned ZIP to XPI does not replace signing.
 
 Open the popup, configure your Groq API key, and refresh WhatsApp Web. In Firefox/Zen, also confirm permissions for the WhatsApp and Groq sites in `about:addons`.
 
-To update, reload the extension from the same folder (Chrome or temporary Firefox/Zen), or install the new signed XPI with the same ID and a higher version (permanent). Do not uninstall before updating if you want to preserve your key, preferences, and cache. Temporary installation does not guarantee persistence between browser sessions.
+For automatic Firefox/Zen updates, use the Mozilla-hosted release and set **Allow automatic updates → On** in the extension's `about:addons` details. Future releases must be submitted to **On this site**, keeping the ID `whatsapp-audio-transcriber@gabrielalonso.dev`. Do not add a custom `update_url` to the Mozilla-hosted build. Self-distributed versions without an update manifest do not receive these manual-channel uploads automatically.
+
+When migrating an existing signed installation, keep the same add-on ID and update to the Mozilla-hosted version. Use **Check for Updates** in `about:addons`; if a one-time installation from the catalog is needed, update in place. Do not uninstall first if you want to preserve your key, preferences, and cache. Mozilla review must finish before the catalog version can be installed or delivered as an update.
+
+To update local development builds, reload the extension from the same folder (Chrome or temporary Firefox/Zen). Temporary installation does not guarantee persistence between browser sessions.
 
 For local builds, see [Development](../README.md#development). For signing and distribution, see [Mozilla’s guide](https://extensionworkshop.com/documentation/publish/signing-and-distribution-overview/).
