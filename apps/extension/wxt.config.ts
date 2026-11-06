@@ -21,7 +21,7 @@ export default defineConfig({
     name: "__MSG_extensionName__",
     description: "__MSG_extensionDescription__",
     default_locale: "pt_BR",
-    version: "0.2.4",
+    version: "0.3.0",
     permissions: ["storage"],
     host_permissions: ["https://web.whatsapp.com/*", "https://api.groq.com/*"],
     ...(browser === "firefox"
