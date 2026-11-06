@@ -2,6 +2,11 @@ import { isCurrentChat, type ChatRow } from "./chatRows";
 
 export type ChatAction = "archive" | "mark-unread" | "mark-read";
 export type ChatActionResult = "dispatched" | "already-done";
+export type ChatActionRunner = (
+  chat: ChatRow,
+  action: ChatAction,
+  signal: AbortSignal,
+) => Promise<ChatActionResult>;
 
 const MENU_SELECTOR = '[role="menu"], [data-animate-dropdown-popup="true"]';
 const ITEM_SELECTOR = '[role="menuitem"], [role="button"], li[tabindex]';
@@ -94,7 +99,10 @@ function findItem(
   });
 }
 
-function concealActionMenu() {
+function concealActionMenu(): {
+  claim: (menu: HTMLElement) => void;
+  release: () => void;
+} {
   const sheet = document.createElement("style");
   sheet.dataset.watChatMenuMask = "";
   sheet.textContent = `
@@ -126,14 +134,14 @@ function concealActionMenu() {
       }
       // Keep the mask through WhatsApp's asynchronous exit, but never trap a
       // later user interaction or leave an unclosable menu invisible.
-      const cleanup = () => {
+      function cleanup(): void {
         observer.disconnect();
         clearTimeout(timeout);
         document.removeEventListener("pointerdown", cleanup, true);
         document.removeEventListener("keydown", cleanup, true);
         popup?.removeAttribute("data-wat-chat-menu-owned");
         sheet.remove();
-      };
+      }
       const observer = new MutationObserver(() => {
         if (!popup?.isConnected || !isVisible(popup)) cleanup();
       });
@@ -151,13 +159,13 @@ function concealActionMenu() {
 }
 
 /** Serializes access to WhatsApp's single native context menu. */
-export function createChatActionRunner() {
+export function createChatActionRunner(): ChatActionRunner {
   let busy = false;
-  return async (
+  return async function runChatAction(
     chat: ChatRow,
     action: ChatAction,
     signal: AbortSignal,
-  ): Promise<ChatActionResult> => {
+  ): Promise<ChatActionResult> {
     if (busy) throw new Error("Aguarde a ação anterior terminar.");
     if (!isCurrentChat(chat) || signal.aborted)
       throw new Error("A conversa mudou. Tente novamente.");
@@ -166,12 +174,13 @@ export function createChatActionRunner() {
     busy = true;
     let ownedMenu: HTMLElement | null = null;
     const controller = new AbortController();
-    const abort = () => controller.abort();
-    const onKey = () => abort();
+    function abort(): void {
+      controller.abort();
+    }
     // A different user interaction cancels the pending command rather than
     // accidentally choosing an item from a newly opened menu.
     document.addEventListener("pointerdown", abort, true);
-    document.addEventListener("keydown", onKey, true);
+    document.addEventListener("keydown", abort, true);
     document.addEventListener("scroll", abort, true);
     signal.addEventListener("abort", abort, { once: true });
     const mask = concealActionMenu();
@@ -228,7 +237,7 @@ export function createChatActionRunner() {
       mask.release();
       signal.removeEventListener("abort", abort);
       document.removeEventListener("pointerdown", abort, true);
-      document.removeEventListener("keydown", onKey, true);
+      document.removeEventListener("keydown", abort, true);
       document.removeEventListener("scroll", abort, true);
       busy = false;
     }
@@ -237,7 +246,7 @@ export function createChatActionRunner() {
 
 function waitForMenu(signal: AbortSignal): Promise<HTMLElement> {
   return new Promise((resolve, reject) => {
-    const finish = (menu?: HTMLElement) => {
+    function finish(menu?: HTMLElement): void {
       observer.disconnect();
       clearTimeout(timeout);
       signal.removeEventListener("abort", cancel);
@@ -246,8 +255,10 @@ function waitForMenu(signal: AbortSignal): Promise<HTMLElement> {
         reject(
           new Error("Não foi possível acessar o menu. Use o menu da conversa."),
         );
-    };
-    const cancel = () => finish();
+    }
+    function cancel(): void {
+      finish();
+    }
     const observer = new MutationObserver(() => {
       const menus = openMenus();
       if (menus.length === 1 && menus[0]?.querySelector(ITEM_SELECTOR))

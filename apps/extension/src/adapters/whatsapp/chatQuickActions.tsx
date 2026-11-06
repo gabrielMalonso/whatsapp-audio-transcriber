@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { ChatQuickActions } from "../../components/ChatQuickActions";
-import { createChatActionRunner } from "./chatActions";
+import { createChatActionRunner, type ChatActionRunner } from "./chatActions";
 import {
   findChatRows,
   isCurrentChat,
@@ -31,7 +31,7 @@ export function startChatQuickActions(): () => void {
   document.documentElement.append(pageSheet);
   let frame = 0;
 
-  const scan = () => {
+  function scan(): void {
     frame = 0;
     const chats = findChatRows();
     const found = new Set(chats.map((chat) => chat.row));
@@ -58,69 +58,9 @@ export function startChatQuickActions(): () => void {
         continue;
       }
       current?.dispose();
-      const host = document.createElement("span");
-      host.dataset.watChatActions = "";
-      chat.row.dataset.watChatRow = "";
-      chat.metadata.dataset.watChatMeta = "";
-      const shadow = host.attachShadow({ mode: "closed" });
-      const stylesheet = document.createElement("style");
-      stylesheet.textContent = styles;
-      const app = document.createElement("span");
-      shadow.append(stylesheet, app);
-      chat.metadata.after(host);
-      const controller = new AbortController();
-      const root = createRoot(app);
-      const update = (readState: ChatReadState) => {
-        root.render(
-          <ChatQuickActions
-            readState={readState}
-            run={(action) => run(chat, action, controller.signal)}
-            signal={controller.signal}
-          />,
-        );
-      };
-      update(chat.readState);
-      let hovered = chat.row.matches(":hover");
-      const sync = () => {
-        if (controller.signal.aborted) return;
-        const focused =
-          shadow.activeElement?.matches(":focus-visible") ?? false;
-        host.toggleAttribute("data-wat-chat-visible", hovered || focused);
-        chat.row.toggleAttribute("data-wat-chat-active", hovered || focused);
-      };
-      const enter = () => {
-        hovered = true;
-        sync();
-      };
-      const leave = () => {
-        hovered = false;
-        sync();
-      };
-      const focus = () => queueMicrotask(sync);
-      chat.row.addEventListener("mouseenter", enter);
-      chat.row.addEventListener("mouseleave", leave);
-      shadow.addEventListener("focusin", focus);
-      shadow.addEventListener("focusout", focus);
-      sync();
-      mounted.set(chat.row, {
-        chat,
-        host,
-        update,
-        dispose: () => {
-          controller.abort();
-          chat.row.removeEventListener("mouseenter", enter);
-          chat.row.removeEventListener("mouseleave", leave);
-          shadow.removeEventListener("focusin", focus);
-          shadow.removeEventListener("focusout", focus);
-          root.unmount();
-          host.remove();
-          delete chat.row.dataset.watChatRow;
-          delete chat.row.dataset.watChatActive;
-          delete chat.metadata.dataset.watChatMeta;
-        },
-      });
+      mounted.set(chat.row, mountChatActions(chat, run));
     }
-  };
+  }
   const observer = new MutationObserver(() => {
     if (!frame) frame = requestAnimationFrame(scan);
   });
@@ -137,5 +77,82 @@ export function startChatQuickActions(): () => void {
     for (const current of mounted.values()) current.dispose();
     mounted.clear();
     pageSheet.remove();
+  };
+}
+
+function mountChatActions(
+  chat: ChatRow,
+  run: ChatActionRunner,
+): MountedActions {
+  const host = document.createElement("span");
+  host.dataset.watChatActions = "";
+  chat.row.dataset.watChatRow = "";
+  chat.metadata.dataset.watChatMeta = "";
+  const shadow = host.attachShadow({ mode: "closed" });
+  const stylesheet = document.createElement("style");
+  stylesheet.textContent = styles;
+  const app = document.createElement("span");
+  shadow.append(stylesheet, app);
+  chat.metadata.after(host);
+  const controller = new AbortController();
+  const root = createRoot(app);
+
+  function update(readState: ChatReadState): void {
+    root.render(
+      <ChatQuickActions
+        readState={readState}
+        run={(action) => run(chat, action, controller.signal)}
+        signal={controller.signal}
+      />,
+    );
+  }
+
+  update(chat.readState);
+  let hovered = chat.row.matches(":hover");
+
+  function syncVisibility(): void {
+    if (controller.signal.aborted) return;
+    const focused = shadow.activeElement?.matches(":focus-visible") ?? false;
+    const visible = hovered || focused;
+    host.toggleAttribute("data-wat-chat-visible", visible);
+    chat.row.toggleAttribute("data-wat-chat-active", visible);
+  }
+
+  function enter(): void {
+    hovered = true;
+    syncVisibility();
+  }
+
+  function leave(): void {
+    hovered = false;
+    syncVisibility();
+  }
+
+  function focus(): void {
+    queueMicrotask(syncVisibility);
+  }
+
+  chat.row.addEventListener("mouseenter", enter);
+  chat.row.addEventListener("mouseleave", leave);
+  shadow.addEventListener("focusin", focus);
+  shadow.addEventListener("focusout", focus);
+  syncVisibility();
+
+  return {
+    chat,
+    host,
+    update,
+    dispose() {
+      controller.abort();
+      chat.row.removeEventListener("mouseenter", enter);
+      chat.row.removeEventListener("mouseleave", leave);
+      shadow.removeEventListener("focusin", focus);
+      shadow.removeEventListener("focusout", focus);
+      root.unmount();
+      host.remove();
+      delete chat.row.dataset.watChatRow;
+      delete chat.row.dataset.watChatActive;
+      delete chat.metadata.dataset.watChatMeta;
+    },
   };
 }

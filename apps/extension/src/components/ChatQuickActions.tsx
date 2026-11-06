@@ -1,5 +1,5 @@
 import { Archive, Mail, MailOpen } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactElement } from "react";
 import type {
   ChatAction,
   ChatActionResult,
@@ -27,7 +27,11 @@ const alreadyDone: Record<ChatAction, string> = {
 // Shared across rows, matching the sidebar tooltip provider’s warm window.
 let tooltipWarmUntil = 0;
 
-export function ChatQuickActions({ readState, run, signal }: Props) {
+export function ChatQuickActions({
+  readState,
+  run,
+  signal,
+}: Props): ReactElement {
   const readAction = readState === "unread" ? "mark-read" : "mark-unread";
   const readLabel =
     readState === "unread" ? "Marcar como lido" : "Marcar como não lido";
@@ -41,23 +45,24 @@ export function ChatQuickActions({ readState, run, signal }: Props) {
   const actions = useRef<HTMLDivElement>(null);
   const hintText = hint?.action === "read" ? readLabel : "Arquivar conversa";
 
-  const clearHint = () => {
+  function clearHint(): void {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
     if (hint?.visible) tooltipWarmUntil = Date.now() + 400;
     setHint((current) => (current ? { ...current, visible: false } : null));
-  };
-  const showHint = (
+  }
+
+  function showHint(
     anchor: HTMLElement,
     action: Hint["action"],
     immediate = false,
-  ) => {
+  ): void {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(
       () => setHint({ anchor, action, visible: true }),
       immediate || Date.now() < tooltipWarmUntil ? 0 : 150,
     );
-  };
+  }
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
@@ -71,31 +76,37 @@ export function ChatQuickActions({ readState, run, signal }: Props) {
   }, [feedback]);
   useEffect(() => {
     const popup = tooltip.current;
-    const anchor = feedback
-      ? actions.current
-      : hint?.visible
-        ? hint.anchor
-        : null;
     if (!popup) return;
+    let anchor: HTMLElement | null = null;
+    if (feedback) {
+      anchor = actions.current;
+    } else if (hint?.visible) {
+      anchor = hint.anchor;
+    }
     if (!anchor) {
       popup.hidePopover?.();
       return;
     }
-    const position = () => {
-      const rect = anchor.getBoundingClientRect();
-      const width = popup.offsetWidth;
-      const height = popup.offsetHeight;
-      popup.style.left = `${Math.max(5, Math.min((rect.left + rect.right - width) / 2, window.innerWidth - width - 5))}px`;
-      const top = rect.top - height - 4;
-      popup.style.top = `${top >= 5 ? top : rect.bottom + 4}px`;
-    };
     popup.showPopover?.();
-    position();
-    const dismiss = () => {
+    const rect = anchor.getBoundingClientRect();
+    const width = popup.offsetWidth;
+    const height = popup.offsetHeight;
+    const left = Math.max(
+      5,
+      Math.min(
+        (rect.left + rect.right - width) / 2,
+        window.innerWidth - width - 5,
+      ),
+    );
+    const top = rect.top - height - 4;
+    popup.style.left = `${left}px`;
+    popup.style.top = `${top >= 5 ? top : rect.bottom + 4}px`;
+
+    function dismiss(): void {
       if (hint?.visible) tooltipWarmUntil = Date.now() + 400;
       setHint((current) => (current ? { ...current, visible: false } : null));
       setFeedback(null);
-    };
+    }
     document.addEventListener("scroll", dismiss, true);
     window.addEventListener("resize", dismiss);
     return () => {
@@ -105,7 +116,7 @@ export function ChatQuickActions({ readState, run, signal }: Props) {
     };
   }, [hint, hintText, feedback]);
 
-  const act = async (action: ChatAction) => {
+  async function act(action: ChatAction): Promise<void> {
     if (pending || signal.aborted) return;
     clearHint();
     setFeedback(null);
@@ -125,7 +136,7 @@ export function ChatQuickActions({ readState, run, signal }: Props) {
     } finally {
       if (!signal.aborted) setPending(false);
     }
-  };
+  }
 
   return (
     <div

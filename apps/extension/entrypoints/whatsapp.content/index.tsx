@@ -1,5 +1,5 @@
-import { startVoiceMessageScanner } from "../../src/adapters/whatsapp/scanner";
 import { startChatQuickActions } from "../../src/adapters/whatsapp/chatQuickActions";
+import { startVoiceMessageScanner } from "../../src/adapters/whatsapp/scanner";
 
 export default defineContentScript({
   matches: ["https://web.whatsapp.com/*"],
