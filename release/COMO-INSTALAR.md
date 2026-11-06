@@ -4,7 +4,7 @@ The existing Chrome packages in this folder remain specific to Chrome. Firefox a
 
 - **Chrome:** Extract the ZIP, open `chrome://extensions`, enable Developer mode, and use **Load unpacked** on the folder containing `manifest.json`.
 - **Firefox/Zen temporary:** Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `apps/extension/.output/firefox-mv3/manifest.json`. The extension is removed when the browser closes.
-- **Firefox/Zen permanent:** Use the [Mozilla Add-ons listing](https://addons.mozilla.org/firefox/addon/e1edf950e86a47f099a7/) once the public release is approved. The first catalog release is being submitted as version 0.3.1. Before approval, the existing signed, self-distributed XPI remains available through the Developer Hub. Renaming an unsigned ZIP to XPI does not replace signing.
+- **Firefox/Zen permanent:** Use the [Mozilla Add-ons listing](https://addons.mozilla.org/firefox/addon/whatsapp-transcritor-gabriel/) once the public release is approved. The first catalog release is being submitted as version 0.3.1. Before approval, the existing signed, self-distributed XPI remains available through the Developer Hub. Renaming an unsigned ZIP to XPI does not replace signing.
 
 Open the popup, configure your Groq API key, and refresh WhatsApp Web. In Firefox/Zen, also confirm permissions for the WhatsApp and Groq sites in `about:addons`.
 
